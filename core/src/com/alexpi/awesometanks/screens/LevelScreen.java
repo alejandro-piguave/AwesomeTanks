@@ -42,7 +42,7 @@ public class LevelScreen extends BaseScreen {
     public void show() {
         gameValues = Gdx.app.getPreferences("values");
         skin = game.getManager().get("uiskin/uiskin.json");
-        play = new TextButton("Play",Styles.getTextButtonStyle((int) (Constants.tileSize/3)));
+        play = new TextButton("Play",Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize/3)));
 
         play.addListener(new ClickListener(){
             @Override
@@ -66,19 +66,19 @@ public class LevelScreen extends BaseScreen {
         table = new Table(skin);
         table.setFillParent(true);
 
-        unlockedLevel  = new Label("Locked Level", Styles.getLabelStyle((int) Constants.tileSize));
+        unlockedLevel  = new Label("Locked Level", Styles.getLabelStyle(game.getManager(), (int) Constants.tileSize));
         unlockedLevel.setColor(Color.RED);
         unlockedLevel.setPosition(stage.getWidth() / 2, stage.getHeight() / 2, Align.center);
         unlockedLevel.setSize(0, 0);
         unlockedLevel.addAction(Actions.alpha(0));
 
-        list = new List(Styles.getListStyle((int) (Constants.tileSize/3)));
+        list = new List(Styles.getListStyle(game.getManager(), (int) (Constants.tileSize/3)));
         Array array = new Array();
         for(int i=1;i<=30;i++) array.add("Level "+i);
         list.setItems(array);
         pane = new ScrollPane(list,skin);
 
-        table.add(new Label("Select level",Styles.getLabelStyle((int)(Constants.tileSize/2)))).row();
+        table.add(new Label("Select level",Styles.getLabelStyle(game.getManager(), (int)(Constants.tileSize/2)))).row();
         table.add(pane).width(Constants.centerY).height(Constants.tileSize * 5).row();
         table.add(play).size(Constants.tileSize * 3, Constants.tileSize).pad(Constants.tileSize / 8);
         stage.addActor(table);

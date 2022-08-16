@@ -35,10 +35,10 @@ public class MainScreen extends BaseScreen {
         mainStage = new Stage();
         table = new Table();
 
-        title = new Label("Awesome\nTanks", Styles.getLabelStyle((int) (Constants.tileSize * 1.5f)));
+        title = new Label("Awesome\nTanks", Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize * 1.5f)));
         title.setAlignment(Align.center);
-        play = new TextButton("Play", Styles.getTextButtonStyle((int) (Constants.tileSize / 3)));
-        configuration = new TextButton("Settings", Styles.getTextButtonStyle((int) (Constants.tileSize / 3)));
+        play = new TextButton("Play", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 3)));
+        configuration = new TextButton("Settings", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 3)));
 
 
         play.addListener(new ClickListener() {

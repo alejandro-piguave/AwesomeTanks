@@ -69,12 +69,13 @@ import java.util.Vector;
 /**
  * Created by Alex on 30/12/2015.
  */
-public class GameScreen extends BaseScreen implements InputProcessor, ContactListener{
-    private Vector<ImageButton>buttons;
+public class GameScreen extends BaseScreen implements InputProcessor{
+    private static final int BUTTON_COUNT = 7;
+    private ImageButton[] buttons;
     private Vector<Shade> shades;
     private Stage gameStage, UIStage, shadeStage;
     private World world;
-    private Skin joystickSkin, uiSkin;
+    private Skin uiSkin;
     private Touchpad joystick;
     private Tank tank;
     private Table weaponsTable;
@@ -90,9 +91,8 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
 
     @Override
     public void show() {
-        buttons = new Vector<>();
+        buttons = new ImageButton[BUTTON_COUNT];
         shades = new Vector<>();
-        joystickSkin = new Skin();
         UIStage = new Stage();
         gameStage = new Stage();
         shadeStage = new Stage();
@@ -259,31 +259,31 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
     private void createUIScene(){
         uiSkin = game.getManager().get("uiskin/uiskin.json");
 
-        gunName = new Label("Minigun", Styles.getLabelStyle((int) (Constants.tileSize / 4)));
+        gunName = new Label("Minigun", Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize / 4)));
         gunName.setPosition(UIStage.getWidth() / 2 - gunName.getWidth() / 2, 10);gunName.setAlignment(Align.center);
 
-        ammoAmount = new Label(tank.getCurrentWeapon().getAmmo()+"/100",Styles.getLabelStyle((int) (Constants.tileSize/2)));
+        ammoAmount = new Label(tank.getCurrentWeapon().getAmmo()+"/100",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
         float ammoAlignment = gameSettings.getBoolean("isAlignedToLeft")?10f:Constants.screenWidth-ammoAmount.getWidth()-10f;
         ammoAmount.setPosition(ammoAlignment,Constants.screenHeight-ammoAmount.getHeight());ammoAmount.setAlignment(Align.center);
         ammoAmount.setVisible(false);
 
         Timer.schedule(new Timer.Task() {@Override public void run() {gunName.addAction(Actions.fadeOut(TRANSITION_DURATION));}}, 2f);
 
-        money = new Label(tank.money+" $",Styles.getLabelStyle((int) (Constants.tileSize/3)));
+        money = new Label(tank.money+" $",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/3)));
         money.setPosition(Constants.centerX, Constants.screenHeight - money.getHeight(),Align.center);
 
-        for(int i = 0; i < 7;i++){
+        for(int i = 0; i < BUTTON_COUNT;i++){
             Texture texture = game.getManager().get("icons/icon_"+i+".png");
             Texture disabled= game.getManager().get("icons/icon_disabled_"+i+".png");
             ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle(uiSkin.get(Button.ButtonStyle.class));
             style.imageUp = new TextureRegionDrawable(new TextureRegion(texture));
             style.imageDisabled = new TextureRegionDrawable(new TextureRegion(disabled));
-            buttons.add(new ImageButton(style));
+            buttons[i]= new ImageButton(style);
         }
 
         float buttonsAlignment,joystickAlignment;
         joystickAlignment = gameSettings.getBoolean("isAlignedToLeft")?10: Constants.screenWidth- Constants.screenHeight/2.5f-10;
-        joystick = new Touchpad (0,getTouchPadStyle());
+        joystick = new Touchpad (0,Styles.getTouchPadStyle(game.getManager()));
         joystick.setColor(joystick.getColor().r, joystick.getColor().g, joystick.getColor().b, 0.5f);
         joystick.setBounds(joystickAlignment, 10, Constants.screenHeight / 2.5f, Constants.screenHeight / 2.5f);
 
@@ -294,20 +294,24 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
         for(ImageButton i: buttons)
             weaponsTable.add(i).width(Constants.screenHeight/7).height(Constants.screenHeight / 7).row();
 
-
-        for (final Button ib: buttons) {
-            if(buttons.indexOf(ib) > 0)ib.setDisabled(gameValues.getBoolean("weapon"+buttons.indexOf(ib),true));
-            if(!ib.isDisabled())ib.addListener(new ClickListener(){
+        for (int i = 0; i < BUTTON_COUNT; i++) {
+            if(i > 0){
+                buttons[i].setDisabled(gameValues.getBoolean("weapon"+i,true));
+                buttons[i].setColor(buttons[i].getColor().r,buttons[i].getColor().g,buttons[i].getColor().b,.5f);
+            }
+            if(!buttons[i].isDisabled()) {
+                final int finalI = i;
+                buttons[i].addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if(soundFX) gunChangeSound.play();
-                    tank.setCurrentWeapon(buttons.indexOf(ib));
-                    for (Button ib: buttons)
-                        ib.setColor(ib.getColor().r,ib.getColor().g,ib.getColor().b,.5f);
-                    ib.setColor(ib.getColor().r, ib.getColor().g, ib.getColor().b, 1f);
+                    tank.setCurrentWeapon(finalI);
+                    for (Button ib: buttons) ib.setColor(ib.getColor().r,ib.getColor().g,ib.getColor().b,.5f);
+
+                    buttons[finalI].setColor(buttons[finalI].getColor().r, buttons[finalI].getColor().g, buttons[finalI].getColor().b, 1f);
 
                     ammoAmount.setText(tank.getCurrentWeapon().getAmmo()+"/100");
-                    if(buttons.indexOf(ib)==0)ammoAmount.setVisible(false);else ammoAmount.setVisible(true);
+                    ammoAmount.setVisible(finalI != 0);
 
                     gunName.setText(tank.getCurrentWeapon().getName());
                     gunName.addAction(Actions.alpha(1f));
@@ -315,9 +319,7 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
                         gunName.addAction(Actions.fadeOut(TRANSITION_DURATION));}}, 2f);
                 }
             });
-            if(!buttons.firstElement().equals(ib))
-                ib.setColor(ib.getColor().r,ib.getColor().g,ib.getColor().b,.5f);
-
+            }
         }
         UIStage.addActor(joystick);
         UIStage.addActor(weaponsTable);
@@ -360,8 +362,8 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
         return false;
     }
     private void showLevelFailedDialog(){
-        Dialog levelFailed = new Dialog("Level failed", Styles.getWindowStyle((int) (Constants.tileSize / 3)));
-        TextButton back = new TextButton("Back", Styles.getTextButtonStyle((int) (Constants.tileSize / 4)));
+        Dialog levelFailed = new Dialog("Level failed", Styles.getWindowStyle(game.getManager(), (int) (Constants.tileSize / 3)));
+        TextButton back = new TextButton("Back", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 4)));
         back.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -380,8 +382,8 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
         levelFailed.show(UIStage);
     }
     private void showLevelCompletedDialog(){
-        Dialog levelCompleted = new Dialog("Level completed", Styles.getWindowStyle((int) (Constants.tileSize / 3)));
-        TextButton continueButton = new TextButton("Continue", Styles.getTextButtonStyle((int) (Constants.tileSize / 4)));
+        Dialog levelCompleted = new Dialog("Level completed", Styles.getWindowStyle(game.getManager(), (int) (Constants.tileSize / 3)));
+        TextButton continueButton = new TextButton("Continue", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 4)));
         continueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -401,67 +403,11 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
     }
 
     @Override
-    public void beginContact(Contact contact) {
-        Fixture fixtureA = contact.getFixtureA(), fixtureB = contact.getFixtureB();
-
-        if((fixtureA.getUserData() instanceof Projectile && (fixtureB.getUserData() instanceof DamageableActor))
-                || ((fixtureB.getUserData() instanceof Projectile) && (fixtureA.getUserData() instanceof DamageableActor))){
-
-            Projectile projectile = fixtureA.getUserData()instanceof Projectile?
-                    (Projectile)fixtureA.getUserData(): (Projectile)fixtureB.getUserData();
-
-            DamageableActor damageableActor =(DamageableActor) (fixtureA.getUserData()instanceof DamageableActor?
-                    fixtureA.getUserData(): fixtureB.getUserData());
-
-            if(projectile instanceof Flame)
-                damageableActor.burn(((Flame) projectile).burnDuration);
-
-            projectile.kill();
-
-            if( !(projectile.isEnemy() && damageableActor instanceof Spawner)   )
-                damageableActor.getHit(projectile.damage);
-
-            gameStage.addActor(new ParticleActor(game.getManager(),"particles/collision.party",
-                    damageableActor.getX()+damageableActor.getWidth()/2, damageableActor.getY()+damageableActor.getHeight()/2,false));
-
-           if(!damageableActor.isAlive() && (damageableActor instanceof  Mine)){
-                Fixture mineFixture = fixtureA.getUserData() instanceof Mine? fixtureA:fixtureB;
-                float mineX = mineFixture.getBody().getPosition().x, mineY = mineFixture.getBody().getPosition().y;
-               gameStage.addActor(new ParticleActor(game.getManager(),"particles/big-explosion.party",mineX*Constants.tileSize,mineY*Constants.tileSize,false));
-                Array<Body> bodies = new Array<Body>();
-                world.getBodies(bodies);
-                for(Body body: bodies){
-                    float distanceFromMine = (float) Utils.fastHypot(body.getPosition().x - mineX,body.getPosition().y - mineY);
-                    if(body.getUserData() instanceof DamageableActor &&( distanceFromMine <  5f))
-                        ((DamageableActor) body.getUserData()).getHit(350 * ((5f - distanceFromMine) / 5f));
-                }
-            }
-        }
-
-        if((fixtureA.getUserData()instanceof Item && fixtureB.getUserData()instanceof Tank)
-                || (contact.getFixtureB().getUserData()instanceof Item && fixtureA.getUserData()instanceof Tank)){
-
-            Item item = fixtureA.getUserData()instanceof Item?
-                    (Item)fixtureA.getUserData(): (Item)fixtureB.getUserData();
-
-            if(item instanceof GoldNugget) {GoldNugget nugget = (GoldNugget)item;money.setText((tank.money += nugget.value) + " $");}
-            else if(item instanceof HealthPack)
-                tank.heal(((HealthPack)item).getHealth());
-            else if(item instanceof FreezingBall){
-                for(Actor a: gameStage.getActors())
-                    if(a instanceof Enemy)
-                        ((Enemy)a).freeze(5);
-            }
-            item.kill();
-        }
-    }
-
-    @Override
     public boolean keyDown(int keycode) {
         if(keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE){
             isPaused = true;
-            Dialog pauseMenu = new Dialog("Pause Menu", Styles.getWindowStyle((int) (Constants.tileSize / 3)));
-            TextButton back = new TextButton("Back", Styles.getTextButtonStyle((int) (Constants.tileSize / 4)));
+            Dialog pauseMenu = new Dialog("Pause Menu", Styles.getWindowStyle(game.getManager(), (int) (Constants.tileSize / 3)));
+            TextButton back = new TextButton("Back", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 4)));
             back.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -475,7 +421,7 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
                     })));
                 }
             });
-            TextButton resume = new TextButton("Resume", Styles.getTextButtonStyle((int) (Constants.tileSize / 4)));
+            TextButton resume = new TextButton("Resume", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 4)));
             resume.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -510,17 +456,6 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
         Gdx.input.setInputProcessor(null);
     }
 
-    private Touchpad.TouchpadStyle getTouchPadStyle(){
-        joystickSkin.add("touchBackground", game.getManager().get("touchBackground.png"));
-        joystickSkin.add("touchKnob", game.getManager().get("touchKnob.png"));
-
-        Touchpad.TouchpadStyle joystickStyle = new Touchpad.TouchpadStyle();
-        joystickStyle.background = joystickSkin.getDrawable("touchBackground");
-        joystickStyle.knob = joystickSkin.getDrawable("touchKnob");
-
-        return joystickStyle;
-    }
-
     @Override
     public boolean keyUp(int keycode) {return false;}
 
@@ -531,14 +466,8 @@ public class GameScreen extends BaseScreen implements InputProcessor, ContactLis
     public boolean mouseMoved(int screenX, int screenY) {return false;}
 
     @Override
-    public boolean scrolled(int amount) {return false;}
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
+    }
 
-    @Override
-    public void endContact(Contact contact) {}
-
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {}
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {}
 }

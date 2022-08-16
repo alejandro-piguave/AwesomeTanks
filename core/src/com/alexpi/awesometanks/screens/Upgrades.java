@@ -77,15 +77,15 @@ public class Upgrades extends BaseScreen {
                 case 1: name = "speed";break;
                 case 2: name = "rotation";break;
                 case 3: name = "visibility";break;}
-            performances.add(new Performance(name,uiSkin,(int)(Constants.tileSize/4),gameValues.getInteger(name),5f,500));
+            performances.add(new Performance(game.getManager(), name,uiSkin,(int)(Constants.tileSize/4),gameValues.getInteger(name),5f,500));
             performances.get(i).changePrice(500+performances.get(i).getValue()*500);
         }
 
-        play = new TextButton("Play", Styles.getTextButtonStyle((int) (Constants.tileSize / 3)));
+        play = new TextButton("Play", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 3)));
 
         moneyValue = gameValues.getInteger("money",1500);
-        money = new Label(moneyValue + " $", Styles.getLabelStyle((int) (Constants.tileSize)));
-        weaponPrice = new Label("",Styles.getLabelStyle((int) (Constants.tileSize)/2));
+        money = new Label(moneyValue + " $", Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize)));
+        weaponPrice = new Label("",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize)/2));
         weaponPrice.setAlignment(Align.center);
 
         for(int i = 0; i < 7;i++){
@@ -138,7 +138,7 @@ public class Upgrades extends BaseScreen {
                     weaponPower.setVisible(true);
                 }}});
 
-        weaponAmmo = new Performance("Ammo",uiSkin,(int)(Constants.tileSize/4),values[0][0],100f,100);
+        weaponAmmo = new Performance(game.getManager(), "Ammo",uiSkin,(int)(Constants.tileSize/4),values[0][0],100f,100);
         weaponAmmo.setVisible(false);
         weaponAmmo.getBuyButton().addListener(new ClickListener() {
             @Override
@@ -149,7 +149,7 @@ public class Upgrades extends BaseScreen {
                     money.setText((moneyValue -= weaponAmmo.getPrice()) + " $");
                 }}});
 
-        weaponPower = new Performance("Power",uiSkin,(int)(Constants.tileSize/4),values[1][0],5,200 + 100 * values[0][0]);
+        weaponPower = new Performance(game.getManager(), "Power",uiSkin,(int)(Constants.tileSize/4),values[1][0],5,200 + 100 * values[0][0]);
         weaponPower.getBuyButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

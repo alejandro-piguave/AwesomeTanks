@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
@@ -16,9 +17,9 @@ public class Performance extends Group {
     private Label nameLabel;
     private TextButton buy;
     private int price;
-    public Performance(String name, Skin skin, int fontSize, float value,float max, int price){
-        nameLabel = new Label(name, Styles.getLabelStyle(fontSize));nameLabel.setAlignment(Align.center);
-        buy = new TextButton("Buy "+price+" $", Styles.getTextButtonStyle(fontSize));
+    public Performance(AssetManager assetManager, String name, Skin skin, int fontSize, float value, float max, int price){
+        nameLabel = new Label(name, Styles.getLabelStyle(assetManager, fontSize));nameLabel.setAlignment(Align.center);
+        buy = new TextButton("Buy "+price+" $", Styles.getTextButtonStyle(assetManager, fontSize));
         bar = new ProgressBar(0f,max,1f,false,skin);bar.setValue(value);
 
         addActor(bar);

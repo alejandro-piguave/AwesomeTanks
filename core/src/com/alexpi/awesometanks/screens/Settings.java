@@ -59,10 +59,10 @@ public class Settings extends BaseScreen {
         if(settings.getBoolean("isAlignedToLeft"))left.setChecked(true); else right.setChecked(true);
         if(settings.getBoolean("areSoundsActivated"))soundFX.setChecked(true);
 
-        title = new Label("Settings", Styles.getLabelStyle((int) (Constants.tileSize)));
-        alignment = new Label("Joystick's alignment",Styles.getLabelStyle((int) (Constants.tileSize/2)));
-        sounds = new Label("Sounds",Styles.getLabelStyle((int) (Constants.tileSize/2)));
-        tankColor = new Label("Tank Color",Styles.getLabelStyle((int) (Constants.tileSize/2)));
+        title = new Label("Settings", Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize)));
+        alignment = new Label("Joystick's alignment",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
+        sounds = new Label("Sounds",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
+        tankColor = new Label("Tank Color",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
 
 
 
@@ -70,7 +70,7 @@ public class Settings extends BaseScreen {
         for(int i =0;i<10;i++)
             array.add(Constants.colorNames[i]);
 
-        list = new List(Styles.getListStyle((int) (Constants.tileSize/3)));
+        list = new List(Styles.getListStyle(game.getManager(), (int) (Constants.tileSize/3)));
         list.setItems(array);
         list.setSelectedIndex(settings.getInteger("tankColor",0));
 
