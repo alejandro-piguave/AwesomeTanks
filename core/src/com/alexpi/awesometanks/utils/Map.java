@@ -5,7 +5,6 @@ import com.badlogic.gdx.files.FileHandle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Random;
 import java.util.Vector;
 
 /**
@@ -14,8 +13,7 @@ import java.util.Vector;
 public class Map {
     private char[][] map;
     int rA, cA, rows, columns;
-    public Map(){
-    }
+    public Map(){ }
 
     public char[][] getMap(){return map;}
 
@@ -48,9 +46,6 @@ public class Map {
 
         for(int i = 0; i <rA;i++)
             map[i] = ans.get(i).toCharArray();
-
-
-
     }
     public void deleteBlockAt(int posX, int posY){
         map[posY][posX] = Constants.space;
@@ -58,7 +53,6 @@ public class Map {
 
     public void generateRandomMaze(int rows, int columns) {
         this.rows = rows; this.columns = columns;
-        Random rnd  = new Random();
         int rP = 2 * rows + 1, cP = 2 * columns + 1;
         int extension = 3, width= extension+1;
 
@@ -76,7 +70,7 @@ public class Map {
 
 
         // select random point and open as start node
-        Point st = new Point(rnd.nextInt(rows)*2+1,rnd.nextInt(columns)*2+1,null);
+        Point st = new Point(Utils.getRandomInt(rows)*2+1,Utils.getRandomInt(columns)*2+1,null);
         miniMaze[st.r][st.c] = Constants.start;
 
         // iterate through direct neighbors of node
@@ -98,7 +92,7 @@ public class Map {
         while(!frontier.isEmpty()){
 
             // pick current node at random
-            Point cu = frontier.remove(rnd.nextInt(frontier.size()));
+            Point cu = frontier.remove(Utils.getRandomInt(frontier.size()));
             Point op = cu.opposite();
             try{
                 // if both node and its opposite are blocks
@@ -165,7 +159,7 @@ public class Map {
         for (int i = 1; i < rP; i += 2) {
             for (int j = 1; j < cP; j += 2) {
                 if (miniMaze[i][j] == Constants.start || miniMaze[i][j] == Constants.end)
-                    map[(((i - 1) / 2) * width + 1) + rnd.nextInt(extension)][(((j - 1) / 2) * width + 1) + rnd.nextInt(extension)] = miniMaze[i][j];
+                    map[(((i - 1) / 2) * width + 1) + Utils.getRandomInt(extension)][(((j - 1) / 2) * width + 1) + Utils.getRandomInt(extension)] = miniMaze[i][j];
             }
         }
 
@@ -180,11 +174,6 @@ public class Map {
                 System.out.print(map[i][j]);
             System.out.println();
         }*/
-
-
-
-
-
     }
 
 }

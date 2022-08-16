@@ -1,12 +1,15 @@
 package com.alexpi.awesometanks.weapons;
 
+import com.alexpi.awesometanks.utils.Constants;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * Created by Alex on 03/01/2016.
@@ -17,21 +20,28 @@ public abstract class Weapon {
     public Sprite sprite;
     protected Sound shotSound;
     protected float desiredAngleRotation, currentAngleRotation;
-    private String name;
+    private final String name;
     protected short filter;
-    protected boolean canShoot;
+    protected boolean isCoolingDown;
+    private final boolean sound;
+    private boolean unlimitedAmmo = false;
+    private final float coolingDownTime;
 
-    public Weapon(String name){this.name = name;canShoot = true;}
-    public void detach(){
-        sprite.getTexture().dispose();
-        shotSound.dispose();
+    public Weapon(String name, AssetManager assetManager, String texturePath, String shotSoundPath, int ammo, int power, short filter, boolean sound, float coolingDownTime){
+        this.name = name;
+        this.isCoolingDown = false;
+        this.sprite = new Sprite(assetManager.get(texturePath,Texture.class));
+        this.shotSound = assetManager.get(shotSoundPath,Sound.class);
+        this.ammo = ammo;
+        this.power = power;
+        this.filter = filter;
+        this.sound = sound;
+        this.coolingDownTime = coolingDownTime;
     }
 
     public String getName() {return name;}
     public int getAmmo(){return ammo;}
-    public void decreaseAmmo(){if(ammo>0)ammo--;}
-
-    public void setValues(int ammo, int power, short filter) {this.ammo = ammo;this.power = power;this.filter = filter;}
+    private void decreaseAmmo(){if(ammo>0)ammo--;}
 
     public boolean hasAmmo(){return ammo>0;}
 
@@ -56,18 +66,42 @@ public abstract class Weapon {
         sprite.setRotation(currentAngleRotation*MathUtils.radiansToDegrees);
     }
 
-    public abstract void shoot(AssetManager manager,Stage stage, World world, Vector2 currentPosition, boolean sound);
+    public void setUnlimitedAmmo(boolean unlimitedAmmo) {
+        this.unlimitedAmmo = unlimitedAmmo;
+    }
 
-    public static Weapon getWeaponAt(int i){
+    public boolean isSound() {
+        return sound;
+    }
+
+    public void shoot(AssetManager assetManager, Stage stage, World world, Vector2 position){
+        if(canShoot()) {
+            createProjectile(stage, assetManager, world, position);
+            if (sound) shotSound.play();
+            if (!unlimitedAmmo) decreaseAmmo();
+            isCoolingDown = true;
+            Timer.schedule(new Timer.Task() {
+                @Override public void run() {
+                    if(isCoolingDown) isCoolingDown = false;
+                }
+                }, coolingDownTime);
+        }
+    }
+
+    public abstract void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position);
+
+    private boolean canShoot(){return (hasAmmo() || unlimitedAmmo) && !isCoolingDown;}
+
+    public static Weapon getWeaponAt(int i, AssetManager assetManager, int ammo, int power, short filter, boolean sound){
         Weapon weapon = null;
         switch (i){
-            case 0:weapon = new MiniGun();break;
-            case 1:weapon = new ShotGun();break;
-            case 2:weapon = new Ricochet();break;
-            case 3:weapon = new Flamethrower();break;
-            case 4:weapon = new Canon();break;
-            case 5:weapon = new LaserGun();break;
-            case 6:weapon = new RailGun();break;
+            case Constants.MINIGUN: weapon = new MiniGun(assetManager, ammo, power, filter, sound);break;
+            case Constants.SHOTGUN: weapon = new ShotGun(assetManager, ammo, power, filter, sound);break;
+            case Constants.RICOCHET: weapon = new Ricochet(assetManager, ammo, power, filter, sound);break;
+            case Constants.FLAMETHROWER: weapon = new Flamethrower(assetManager, ammo, power, filter, sound);break;
+            case Constants.CANON: weapon = new Canon(assetManager, ammo, power, filter, sound);break;
+            case Constants.LASERGUN: weapon = new LaserGun(assetManager, ammo, power, filter, sound);break;
+            case Constants. RAILGUN: weapon = new RailGun(assetManager, ammo, power, filter, sound);break;
         }
         return weapon;
     }

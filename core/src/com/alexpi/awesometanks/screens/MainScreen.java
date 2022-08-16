@@ -1,5 +1,7 @@
 package com.alexpi.awesometanks.screens;
 
+import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -24,7 +26,6 @@ public class MainScreen extends BaseScreen {
     private TextButton play, configuration;
     private Label title;
 
-
     public MainScreen(final MainGame game) {
         super(game);
     }
@@ -43,9 +44,9 @@ public class MainScreen extends BaseScreen {
         play.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                mainStage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.upgrades);}})));}});
+                mainStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.upgrades);}})));}});
 
-        configuration.addListener(new ClickListener() {@Override public void clicked(InputEvent event, float x, float y) {mainStage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.settings);}})));}});
+        configuration.addListener(new ClickListener() {@Override public void clicked(InputEvent event, float x, float y) {mainStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.settings);}})));}});
 
         table.setFillParent(true);
         table.center();
@@ -57,7 +58,7 @@ public class MainScreen extends BaseScreen {
         mainStage.addActor(table);
         Gdx.input.setInputProcessor(mainStage);
 
-        mainStage.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(1f)));
+        mainStage.addAction(Actions.sequence(Actions.alpha(0f), Actions.fadeIn(TRANSITION_DURATION)));
         Gdx.input.setCatchBackKey(false);
     }
 

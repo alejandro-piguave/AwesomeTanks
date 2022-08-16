@@ -1,5 +1,7 @@
 package com.alexpi.awesometanks.screens;
 
+import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
@@ -50,8 +52,8 @@ public class Upgrades extends BaseScreen {
     public void show() {
         gameValues = Gdx.app.getPreferences("values");
 
-        weapons = new Vector<ImageButton>(8);
-        performances = new Vector<Performance>(4);
+        weapons = new Vector<>(8);
+        performances = new Vector<>(4);
         uiSkin = game.getManager().get("uiskin/uiskin.json");
         stage = new Stage();
 
@@ -188,7 +190,7 @@ public class Upgrades extends BaseScreen {
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setCatchBackKey(true);
 
-        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(.5f)));
+        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(TRANSITION_DURATION)));
 
         play.addListener(new ClickListener() {
             @Override
@@ -203,7 +205,7 @@ public class Upgrades extends BaseScreen {
                 }
                 gameValues.putInteger("money",moneyValue);
                 gameValues.flush();
-                stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.levelScreen);}})));}});
+                stage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.levelScreen);}})));}});
     }
 
     @Override

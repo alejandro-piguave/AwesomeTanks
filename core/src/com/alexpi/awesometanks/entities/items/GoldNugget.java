@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.items;
 
 
+import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -13,10 +14,11 @@ public class GoldNugget extends Item {
 
     public int value;
 
-    public GoldNugget(AssetManager manager,World world, Vector2 position, float size, float angle){
-        super(manager,"sprites/nugget.png",world,position,size);
+    public GoldNugget(AssetManager manager,World world, Vector2 position){
+        super(manager,"sprites/nugget.png",world,position, Utils.getRandomFloat(.1f,.25f));
         value = (int) (size*1000);
-        body.applyLinearImpulse(MathUtils.cos(angle) * 1f, MathUtils.sin(angle) * 1f, body.getPosition().x, body.getPosition().y, true);
+        float angle =  Utils.getRandomFloat(Math.PI*2);
+        body.applyLinearImpulse(MathUtils.cos(angle), MathUtils.sin(angle), body.getPosition().x, body.getPosition().y, true);
 
     }
 }

@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.blocks;
 
+import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -18,7 +19,8 @@ public class Turret extends Block {
     private Weapon weapon;
     private Vector2 targetPosition;
     private AssetManager manager;
-    public Turret(AssetManager manager, World world,Vector2 targetPosition, int posX, int posY, int type) {
+    private final static float ROTATION_SPEED = .035f;
+    public Turret(AssetManager manager, World world, Vector2 targetPosition, int posX, int posY, int type, boolean sound) {
         super(manager, world,new PolygonShape(), 500, posX, posY, .8f);
         this.manager = manager;
         Filter filter = new Filter();
@@ -27,8 +29,8 @@ public class Turret extends Block {
         this.targetPosition = targetPosition;
         sprite = new Sprite(manager.get("sprites/turret_base.png", Texture.class));
 
-        weapon = Weapon.getWeaponAt(type);
-        weapon.setValues(1,3,Constants.ENEMY_BULLET_MASK);
+        weapon = Weapon.getWeaponAt(type, manager, 1, 3, Constants.ENEMY_BULLET_MASK, sound);
+        weapon.setUnlimitedAmmo(true);
         setOrigin(getWidth() / 2, getHeight() / 2);
     }
 
@@ -41,18 +43,13 @@ public class Turret extends Block {
     @Override
     public void act(float delta) {
         super.act(delta);
-        float distanceFromTarget  = (float) (Math.hypot(targetPosition.x-body.getPosition().x,targetPosition.y-body.getPosition().y));
+        float distanceFromTarget  = (float) (Utils.fastHypot(targetPosition.x-body.getPosition().x,targetPosition.y-body.getPosition().y));
 
         if(distanceFromTarget < 4 && isAlive()){
             weapon.setDesiredAngleRotation(targetPosition.x - body.getPosition().x, targetPosition.y - body.getPosition().y);
-            weapon.updateAngleRotation(.075f);
-            if(weapon.hasRotated())weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition(),false);
+            weapon.updateAngleRotation(ROTATION_SPEED);
+            if(weapon.hasRotated())weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition());
         }
     }
 
-    @Override
-    public void detach() {
-        super.detach();
-        weapon.detach();
-    }
 }

@@ -1,5 +1,7 @@
 package com.alexpi.awesometanks.screens;
 
+import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
@@ -46,14 +48,14 @@ public class LevelScreen extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(gameValues.getBoolean("unlocked"+list.getSelectedIndex()) || list.getSelectedIndex() == 0)
-                    stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run(new Runnable() {
+                    stage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {
                         @Override public void run() {game.setScreen(new GameScreen(game,list.getSelectedIndex()));}})));
                 else{
                     unlockedLevel.addAction(Actions.alpha(1f));
                     Timer.schedule(new Timer.Task() {
                         @Override
                         public void run() {
-                            unlockedLevel.addAction(Actions.fadeOut(1));
+                            unlockedLevel.addAction(Actions.fadeOut(TRANSITION_DURATION));
                         }
                     }, 1f);
                 }
@@ -84,7 +86,7 @@ public class LevelScreen extends BaseScreen {
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setCatchBackKey(true);
 
-        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(.5f)));
+        stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(TRANSITION_DURATION)));
     }
 
     @Override

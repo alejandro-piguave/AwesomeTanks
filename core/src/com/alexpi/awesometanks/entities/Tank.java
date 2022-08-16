@@ -17,8 +17,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.weapons.Weapon;
 
-import java.util.Vector;
-
 
 /**
  * Created by Alex on 02/01/2016.
@@ -27,7 +25,7 @@ public class Tank extends DamageableActor{
 
     private Sprite bodySprite, wheelsSprite;
     private int currentWeapon;
-    private Vector<Weapon> weapons;
+    private Weapon[] weapons;
     private Body body;
     private Fixture fixture;
     public float jX, jY, size, currentAngleRotation, desiredAngleRotation, rotationSpeed, movementSpeed;
@@ -48,16 +46,13 @@ public class Tank extends DamageableActor{
         alive = true;isMoving=false;
         movement = new Vector2();
 
-        weapons = new Vector(7);
+        weapons = new Weapon[7];
 
         for(int i = 0; i < 7; i++)
-            weapons.add(Weapon.getWeaponAt(i));
-
-        for(int i = 0; i < 7; i++)
-            weapons.get(i).setValues(gameValues.getInteger("ammo" + i), gameValues.getInteger("power" + i), Constants.TANK_BULLET_MASK);
+            weapons[i] = Weapon.getWeaponAt(i, manager, gameValues.getInteger("ammo" + i), gameValues.getInteger("power" + i), Constants.TANK_BULLET_MASK, sounds);
 
         visibilityRadius = 1.5f+ gameValues.getInteger("visibility")/2f;
-        rotationSpeed = .05f+gameValues.getInteger("rotation") /40f;
+        rotationSpeed = .07f+gameValues.getInteger("rotation") /40f;
         movementSpeed = 100f + gameValues.getInteger("speed")*10f;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -92,7 +87,7 @@ public class Tank extends DamageableActor{
         batch.draw(wheelsSprite, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
         batch.setColor(getColor());
         batch.draw(bodySprite, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
-        batch.draw(weapons.get(currentWeapon).sprite, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), weapons.get(currentWeapon).sprite.getRotation());
+        batch.draw(weapons[currentWeapon].sprite, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), weapons[currentWeapon].sprite.getRotation());
         batch.setColor(1, 1, 1, parentAlpha);
         super.draw(batch, parentAlpha);
     }
@@ -112,8 +107,7 @@ public class Tank extends DamageableActor{
         getCurrentWeapon().updateAngleRotation(rotationSpeed);
 
         if(hasToShoot && getCurrentWeapon().hasRotated() && isAlive()){
-            getCurrentWeapon().shoot(manager, getStage(), body.getWorld(), body.getPosition(), allowSounds);
-            getCurrentWeapon().decreaseAmmo();
+            getCurrentWeapon().shoot(manager, getStage(), body.getWorld(), body.getPosition());
             hasToShoot = false;
         }
         setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
@@ -145,18 +139,16 @@ public class Tank extends DamageableActor{
         body.destroyFixture(fixture);
         body.getWorld().destroyBody(body);
         remove();
-        for(Weapon w: weapons)
-            w.detach();
     }
 
     public void saveProgress(Preferences gameValues){
-        for(int i =0; i<weapons.size();i++)
-            gameValues.putInteger("ammo" + i, weapons.get(i).getAmmo());}
+        for(int i =0; i<weapons.length;i++)
+            gameValues.putInteger("ammo" + i, weapons[i].getAmmo());}
 
     public void setCurrentWeapon(int num){
         currentWeapon = num;
     }
-    public Weapon getCurrentWeapon(){return weapons.get(currentWeapon);}
+    public Weapon getCurrentWeapon(){return weapons[currentWeapon];}
     public float getPosY() {return body.getPosition().y;}
     public float getPosX() {return body.getPosition().x;}
     public Body getBody() {return body;}

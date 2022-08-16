@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities;
 
+import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,8 +19,6 @@ import com.alexpi.awesometanks.entities.items.GoldNugget;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.weapons.Weapon;
 
-import java.util.Random;
-
 
 /**
  * Created by Alex on 17/02/2016.
@@ -30,9 +29,10 @@ public class Enemy extends DamageableActor{
     private Sprite bodySprite, wheelsSprite, freezed;
     private Vector2 movement, targetPosition;
     private Weapon weapon;
-    private float size, currentAngleRotation, desiredAngleRotation, movementSpeed = 90f;
+    private float size, currentAngleRotation, desiredAngleRotation, movementSpeed = 60f;
     private boolean isFreezed, allowSounds;
     private AssetManager manager;
+    private final static float ROTATION_SPEED = .035f;
 
     public Enemy(AssetManager manager, World world, Vector2 position, Vector2 targetPosition, float size, int type){
         super(manager,100 + Constants.prices[1][type]);
@@ -66,8 +66,8 @@ public class Enemy extends DamageableActor{
 
         shape.dispose();
 
-        weapon = Weapon.getWeaponAt(type);
-        weapon.setValues(1, 2, Constants.ENEMY_BULLET_MASK);
+        weapon = Weapon.getWeaponAt(type, manager, 1, 2, Constants.ENEMY_BULLET_MASK, allowSounds);
+        weapon.setUnlimitedAmmo(true);
 
         setSize(size * Constants.tileSize, size * Constants.tileSize);
         setOrigin(getOriginX() + getWidth() / 2, getOriginY() + getHeight() / 2);
@@ -85,7 +85,7 @@ public class Enemy extends DamageableActor{
 
     @Override
     public void act(float delta) {
-        float distanceFromTarget = (float) (Math.hypot(targetPosition.x-body.getPosition().x,targetPosition.y-body.getPosition().y));
+        float distanceFromTarget = (float) (Utils.fastHypot(targetPosition.x-body.getPosition().x,targetPosition.y-body.getPosition().y));
         if(distanceFromTarget < 7 && !isFreezed && isAlive()){
             setDesiredAngleRotation(targetPosition.x - body.getPosition().x, targetPosition.y - body.getPosition().y);
             updateAngleRotation();
@@ -96,8 +96,8 @@ public class Enemy extends DamageableActor{
             body.setLinearVelocity(movement);
 
             weapon.setDesiredAngleRotation(targetPosition.x - body.getPosition().x, targetPosition.y - body.getPosition().y);
-            weapon.updateAngleRotation(.075f);
-            if(weapon.hasRotated()) weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition(),allowSounds);
+            weapon.updateAngleRotation(ROTATION_SPEED);
+            if(weapon.hasRotated()) weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition());
         }
         setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);
@@ -115,14 +115,14 @@ public class Enemy extends DamageableActor{
     }
 
 
-    public void freeze(float num){
+    public void freeze(float freezingTime){
         isFreezed = true;
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 isFreezed = false;
             }
-        }, num);
+        }, freezingTime);
     }
     public void setDesiredAngleRotation(float x, float y) {
         desiredAngleRotation = (float) Math.atan2(y,x);
@@ -144,11 +144,9 @@ public class Enemy extends DamageableActor{
     public boolean hasRotated(){return currentAngleRotation == desiredAngleRotation;}
 
     public void drop(){
-        Random rnd = new Random();
-
-        int num1 = rnd.nextInt(11)+5;
+        int num1 = Utils.getRandomInt(5,16);
         for(int i =0; i <num1;i++)
-            getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition(),rnd.nextFloat()*(.25f-.1f)+.1f, (float) (rnd.nextFloat()*(Math.PI*2))));
+            getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition()));
     }
 
 }

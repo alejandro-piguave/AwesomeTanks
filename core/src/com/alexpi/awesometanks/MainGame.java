@@ -30,6 +30,13 @@ public class MainGame extends Game {
         manager.load("uiskin/default.fnt", BitmapFont.class);
 
         manager.load("sounds/gun_change.ogg",Sound.class);
+		manager.load("sounds/minigun.ogg", Sound.class);
+		manager.load("sounds/shotgun.ogg", Sound.class);
+		manager.load("sounds/ricochet.ogg", Sound.class);
+		manager.load("sounds/flamethrower.ogg",Sound.class);
+		manager.load("sounds/canon.ogg",Sound.class);
+		manager.load("sounds/laser.ogg",Sound.class);
+		manager.load("sounds/railgun.ogg",Sound.class);
 
         manager.load("touchBackground.png", Texture.class);
         manager.load("touchKnob.png", Texture.class);
