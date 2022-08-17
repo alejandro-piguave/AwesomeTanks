@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.weapons;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.utils.Constants;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
@@ -74,9 +75,9 @@ public abstract class Weapon {
         return sound;
     }
 
-    public void shoot(AssetManager assetManager, Stage stage, World world, Vector2 position){
+    public void shoot(AssetManager assetManager, Stage stage, World world, Vector2 position, DamageListener listener){
         if(canShoot()) {
-            createProjectile(stage, assetManager, world, position);
+            createProjectile(stage, assetManager, world, position, listener);
             if (sound) shotSound.play();
             if (!unlimitedAmmo) decreaseAmmo();
             isCoolingDown = true;
@@ -88,7 +89,7 @@ public abstract class Weapon {
         }
     }
 
-    public abstract void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position);
+    public abstract void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener);
 
     private boolean canShoot(){return (hasAmmo() || unlimitedAmmo) && !isCoolingDown;}
 

@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.blocks;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
@@ -19,8 +20,8 @@ public class Spawner extends Block {
     private Vector2 targetPosition;
     private int maxType;
 
-    public Spawner(AssetManager manager,World world, Vector2 targetPosition, int posX, int posY, int level) {
-        super(manager,world,new PolygonShape(),500, posX, posY,1f);
+    public Spawner(AssetManager manager, World world, Vector2 targetPosition, DamageListener listener, int posX, int posY, int level) {
+        super(manager,world,new PolygonShape(),listener, getHealth(level), posX, posY,1f);
         this.manager = manager;
         this.targetPosition = targetPosition;
         lastSpawn = System.currentTimeMillis();
@@ -29,11 +30,11 @@ public class Spawner extends Block {
         maxType = getMaxType(level);
     }
 
-    private int getHealth(int level){
+    private static int getHealth(int level){
         return 200 + (800-200)/30*level;
     }
 
-    private int getMaxType(int level) {
+    public static int getMaxType(int level) {
         if(level <=3)
             return Constants.SHOTGUN;
         else return Constants.RAILGUN;
@@ -45,7 +46,7 @@ public class Spawner extends Block {
         if(lastSpawn + interval <  System.currentTimeMillis()){
             lastSpawn = System.currentTimeMillis();
             interval = Utils.getRandomInt(10000,20000);
-            getStage().addActor(new Enemy(manager, body.getWorld(), body.getPosition(),targetPosition, .75f, Utils.getRandomInt(maxType+1)));
+            getStage().addActor(new Enemy(manager, body.getWorld(), body.getPosition(),targetPosition, damageListener, .75f, Utils.getRandomInt(maxType+1)));
         }
     }
 }

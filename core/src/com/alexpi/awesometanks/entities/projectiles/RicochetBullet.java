@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -20,8 +21,8 @@ public class RicochetBullet extends Projectile {
     Sound hitSound;
     boolean soundFX;
 
-    public RicochetBullet(AssetManager manager,World world, Vector2 pos,Sound sound, float angle,boolean soundFX, float power, short filter) {
-        super(world,pos,new CircleShape(),angle,20f,.2f,25+power*2,filter);
+    public RicochetBullet(AssetManager manager, World world, Vector2 pos, Sound sound, DamageListener listener, float angle, boolean soundFX, float power, short filter) {
+        super(world,pos,new CircleShape(), listener, angle,20f,.2f,25+power*2,filter);
         hitSound = sound;
         this.soundFX = soundFX;
         sprite = new Sprite(manager.get("sprites/ricochet_bullet.png",Texture.class));
@@ -33,13 +34,6 @@ public class RicochetBullet extends Projectile {
             stage.addActor(particleActor);
         super.setStage(stage);
     }
-    @Override
-    public void kill() {
-        if(hits <5)
-            hits++;
-        else alive=false;
-        if(soundFX)hitSound.play();
-    }
 
     @Override
     public void act(float delta) {
@@ -48,8 +42,13 @@ public class RicochetBullet extends Projectile {
     }
 
     @Override
-    public void detach() {
-        super.detach();
-        particleActor.detach();
+    public void destroy() {
+        if(hits <5){
+            hits++;
+            if(soundFX)hitSound.play();
+        } else{
+            listener.onDeath(this);
+        }
     }
+
 }

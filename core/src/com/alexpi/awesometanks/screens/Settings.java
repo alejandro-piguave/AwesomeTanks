@@ -45,7 +45,7 @@ public class Settings extends BaseScreen {
     public void show() {
         settings = Gdx.app.getPreferences("settings");
         stage = new Stage();
-        skin = new Skin(Gdx.files.internal("uiskin/uiskin.json"));
+        skin = game.getManager().get("uiskin/uiskin.json", Skin.class);
         table = new Table();
         table.setFillParent(true);table.top();
 
@@ -65,7 +65,6 @@ public class Settings extends BaseScreen {
         tankColor = new Label("Tank Color",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
 
 
-
         Array array = new Array();
         for(int i =0;i<10;i++)
             array.add(Constants.colorNames[i]);
@@ -77,9 +76,9 @@ public class Settings extends BaseScreen {
         pane = new ScrollPane(list, skin);
 
         table.add(title).pad(Constants.tileSize / 6).center().row();
-        table.add(alignment).pad(Constants.tileSize / 4).center().row();
-        table.add(left).left();table.row();
-        table.add(right).left();table.row();
+        //table.add(alignment).pad(Constants.tileSize / 4).center().row();
+        //table.add(left).left();table.row();
+        //table.add(right).left();table.row();
         table.add(sounds).pad(Constants.tileSize/4).center().row();
         table.add(soundFX).left().row();
         table.add(tankColor).pad(Constants.tileSize/4).center().row();
@@ -98,7 +97,7 @@ public class Settings extends BaseScreen {
         stage.act();
         stage.draw();
         if(Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run(new Runnable() {
+            stage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {
                 @Override
                 public void run() {game.setScreen(game.mainScreen);}
             })));}

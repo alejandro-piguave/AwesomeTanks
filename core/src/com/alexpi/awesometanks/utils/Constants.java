@@ -22,7 +22,7 @@ public class Constants {
             {0, 3000, 5000, 7500, 7500, 10000, 10000}
     };
 
-    public static float TRANSITION_DURATION = .35f;
+    public static float TRANSITION_DURATION = .3f;
 
     public static final int MINIGUN = 0;
     public static final int SHOTGUN = 1;

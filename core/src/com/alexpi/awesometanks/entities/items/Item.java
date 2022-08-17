@@ -1,5 +1,7 @@
 package com.alexpi.awesometanks.entities.items;
 
+import com.alexpi.awesometanks.entities.DamageListener;
+import com.alexpi.awesometanks.entities.Detachable;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -18,17 +20,17 @@ import com.alexpi.awesometanks.utils.Constants;
 /**
  * Created by Alex on 19/02/2016.
  */
-public abstract class Item extends Actor {
+public abstract class Item extends Actor implements Detachable {
 
-    protected boolean alive;
     private Sprite sprite;
     protected Body body;
     protected Fixture fixture;
     public float size;
+    protected DamageListener listener;
 
-    public Item(AssetManager manager,String fileName, World world,Vector2 position, float size){
-        alive = true;
+    public Item(AssetManager manager,String fileName, World world,Vector2 position, DamageListener listener, float size){
         this.size = size;
+        this.listener = listener;
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef();
 
@@ -57,7 +59,6 @@ public abstract class Item extends Actor {
     }
     @Override
     public void act(float delta) {
-        if(!alive)detach();
         setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);
     }
@@ -67,11 +68,15 @@ public abstract class Item extends Actor {
         batch.draw(sprite, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
     }
 
+    @Override
     public void detach(){
         body.destroyFixture(fixture);
         body.getWorld().destroyBody(body);
         remove();
     }
 
-    public void kill(){alive = false;}
+    public void pickUp(){
+        listener.onDeath(this);
+    }
+
 }

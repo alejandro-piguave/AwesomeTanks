@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -15,8 +16,8 @@ public class Flame extends Projectile {
     public float burnDuration;
     ParticleActor particleActor;
 
-    public Flame(AssetManager manager,Stage stage,World world, Vector2 pos, float angle, float burnDuration, short filter) {
-        super(world, pos, new CircleShape(), angle, 15f, .1f, 20f, filter);
+    public Flame(AssetManager manager, Stage stage, World world, Vector2 pos, DamageListener listener, float angle, float burnDuration, short filter) {
+        super(world, pos, new CircleShape(), listener, angle, 15f, .1f, 20f, filter);
         this.burnDuration = burnDuration;
         particleActor = new ParticleActor(manager,"particles/flame.party",getX()+getWidth()/2,getY()+getHeight()/2,true);
         stage.addActor(particleActor);
@@ -31,7 +32,7 @@ public class Flame extends Projectile {
     @Override
     public void detach() {
         super.detach();
-        particleActor.detach();
+        particleActor.remove();
     }
 
 }

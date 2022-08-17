@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.blocks;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,10 +19,12 @@ import com.alexpi.awesometanks.entities.items.HealthPack;
 public class Box extends Block {
     private AssetManager manager;
     private Vector2 targetPosition;
-    public Box(AssetManager manager, World world, Vector2 targetPosition, int posX, int posY){
-        super(manager, world,new PolygonShape(), 50, posX, posY, .8f);
+    private int maxType;
+    public Box(AssetManager manager, World world, Vector2 targetPosition, DamageListener listener, int posX, int posY, int level){
+        super(manager, world,new PolygonShape(), listener,50, posX, posY, .8f);
         this.manager = manager;
         this.targetPosition = targetPosition;
+        maxType = Spawner.getMaxType(level);
         sprite = new Sprite(manager.get("sprites/box.png",Texture.class));
     }
 
@@ -30,14 +33,14 @@ public class Box extends Block {
             case 0:
                 int num1 = Utils.getRandomInt(5,16);
                 for(int i =0; i <num1;i++)
-                    getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition()));
+                    getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition(), damageListener));
                 break;
             case 1:
-                getStage().addActor(new FreezingBall(manager, body.getWorld(), body.getPosition()));break;
+                getStage().addActor(new FreezingBall(manager, body.getWorld(), body.getPosition(), damageListener));break;
             case 2:
-                getStage().addActor(new HealthPack(manager,body.getWorld(),body.getPosition()));break;
+                getStage().addActor(new HealthPack(manager,body.getWorld(),body.getPosition(), damageListener));break;
             case 3:
-                getStage().addActor(new Enemy(manager, body.getWorld(), body.getPosition(),targetPosition,.5f, Utils.getRandomInt(7)));break;
+                getStage().addActor(new Enemy(manager, body.getWorld(), body.getPosition(),targetPosition, damageListener,.5f, maxType));break;
         }
     }
 

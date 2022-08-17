@@ -10,11 +10,11 @@ public class Utils {
     }
 
     public static int getRandomInt(int max){
-        return (int)Math.floor(Math.random()*(max));
+        return (int)Math.floor(Math.random()*max);
     }
 
     public static float getRandomFloat(float min, float max){
-        return (float)Math.floor(Math.random()*(max-min)+min);
+        return (float)Math.random()*(max-min)+min;
     }
 
     public static float getRandomFloat(float max){
@@ -24,7 +24,6 @@ public class Utils {
     public static float getRandomFloat(double max){
         return (float)Math.floor(Math.random()*(max));
     }
-
 
     public static double fastHypot(double x, double y) {
         return Math.sqrt(x*x+y*y);

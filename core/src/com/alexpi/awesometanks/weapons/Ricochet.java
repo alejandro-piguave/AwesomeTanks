@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.weapons;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.entities.projectiles.RicochetBullet;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
@@ -16,7 +17,7 @@ public class Ricochet extends Weapon {
         super("Ricochet", assetManager, "weapons/ricochet.png", "sounds/ricochet.ogg", ammo, power, filter, sound, .5f);
     }
     @Override
-    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position) {
-        stage.addActor(new RicochetBullet(assetManager,world, position,shotSound, currentAngleRotation,isSound(), power, filter));
+    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener) {
+        stage.addActor(new RicochetBullet(assetManager,world, position, shotSound,  listener,currentAngleRotation,isSound(), power, filter));
     }
 }

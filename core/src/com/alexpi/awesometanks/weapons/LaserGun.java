@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.weapons;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.entities.projectiles.Laser;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
@@ -17,8 +18,8 @@ public class LaserGun extends Weapon {
     }
 
     @Override
-    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position) {
-        stage.addActor(new Laser(assetManager, world, position, currentAngleRotation, power,filter));
+    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener) {
+        stage.addActor(new Laser(assetManager, world, position, listener, currentAngleRotation, power,filter));
 
     }
 }

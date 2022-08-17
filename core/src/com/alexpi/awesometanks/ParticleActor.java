@@ -33,10 +33,8 @@ public class ParticleActor extends Actor {
         super.act(delta);
         effect.setPosition(getX(),getY());
         effect.update(delta);
-        if(effect.isComplete() && !loop) detach();
+        if(effect.isComplete() && !loop) remove();
         else if(effect.isComplete() && loop)effect.reset();
     }
 
-
-    public void detach(){remove();}
 }

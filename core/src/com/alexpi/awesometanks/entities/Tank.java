@@ -35,8 +35,8 @@ public class Tank extends DamageableActor{
     public float visibilityRadius;
     private AssetManager manager;
 
-    public Tank(AssetManager manager, World world, Vector2 position,Preferences gameValues, Color color, int money,boolean sounds){
-        super(manager, 1200 + gameValues.getInteger("health")*200 );
+    public Tank(AssetManager manager, World world, Vector2 position,Preferences gameValues, Color color, DamageListener listener, int money,boolean sounds){
+        super(manager, listener,1200 + gameValues.getInteger("health")*200 );
         allowSounds = sounds;this.manager = manager;this.money = money;
         bodySprite = new Sprite(manager.get("sprites/tank_body.png",Texture.class));
         wheelsSprite = new Sprite(manager.get("sprites/tank_wheels.png",Texture.class));
@@ -53,7 +53,7 @@ public class Tank extends DamageableActor{
 
         visibilityRadius = 1.5f+ gameValues.getInteger("visibility")/2f;
         rotationSpeed = .07f+gameValues.getInteger("rotation") /40f;
-        movementSpeed = 100f + gameValues.getInteger("speed")*10f;
+        movementSpeed = 130f + gameValues.getInteger("speed")*10f;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(position.x + .5f, position.y + .5f);
@@ -107,8 +107,8 @@ public class Tank extends DamageableActor{
         getCurrentWeapon().updateAngleRotation(rotationSpeed);
 
         if(hasToShoot && getCurrentWeapon().hasRotated() && isAlive()){
-            getCurrentWeapon().shoot(manager, getStage(), body.getWorld(), body.getPosition());
-            hasToShoot = false;
+            getCurrentWeapon().shoot(manager, getStage(), body.getWorld(), body.getPosition(), damageListener);
+            //hasToShoot = false;
         }
         setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);

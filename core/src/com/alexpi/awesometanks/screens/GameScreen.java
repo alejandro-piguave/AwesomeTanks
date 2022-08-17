@@ -2,8 +2,11 @@ package com.alexpi.awesometanks.screens;
 
 import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
 
+import com.alexpi.awesometanks.entities.DamageListener;
+import com.alexpi.awesometanks.entities.Detachable;
 import com.alexpi.awesometanks.utils.Utils;
 import com.alexpi.awesometanks.world.ContactManager;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
@@ -15,13 +18,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -31,7 +31,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -56,9 +55,6 @@ import com.alexpi.awesometanks.entities.blocks.Wall;
 import com.alexpi.awesometanks.entities.items.FreezingBall;
 import com.alexpi.awesometanks.entities.items.GoldNugget;
 import com.alexpi.awesometanks.entities.items.HealthPack;
-import com.alexpi.awesometanks.entities.items.Item;
-import com.alexpi.awesometanks.entities.projectiles.Flame;
-import com.alexpi.awesometanks.entities.projectiles.Projectile;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.utils.Map;
 import com.alexpi.awesometanks.utils.Styles;
@@ -69,21 +65,20 @@ import java.util.Vector;
 /**
  * Created by Alex on 30/12/2015.
  */
-public class GameScreen extends BaseScreen implements InputProcessor{
+public class GameScreen extends BaseScreen implements InputProcessor, DamageListener {
     private static final int BUTTON_COUNT = 7;
     private ImageButton[] buttons;
     private Vector<Shade> shades;
+    private Array<Detachable> detachableArray;
     private Stage gameStage, UIStage, shadeStage;
     private World world;
-    private Skin uiSkin;
-    private Touchpad joystick;
+    private Touchpad movementTouchpad, aimTouchpad;
     private Tank tank;
-    private Table weaponsTable;
     private Label gunName, money, ammoAmount;
     private Preferences gameSettings, gameValues;
     private int screenPointer, level;
-    private boolean soundFX, isPaused, hasFinished, alreadyExecuted;
-    private Sound gunChangeSound;
+    private boolean soundFX, isPaused, alreadyExecuted, isLevelCompleted;
+    private Sound gunChangeSound, explosionSound;
 
     public GameScreen(MainGame game, int level) {
         super(game);this.level = level;
@@ -97,21 +92,19 @@ public class GameScreen extends BaseScreen implements InputProcessor{
         gameStage = new Stage();
         shadeStage = new Stage();
         world = new World(new Vector2(0,0),true);
-        gunChangeSound = game.getManager().get("sounds/gun_change.ogg");
+        detachableArray = new Array<>();
 
+        gunChangeSound = game.getManager().get("sounds/gun_change.ogg");
+        explosionSound = game.getManager().get("sounds/explosion.ogg");
         gameSettings = Gdx.app.getPreferences("settings");
         gameValues = Gdx.app.getPreferences("values");
         soundFX = gameSettings.getBoolean("areSoundsActivated");
-
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(UIStage);
-        multiplexer.addProcessor(this);
 
         addContactManager();
         createGameScene();
         createUIScene();
 
-        Gdx.input.setInputProcessor(multiplexer);
+        Gdx.input.setInputProcessor(getInputProcessor());
         Gdx.input.setCatchBackKey(true);
     }
 
@@ -120,44 +113,59 @@ public class GameScreen extends BaseScreen implements InputProcessor{
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if(joystick.isTouched()&& (Math.abs(joystick.getKnobPercentX())>.2f || Math.abs(joystick.getKnobPercentY())>.2f)){
-            tank.setDirection(joystick.getKnobPercentX(),joystick.getKnobPercentY());
-            tank.isMoving = true;
-
-            for(Shade shade: shades){
-                float distanceFromTank = (float) Utils.fastHypot(shade.getPosX() - tank.getPosX(), shade.getPosY() - tank.getPosY());
-                if(distanceFromTank < tank.visibilityRadius)
-                    shade.fadeOut();
-            }
-
-        }else tank.isMoving = false;
-
         if(!isPaused){
-            world.step(1 / 40f, 6, 2);
+            world.step(1 / 60f, 6, 2);
             gameStage.act(delta);
             shadeStage.act(delta);
-            ammoAmount.setText(tank.getCurrentWeapon().getAmmo() + "/100");
-
-            hasFinished = true;
-            for(Actor actor: gameStage.getActors())
-                if(actor instanceof Turret || actor instanceof Enemy || actor instanceof Spawner){hasFinished = false; break;}
-
+            //ammoAmount.setText(tank.getCurrentWeapon().getAmmo() + "/100");
+            checkLevelState();
             gameStage.getCamera().position.set(tank.getCenterX(), tank.getCenterY(), 0);
             shadeStage.getCamera().position.set(gameStage.getCamera().position);
         }
-        if(!tank.isAlive() && !alreadyExecuted){
-            isPaused = alreadyExecuted = true;
-            showLevelFailedDialog();
-        }
-        else if( hasFinished && !alreadyExecuted){
-            isPaused = alreadyExecuted = true;
-            showLevelCompletedDialog();
-        }
+
         gameStage.draw();
         shadeStage.draw();
 
         UIStage.act(delta);
         UIStage.draw();
+    }
+
+    private void addDetachable(Detachable detachable){
+        if(!detachableArray.contains(detachable,true))
+            detachableArray.add(detachable);
+    }
+
+    private void checkLevelState(){
+        if(detachableArray.notEmpty()){
+            for(Detachable detachable: detachableArray)
+                detachable.detach();
+            detachableArray.removeRange(0, detachableArray.size-1);
+
+            isLevelCompleted = isLevelCompleted();
+
+            if(!tank.isAlive() && !alreadyExecuted){
+                isPaused = true;
+                alreadyExecuted = true;
+                showLevelFailedDialog();
+            } else if(isLevelCompleted && !alreadyExecuted) {
+                isPaused = true;
+                alreadyExecuted = true;
+                showLevelCompletedDialog();
+            }
+        }
+    }
+
+    private boolean isLevelCompleted(){
+        for(Actor actor: gameStage.getActors())
+            if(actor instanceof Turret || actor instanceof Enemy || actor instanceof Spawner)
+                return false;
+        return true;
+    }
+
+
+    @Override
+    public void onDeath(Detachable actor) {
+        addDetachable(actor);
     }
 
     private void addContactManager(){
@@ -182,19 +190,40 @@ public class GameScreen extends BaseScreen implements InputProcessor{
             @Override
             public void onBulletCollision(float x, float y) {
                 gameStage.addActor(new ParticleActor(game.getManager(), "particles/collision.party", x, y, false));
-
             }
 
             @Override
             public void onLandMineFound(float x, float y) {
-                gameStage.addActor(new ParticleActor(game.getManager(), "particles/big-explosion.party", x * Constants.tileSize, y * Constants.tileSize, false));
+                float explosionSize = Constants.tileSize * 4;
+                float explosionX = Constants.tileSize *  x, explosionY = Constants.tileSize * y;
+                gameStage.addActor(new ParticleActor(game.getManager(), "particles/big-explosion.party", explosionX, explosionY, false));
+                final Image explosionShine = new Image(game.getManager().get("sprites/explosion_shine.png",Texture.class));
+
+                explosionShine.setBounds(explosionX - explosionSize*.5f, explosionY - explosionSize * .5f, explosionSize, explosionSize);
+                explosionShine.setOrigin(explosionSize*.5f, explosionSize*.5f);
+                explosionShine.addAction(Actions.sequence(
+                        Actions.parallel(
+                                Actions.scaleTo(.01f,.01f,.75f),
+                                Actions.alpha(0f, .75f)
+                                ),
+                        Actions.run(new Runnable() {
+                            @Override
+                            public void run() {
+                                explosionShine.remove();
+                            }
+                        })));
+                gameStage.addActor(explosionShine);
+
                 Array<Body> bodies = new Array<>();
                 world.getBodies(bodies);
                 for (Body body : bodies) {
                     float distanceFromMine = (float) Utils.fastHypot(body.getPosition().x - x, body.getPosition().y - y);
-                    if (body.getUserData() instanceof DamageableActor && (distanceFromMine < 5f))
-                        ((DamageableActor) body.getUserData()).getHit(350 * ((5f - distanceFromMine) / 5f));
+                    if (body.getUserData() instanceof DamageableActor && (distanceFromMine < 5f)){
+                        DamageableActor damageableActor = ((DamageableActor) body.getUserData());
+                        damageableActor.takeDamage(350 * ((5f - distanceFromMine) / 5f));
+                    }
                 }
+                if(soundFX)explosionSound.play();
             }
         });
         world.setContactListener(contactManager);
@@ -211,7 +240,7 @@ public class GameScreen extends BaseScreen implements InputProcessor{
                 if(map.getMap()[y][x] == Constants.start){
                     playerX = x;
                     playerY = y;
-                    tank = new Tank(game.getManager(),world,new Vector2(x, map.getRows()-y),gameValues, Constants.colors[gameSettings.getInteger("tankColor")],gameValues.getInteger("money",0),soundFX);
+                    tank = new Tank(game.getManager(),world,new Vector2(x, map.getRows()-y),gameValues, Constants.colors[gameSettings.getInteger("tankColor")],this, gameValues.getInteger("money",0),soundFX);
                 }
         for(int y = 0; y < map.getRows(); y++){
             for(int x = 0; x < map.getColumns() ; x++) {
@@ -227,18 +256,18 @@ public class GameScreen extends BaseScreen implements InputProcessor{
                     blocks.add(new Wall(game.getManager(), world, x, map.getRows() - y));
                 else{
                     if( map.getMap()[y][x] == Constants.gate)
-                        blocks.add(new Gate(game.getManager(), world, x, map.getRows() - y));
+                        blocks.add(new Gate(game.getManager(), world,this, x, map.getRows() - y));
                     else if(map.getMap()[y][x] == Constants.bricks)
-                        blocks.add(new Bricks(game.getManager(), world, x, map.getRows() - y));
+                        blocks.add(new Bricks(game.getManager(), world,this, x, map.getRows() - y));
                     else if(map.getMap()[y][x] == Constants.box)
-                        blocks.add(new Box(game.getManager(), world,tank.getBody().getPosition(),  x, map.getRows() - y));
+                        blocks.add(new Box(game.getManager(), world,tank.getBody().getPosition(),this,  x, map.getRows() - y, level));
                     else if(map.getMap()[y][x] == Constants.spawner)
-                        blocks.add(new Spawner(game.getManager(), world,tank.getBody().getPosition(),  x, map.getRows() - y, level));
+                        blocks.add(new Spawner(game.getManager(), world,tank.getBody().getPosition(),this,  x, map.getRows() - y, level));
                     else if(map.getMap()[y][x] == Constants.bomb)
-                        blocks.add(new Mine(game.getManager(), world, x, map.getRows() - y));
+                        blocks.add(new Mine(game.getManager(), world,this, x, map.getRows() - y));
                     else if(Character.isDigit(map.getMap()[y][x])){
                         int num = Character.getNumericValue(map.getMap()[y][x]);
-                        blocks.add(new Turret(game.getManager(), world, tank.getBody().getPosition(), x, map.getRows() - y, num, soundFX));
+                        blocks.add(new Turret(game.getManager(), world, tank.getBody().getPosition(),this, x, map.getRows() - y, num, soundFX));
                     }
 
                     Image space = new Image(game.getManager().get("sprites/sand.png",Texture.class));
@@ -257,7 +286,7 @@ public class GameScreen extends BaseScreen implements InputProcessor{
     }
 
     private void createUIScene(){
-        uiSkin = game.getManager().get("uiskin/uiskin.json");
+        Skin uiSkin = game.getManager().get("uiskin/uiskin.json");
 
         gunName = new Label("Minigun", Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize / 4)));
         gunName.setPosition(UIStage.getWidth() / 2 - gunName.getWidth() / 2, 10);gunName.setAlignment(Align.center);
@@ -281,14 +310,54 @@ public class GameScreen extends BaseScreen implements InputProcessor{
             buttons[i]= new ImageButton(style);
         }
 
-        float buttonsAlignment,joystickAlignment;
-        joystickAlignment = gameSettings.getBoolean("isAlignedToLeft")?10: Constants.screenWidth- Constants.screenHeight/2.5f-10;
-        joystick = new Touchpad (0,Styles.getTouchPadStyle(game.getManager()));
-        joystick.setColor(joystick.getColor().r, joystick.getColor().g, joystick.getColor().b, 0.5f);
-        joystick.setBounds(joystickAlignment, 10, Constants.screenHeight / 2.5f, Constants.screenHeight / 2.5f);
+        float joystickSize = Constants.screenHeight / 2.25f;
 
-        buttonsAlignment = gameSettings.getBoolean("isAlignedToLeft")? Constants.screenWidth- Constants.tileSize:0;
-        weaponsTable = new Table();
+        movementTouchpad = new Touchpad(0,Styles.getTouchPadStyle(game.getManager()));
+        aimTouchpad = new Touchpad(0,Styles.getTouchPadStyle(game.getManager()));
+
+        movementTouchpad.setColor(movementTouchpad.getColor().r, movementTouchpad.getColor().g, movementTouchpad.getColor().b, 0.5f);
+        aimTouchpad.setColor(movementTouchpad.getColor().r, movementTouchpad.getColor().g, movementTouchpad.getColor().b, 0.5f);
+
+        movementTouchpad.setBounds(10, 10, joystickSize, joystickSize);
+        aimTouchpad.setBounds( Constants.screenWidth- joystickSize-10, 10, joystickSize, joystickSize);
+
+        movementTouchpad.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                float x = movementTouchpad.getKnobPercentX(), y = movementTouchpad.getKnobPercentY();
+                if(movementTouchpad.isTouched()&& (Math.abs(x)>.2f || Math.abs(y)>.2f)){
+                    tank.setDirection(x, y);
+                    tank.isMoving = true;
+
+                    for(Shade shade: shades){
+                        float distanceFromTank = (float) Utils.fastHypot(shade.getPosX() - tank.getPosX(), shade.getPosY() - tank.getPosY());
+                        if(distanceFromTank < tank.visibilityRadius)
+                            shade.fadeOut();
+                    }
+
+                }else tank.isMoving = false;
+                return true;
+            }
+        });
+
+        aimTouchpad.addListener(new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                float x = aimTouchpad.getKnobPercentX(), y = aimTouchpad.getKnobPercentY();
+                if(aimTouchpad.isTouched()&& (Math.abs(x)>.2f || Math.abs(y)>.2f)){
+                    tank.getCurrentWeapon().setDesiredAngleRotation(x, y);
+
+                    float distanceFromCenter = (float) Utils.fastHypot(x,y);
+                    tank.hasToShoot = distanceFromCenter > 0.95f;
+                } else tank.hasToShoot = false;
+
+                return true;
+            }
+        });
+
+        /*
+        float buttonsAlignment = Constants.screenWidth - Constants.tileSize;
+        Table weaponsTable = new Table();
         weaponsTable.top();
         weaponsTable.setBounds(buttonsAlignment, 0, Constants.tileSize, Constants.screenHeight);
         for(ImageButton i: buttons)
@@ -320,47 +389,30 @@ public class GameScreen extends BaseScreen implements InputProcessor{
                 }
             });
             }
-        }
-        UIStage.addActor(joystick);
-        UIStage.addActor(weaponsTable);
+        }*/
+
+        UIStage.addActor(movementTouchpad);
+        UIStage.addActor(aimTouchpad);
+        //UIStage.addActor(weaponsTable);
         UIStage.addActor(gunName);
         UIStage.addActor(money);
         UIStage.addActor(ammoAmount);
     }
 
+    private InputProcessor getInputProcessor(){
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(UIStage);
+        multiplexer.addProcessor(this);
+        return multiplexer;
+    }
+
     private void saveProgress(){
-        if(hasFinished)gameValues.putBoolean("unlocked"+(++level),true);
+        if(isLevelCompleted)gameValues.putBoolean("unlocked"+(++level),true);
         tank.saveProgress(gameValues);
         gameValues.putInteger("money", tank.money);
         gameValues.flush();
     }
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        tank.getCurrentWeapon().setDesiredAngleRotation(
-                screenX - Constants.centerX,(Constants.screenHeight-screenY) - Constants.centerY);
-        screenPointer = pointer;
-        return true;
-    }
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if(pointer == screenPointer){
-            tank.getCurrentWeapon().setDesiredAngleRotation(
-                    screenX - Constants.centerX,(Constants.screenHeight-screenY) - Constants.centerY);
-            return true;
-        }
-        return false;
-    }
 
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if(pointer == screenPointer) {
-            tank.getCurrentWeapon().setDesiredAngleRotation(
-                    screenX - Constants.centerX,(Constants.screenHeight-screenY) - Constants.centerY);
-            tank.hasToShoot = true;
-            return true;
-        }
-        return false;
-    }
     private void showLevelFailedDialog(){
         Dialog levelFailed = new Dialog("Level failed", Styles.getWindowStyle(game.getManager(), (int) (Constants.tileSize / 3)));
         TextButton back = new TextButton("Back", Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize / 4)));
@@ -397,7 +449,6 @@ public class GameScreen extends BaseScreen implements InputProcessor{
                 })));}});
         levelCompleted.button(continueButton);
         levelCompleted.show(UIStage);
-
 
         saveProgress();
     }
@@ -456,6 +507,39 @@ public class GameScreen extends BaseScreen implements InputProcessor{
         Gdx.input.setInputProcessor(null);
     }
 
+    //EVENTS FOR DESKTOP
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if(Gdx.app.getType() == Application.ApplicationType.Desktop){
+            tank.getCurrentWeapon().setDesiredAngleRotation(screenX - Constants.centerX,(Constants.screenHeight-screenY) - Constants.centerY);
+            screenPointer = pointer;
+            return true;
+        } return false;
+    }
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if(Gdx.app.getType() == Application.ApplicationType.Desktop){
+            if(pointer == screenPointer){
+                tank.getCurrentWeapon().setDesiredAngleRotation(screenX - Constants.centerX,(Constants.screenHeight-screenY) - Constants.centerY);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if(Gdx.app.getType() == Application.ApplicationType.Desktop){
+            if(pointer == screenPointer) {
+                tank.getCurrentWeapon().setDesiredAngleRotation(screenX - Constants.centerX,(Constants.screenHeight-screenY) - Constants.centerY);
+                tank.hasToShoot = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean keyUp(int keycode) {return false;}
 
@@ -469,5 +553,4 @@ public class GameScreen extends BaseScreen implements InputProcessor{
     public boolean scrolled(float amountX, float amountY) {
         return false;
     }
-
 }

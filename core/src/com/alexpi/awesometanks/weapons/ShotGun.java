@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.weapons;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.entities.projectiles.Bullet;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
@@ -17,11 +18,11 @@ public class ShotGun extends Weapon {
     }
 
     @Override
-    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position) {
+    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener) {
         for(int i = 0; i < 10;i++){
             float num = (float) (Math.random()-.5f);
             if(Utils.getRandomBoolean())num = -num;
-            stage.addActor(new Bullet(assetManager,world, position, currentAngleRotation + num, Utils.getRandomInt(10,30), .12f,10f+power, filter));
+            stage.addActor(new Bullet(assetManager,world, position, listener,currentAngleRotation + num, Utils.getRandomInt(10,30), .12f,10f+power, filter));
         }
     }
 }

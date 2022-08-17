@@ -1,5 +1,7 @@
 package com.alexpi.awesometanks.entities.projectiles;
 
+import com.alexpi.awesometanks.entities.DamageListener;
+import com.alexpi.awesometanks.entities.Detachable;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -17,15 +19,19 @@ import com.alexpi.awesometanks.utils.Constants;
 /**
  * Created by Alex on 16/01/2016.
  */
-public abstract class Projectile extends Actor{
+public abstract class Projectile extends Actor implements Detachable {
     public Body body;
     private Fixture fixture;
     protected Sprite sprite;
-    protected boolean alive;
+    protected DamageListener listener;
+
+    protected boolean used;
     public float damage,height, width, speed;
 
-    public Projectile(World world, Vector2 position, Shape shape,float angle, float speed, float measure, float damage, short filter){
-        this.damage = damage;alive = true;
+    public Projectile(World world, Vector2 position, Shape shape, DamageListener listener, float angle, float speed, float measure, float damage, short filter){
+        this.damage = damage;
+        this.listener = listener;
+        used = true;
         this.speed = speed;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -60,24 +66,28 @@ public abstract class Projectile extends Actor{
 
     }
 
-    public void kill(){alive = false;}
     public boolean isEnemy(){return fixture.getFilterData().maskBits == Constants.ENEMY_BULLET_MASK;}
 
+    @Override
     public void detach(){
         body.destroyFixture(fixture);
         body.getWorld().destroyBody(body);
         remove();
     }
 
+    public void destroy(){
+        listener.onDeath(this);
+    }
+
     @Override
     public void act(float delta) {
         setPosition((body.getPosition().x - width/2) * Constants.tileSize, (body.getPosition().y - height/2) * Constants.tileSize);
-        if(!alive)detach();
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if(sprite!=null)batch.draw(sprite,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        if(sprite!=null)
+            batch.draw(sprite,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
 
 }

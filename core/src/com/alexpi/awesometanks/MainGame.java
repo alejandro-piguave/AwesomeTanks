@@ -29,7 +29,8 @@ public class MainGame extends Game {
         manager.load("uiskin/uiskin.atlas", TextureAtlas.class);
         manager.load("uiskin/default.fnt", BitmapFont.class);
 
-        manager.load("sounds/gun_change.ogg",Sound.class);
+		manager.load("sounds/explosion.ogg",Sound.class);
+		manager.load("sounds/gun_change.ogg",Sound.class);
 		manager.load("sounds/minigun.ogg", Sound.class);
 		manager.load("sounds/shotgun.ogg", Sound.class);
 		manager.load("sounds/ricochet.ogg", Sound.class);
@@ -53,6 +54,7 @@ public class MainGame extends Game {
         manager.load("sprites/gate.png",Texture.class);
         manager.load("sprites/shade.png",Texture.class);
         manager.load("sprites/turret_base.png",Texture.class);
+		manager.load("sprites/explosion_shine.png",Texture.class);
 
         manager.load("sprites/nugget.png",Texture.class);
         manager.load("sprites/freezing_ball.png",Texture.class);

@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.world;
 
 import com.alexpi.awesometanks.entities.DamageableActor;
+import com.alexpi.awesometanks.entities.Detachable;
 import com.alexpi.awesometanks.entities.Tank;
 import com.alexpi.awesometanks.entities.blocks.Mine;
 import com.alexpi.awesometanks.entities.blocks.Spawner;
@@ -48,12 +49,14 @@ public class ContactManager implements ContactListener {
             if(projectile instanceof Flame)
                 damageableActor.burn(((Flame) projectile).burnDuration);
 
-            projectile.kill();
+            if(!(projectile.isEnemy() && damageableActor instanceof Spawner)){
+                //boolean isAlive = d
+                damageableActor.takeDamage(projectile.damage);
+                //if(!isAlive) contactListener.onDetach(damageableActor);
+            }
+            projectile.destroy();
 
-            if( !(projectile.isEnemy() && damageableActor instanceof Spawner)   )
-                damageableActor.getHit(projectile.damage);
-
-            contactListener.onBulletCollision(damageableActor.getX()+damageableActor.getWidth()/2, damageableActor.getY()+damageableActor.getHeight()/2);
+            contactListener.onBulletCollision(projectile.getX()+projectile.getWidth()*.5f, projectile.getY()+projectile.getHeight()*.5f);
 
             if(!damageableActor.isAlive() && (damageableActor instanceof Mine)){
                 Fixture mineFixture = fixtureA.getUserData() instanceof Mine? fixtureA:fixtureB;
@@ -80,23 +83,17 @@ public class ContactManager implements ContactListener {
                 FreezingBall ball = (FreezingBall) item;
                 contactListener.onFreezingBallFound(ball);
             }
-            item.kill();
+            item.pickUp();
         }
 
     }
 
     @Override
-    public void endContact(Contact contact) {
-
-    }
+    public void endContact(Contact contact) { }
 
     @Override
-    public void preSolve(Contact contact, Manifold oldManifold) {
-
-    }
+    public void preSolve(Contact contact, Manifold oldManifold) { }
 
     @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) {
-
-    }
+    public void postSolve(Contact contact, ContactImpulse impulse) { }
 }

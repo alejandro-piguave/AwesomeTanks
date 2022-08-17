@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.items;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.utils.Utils;
 
 import com.badlogic.gdx.assets.AssetManager;
@@ -14,9 +15,9 @@ public class HealthPack extends Item {
         return health;
     }
 
-    private int health;
-    public HealthPack(AssetManager manager,World world, Vector2 position) {
-        super(manager, "sprites/health_pack.png", world, position, .4f);
+    private final int health;
+    public HealthPack(AssetManager manager, World world, Vector2 position, DamageListener listener) {
+        super(manager, "sprites/health_pack.png", world, position, listener,.4f);
         health = Utils.getRandomInt(50,125);
     }
 }

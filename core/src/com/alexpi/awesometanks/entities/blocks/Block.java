@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.blocks;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -24,8 +25,8 @@ public abstract class Block extends DamageableActor{
     protected float size;
     protected int posX, posY;
 
-    public Block(AssetManager manager,World world,Shape shape, int health, int posX, int posY, float size){
-        super(manager, health);
+    public Block(AssetManager manager, World world, Shape shape, DamageListener listener, int health, int posX, int posY, float size){
+        super(manager, listener, health);
         this.posX = posX; this.posY = posY;
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef();

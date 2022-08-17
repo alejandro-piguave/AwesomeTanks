@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.blocks;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,8 +21,8 @@ public class Turret extends Block {
     private Vector2 targetPosition;
     private AssetManager manager;
     private final static float ROTATION_SPEED = .035f;
-    public Turret(AssetManager manager, World world, Vector2 targetPosition, int posX, int posY, int type, boolean sound) {
-        super(manager, world,new PolygonShape(), 500, posX, posY, .8f);
+    public Turret(AssetManager manager, World world, Vector2 targetPosition, DamageListener listener, int posX, int posY, int type, boolean sound) {
+        super(manager, world,new PolygonShape(), listener,500, posX, posY, .8f);
         this.manager = manager;
         Filter filter = new Filter();
         filter.categoryBits = Constants.CAT_ENEMY;
@@ -48,7 +49,7 @@ public class Turret extends Block {
         if(distanceFromTarget < 4 && isAlive()){
             weapon.setDesiredAngleRotation(targetPosition.x - body.getPosition().x, targetPosition.y - body.getPosition().y);
             weapon.updateAngleRotation(ROTATION_SPEED);
-            if(weapon.hasRotated())weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition());
+            if(weapon.hasRotated())weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition(), damageListener);
         }
     }
 

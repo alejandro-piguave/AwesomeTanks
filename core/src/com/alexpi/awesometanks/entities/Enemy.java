@@ -34,8 +34,8 @@ public class Enemy extends DamageableActor{
     private AssetManager manager;
     private final static float ROTATION_SPEED = .035f;
 
-    public Enemy(AssetManager manager, World world, Vector2 position, Vector2 targetPosition, float size, int type){
-        super(manager,100 + Constants.prices[1][type]);
+    public Enemy(AssetManager manager, World world, Vector2 position, Vector2 targetPosition, DamageListener listener, float size, int type){
+        super(manager, listener, 100 + Constants.prices[1][type]);
         bodySprite = new Sprite(manager.get("sprites/tank_body.png",Texture.class));
         wheelsSprite = new Sprite(manager.get("sprites/tank_wheels.png",Texture.class));
         freezed = new Sprite(manager.get("sprites/freezed.png",Texture.class));
@@ -97,7 +97,7 @@ public class Enemy extends DamageableActor{
 
             weapon.setDesiredAngleRotation(targetPosition.x - body.getPosition().x, targetPosition.y - body.getPosition().y);
             weapon.updateAngleRotation(ROTATION_SPEED);
-            if(weapon.hasRotated()) weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition());
+            if(weapon.hasRotated()) weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition(), damageListener);
         }
         setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);
@@ -113,7 +113,6 @@ public class Enemy extends DamageableActor{
         body.getWorld().destroyBody(body);
         remove();
     }
-
 
     public void freeze(float freezingTime){
         isFreezed = true;
@@ -143,10 +142,10 @@ public class Enemy extends DamageableActor{
     }
     public boolean hasRotated(){return currentAngleRotation == desiredAngleRotation;}
 
-    public void drop(){
+    private void drop(){
         int num1 = Utils.getRandomInt(5,16);
         for(int i =0; i <num1;i++)
-            getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition()));
+            getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition(), damageListener));
     }
 
 }

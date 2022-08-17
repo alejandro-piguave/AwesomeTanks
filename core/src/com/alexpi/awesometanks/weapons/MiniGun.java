@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.weapons;
 
+import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.entities.projectiles.Bullet;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
@@ -12,12 +13,12 @@ import com.badlogic.gdx.utils.Timer;
  */
 public class MiniGun extends Weapon {
     public MiniGun(AssetManager assetManager, int ammo, int power, short filter, boolean sound) {
-        super("Minigun",assetManager,"weapons/minigun.png","sounds/minigun.ogg", ammo, power, filter, sound, .075f);
+        super("Minigun",assetManager,"weapons/minigun.png","sounds/minigun.ogg", ammo, power, filter, sound, .06f);
         setUnlimitedAmmo(true);
     }
 
     @Override
-    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position) {
-        stage.addActor(new Bullet(assetManager,world, position, currentAngleRotation, 30f,.1f,5f+power, filter));
+    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener) {
+        stage.addActor(new Bullet(assetManager,world, position, listener, currentAngleRotation, 30f,.1f,5f+power, filter));
     }
 }

@@ -13,7 +13,7 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Wall extends Block {
 
     public Wall(AssetManager manager,World world, int posX, int posY){
-        super(manager,world,new PolygonShape(), 1,posX,posY,1f);
+        super(manager,world,new PolygonShape(), null,1,posX,posY,1f);
         sprite = new Sprite(manager.get("sprites/wall.png",Texture.class));
     }
 
@@ -24,6 +24,5 @@ public class Wall extends Block {
 
 
     @Override
-    public void getHit(float damage) {
-    }
+    public void takeDamage(float damage) { }
 }
