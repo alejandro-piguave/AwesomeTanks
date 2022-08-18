@@ -74,7 +74,7 @@ public class LevelScreen extends BaseScreen {
         }
 
         table.add(new Label("Select level",Styles.getLabelStyleBackground(game.getManager()))).padTop(32).row();
-        table.add(levelTable).expandY().expandX().fillX().fillY().pad(16).row();
+        table.add(levelTable).expandY().expandX().fillX().top().padTop(64).row();
 
         stage.addActor(background);
         stage.addActor(table);
