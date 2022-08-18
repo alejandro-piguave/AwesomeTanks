@@ -16,9 +16,9 @@ public class Constants {
     public static final Color[] colors = {Color.WHITE,Color.CHARTREUSE,Color.SCARLET,Color.ROYAL, Color.GOLD, Color.ORANGE,Color.PURPLE, Color.SKY,Color.GRAY,  Color.LIGHT_GRAY};
 
     public static final int[][] prices = {
-            {200, 500, 1000, 2000, 2000, 3500, 3500},
-            {0, 100, 200, 300, 300, 400, 400},
-            {0, 2750, 8000, 10000, 10000, 28000, 28000}
+            {200, 500, 1000, 2000, 2000, 3500, 3500},//UPGRADE PRICES
+            {0, 100, 200, 300, 300, 400, 400}, //AMMO PRICES
+            {0, 2750, 8000, 10000, 10000, 28000, 28000}//GUN PRICES
     };
 
     public static final String[] WEAPON_NAMES = {"Minigun", "Shotgun", "Ricochet", "Flamethrower", "Canon", "Lasergun", "Railgun"};
