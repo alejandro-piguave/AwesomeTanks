@@ -59,9 +59,9 @@ public abstract class Projectile extends Actor implements Detachable {
         body.setLinearVelocity(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed);
         body.setFixedRotation(true);
 
-        setSize(Constants.tileSize * width, Constants.tileSize * height);
+        setSize(Constants.TILE_SIZE * width, Constants.TILE_SIZE * height);
         setOrigin(getOriginX() + getWidth() / 2, getOriginY() + getHeight() / 2);
-        setPosition((body.getPosition().x - width/2) * Constants.tileSize, (body.getPosition().y - height/2) * Constants.tileSize);
+        setPosition((body.getPosition().x - width/2) * Constants.TILE_SIZE, (body.getPosition().y - height/2) * Constants.TILE_SIZE);
         setRotation(angle * MathUtils.radiansToDegrees);
 
     }
@@ -81,7 +81,7 @@ public abstract class Projectile extends Actor implements Detachable {
 
     @Override
     public void act(float delta) {
-        setPosition((body.getPosition().x - width/2) * Constants.tileSize, (body.getPosition().y - height/2) * Constants.tileSize);
+        setPosition((body.getPosition().x - width/2) * Constants.TILE_SIZE, (body.getPosition().y - height/2) * Constants.TILE_SIZE);
     }
 
     @Override

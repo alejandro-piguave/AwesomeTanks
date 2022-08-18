@@ -12,6 +12,7 @@ import com.alexpi.awesometanks.entities.Enemy;
 import com.alexpi.awesometanks.entities.items.FreezingBall;
 import com.alexpi.awesometanks.entities.items.GoldNugget;
 import com.alexpi.awesometanks.entities.items.HealthPack;
+import com.badlogic.gdx.scenes.scene2d.Group;
 
 /**
  * Created by Alex on 19/01/2016.
@@ -19,10 +20,12 @@ import com.alexpi.awesometanks.entities.items.HealthPack;
 public class Box extends Block {
     private AssetManager manager;
     private Vector2 targetPosition;
+    private Group entityGroup;
     private int maxType;
-    public Box(AssetManager manager, World world, Vector2 targetPosition, DamageListener listener, int posX, int posY, int level){
+    public Box(AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, DamageListener listener, int posX, int posY, int level){
         super(manager, world,new PolygonShape(), listener,50, posX, posY, .8f);
         this.manager = manager;
+        this.entityGroup = entityGroup;
         this.targetPosition = targetPosition;
         maxType = Spawner.getMaxType(level);
         sprite = new Sprite(manager.get("sprites/box.png",Texture.class));
@@ -33,14 +36,14 @@ public class Box extends Block {
             case 0:
                 int num1 = Utils.getRandomInt(5,16);
                 for(int i =0; i <num1;i++)
-                    getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition(), damageListener));
+                    entityGroup.addActor(new GoldNugget(manager,body.getWorld(),body.getPosition(), damageListener));
                 break;
             case 1:
-                getStage().addActor(new FreezingBall(manager, body.getWorld(), body.getPosition(), damageListener));break;
+                entityGroup.addActor(new FreezingBall(manager, body.getWorld(), body.getPosition(), damageListener));break;
             case 2:
-                getStage().addActor(new HealthPack(manager,body.getWorld(),body.getPosition(), damageListener));break;
+                entityGroup.addActor(new HealthPack(manager,body.getWorld(),body.getPosition(), damageListener));break;
             case 3:
-                getStage().addActor(new Enemy(manager, body.getWorld(), body.getPosition(),targetPosition, damageListener,.5f, maxType));break;
+                entityGroup.addActor(new Enemy(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, damageListener,.5f, maxType));break;
         }
     }
 

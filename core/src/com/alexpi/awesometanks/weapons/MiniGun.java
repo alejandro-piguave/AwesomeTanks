@@ -5,8 +5,7 @@ import com.alexpi.awesometanks.entities.projectiles.Bullet;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.scenes.scene2d.Group;
 
 /**
  * Created by Alex on 03/01/2016.
@@ -18,7 +17,7 @@ public class MiniGun extends Weapon {
     }
 
     @Override
-    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener) {
-        stage.addActor(new Bullet(assetManager,world, position, listener, currentAngleRotation, 30f,.1f,5f+power, filter));
+    public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position, DamageListener listener) {
+        group.addActor(new Bullet(assetManager,world, position, listener, currentAngleRotation, 30f,.1f,3.5f+power, filter));
     }
 }

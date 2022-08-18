@@ -53,13 +53,13 @@ public abstract class Item extends Actor implements Detachable {
         fixture.setUserData(this);
 
         sprite = new Sprite(manager.get(fileName, Texture.class));
-        setSize(size * Constants.tileSize, size * Constants.tileSize);
+        setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE);
         setOrigin(getOriginX() + getWidth() / 2, getOriginY() + getHeight() / 2);
-        setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
+        setPosition((body.getPosition().x - size / 2) * Constants.TILE_SIZE, (body.getPosition().y - size / 2) * Constants.TILE_SIZE);
     }
     @Override
     public void act(float delta) {
-        setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
+        setPosition((body.getPosition().x - size / 2) * Constants.TILE_SIZE, (body.getPosition().y - size / 2) * Constants.TILE_SIZE);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);
     }
 

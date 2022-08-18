@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Timer;
-import com.alexpi.awesometanks.ParticleActor;
 import com.alexpi.awesometanks.utils.Constants;
 
 /**
@@ -56,8 +55,8 @@ public abstract class DamageableActor extends Actor implements Detachable {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if(isBurning)flame.draw(batch, parentAlpha);
-        if(justHit)batch.draw(healthBar, (getX() + getWidth() / 2) - (Constants.tileSize / 2),
-                (getY() + getHeight() / 2) + (Constants.tileSize / 2), Constants.tileSize * (health / maxHealth), Constants.tileSize / 8);
+        if(justHit)batch.draw(healthBar, (getX() + getWidth() / 2) - (Constants.TILE_SIZE / 2),
+                (getY() + getHeight() / 2) + (Constants.TILE_SIZE / 2), Constants.TILE_SIZE * (health / maxHealth), Constants.TILE_SIZE / 8);
     }
 
     public void burn(float duration) {

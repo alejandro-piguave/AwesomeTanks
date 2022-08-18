@@ -16,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.weapons.Weapon;
+import com.badlogic.gdx.scenes.scene2d.Group;
 
 
 /**
@@ -23,7 +24,7 @@ import com.alexpi.awesometanks.weapons.Weapon;
  */
 public class Tank extends DamageableActor{
 
-    private Sprite bodySprite, wheelsSprite;
+    private final Sprite bodySprite, wheelsSprite;
     private int currentWeapon;
     private Weapon[] weapons;
     private Body body;
@@ -34,13 +35,14 @@ public class Tank extends DamageableActor{
     public int money;
     public float visibilityRadius;
     private AssetManager manager;
+    private Group entityGroup;
 
-    public Tank(AssetManager manager, World world, Vector2 position,Preferences gameValues, Color color, DamageListener listener, int money,boolean sounds){
+    public Tank(AssetManager manager, Group entityGroup, World world, Vector2 position, Preferences gameValues, Color color, DamageListener listener, int money, boolean sounds){
         super(manager, listener,1200 + gameValues.getInteger("health")*200 );
         allowSounds = sounds;this.manager = manager;this.money = money;
         bodySprite = new Sprite(manager.get("sprites/tank_body.png",Texture.class));
         wheelsSprite = new Sprite(manager.get("sprites/tank_wheels.png",Texture.class));
-
+        this.entityGroup = entityGroup;
         size = .75f;
         currentAngleRotation = desiredAngleRotation = jX = jY = 0;
         alive = true;isMoving=false;
@@ -74,7 +76,7 @@ public class Tank extends DamageableActor{
 
         shape.dispose();
 
-        setSize(size * Constants.tileSize, size * Constants.tileSize);
+        setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE);
         setOrigin(getWidth() / 2, getHeight() / 2);
         setPosition((body.getPosition().x - size / 2) * getWidth(), (body.getPosition().y - size / 2) * getHeight());
         setColor(color);
@@ -107,10 +109,10 @@ public class Tank extends DamageableActor{
         getCurrentWeapon().updateAngleRotation(rotationSpeed);
 
         if(hasToShoot && getCurrentWeapon().hasRotated() && isAlive()){
-            getCurrentWeapon().shoot(manager, getStage(), body.getWorld(), body.getPosition(), damageListener);
+            getCurrentWeapon().shoot(manager, entityGroup, body.getWorld(), body.getPosition(), damageListener);
             //hasToShoot = false;
         }
-        setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
+        setPosition((body.getPosition().x - size / 2) * Constants.TILE_SIZE, (body.getPosition().y - size / 2) * Constants.TILE_SIZE);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);
         super.act(delta);
     }

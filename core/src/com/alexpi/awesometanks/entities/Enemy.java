@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Timer;
 import com.alexpi.awesometanks.entities.items.GoldNugget;
 import com.alexpi.awesometanks.utils.Constants;
@@ -29,12 +30,13 @@ public class Enemy extends DamageableActor{
     private Sprite bodySprite, wheelsSprite, freezed;
     private Vector2 movement, targetPosition;
     private Weapon weapon;
+    private Group entityGroup;
     private float size, currentAngleRotation, desiredAngleRotation, movementSpeed = 60f;
     private boolean isFreezed, allowSounds;
     private AssetManager manager;
     private final static float ROTATION_SPEED = .035f;
 
-    public Enemy(AssetManager manager, World world, Vector2 position, Vector2 targetPosition, DamageListener listener, float size, int type){
+    public Enemy(AssetManager manager, Group entityGroup, World world, Vector2 position, Vector2 targetPosition, DamageListener listener, float size, int type){
         super(manager, listener, 100 + Constants.prices[1][type]);
         bodySprite = new Sprite(manager.get("sprites/tank_body.png",Texture.class));
         wheelsSprite = new Sprite(manager.get("sprites/tank_wheels.png",Texture.class));
@@ -42,6 +44,7 @@ public class Enemy extends DamageableActor{
         this.size = size;
         allowSounds = Gdx.app.getPreferences("settings").getBoolean("areSoundsActivated");
         this.manager = manager;
+        this.entityGroup = entityGroup;
         movement = new Vector2();
         this.targetPosition = targetPosition;
         BodyDef bodyDef = new BodyDef();
@@ -69,9 +72,9 @@ public class Enemy extends DamageableActor{
         weapon = Weapon.getWeaponAt(type, manager, 1, 2, Constants.ENEMY_BULLET_MASK, allowSounds);
         weapon.setUnlimitedAmmo(true);
 
-        setSize(size * Constants.tileSize, size * Constants.tileSize);
+        setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE);
         setOrigin(getOriginX() + getWidth() / 2, getOriginY() + getHeight() / 2);
-        setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
+        setPosition((body.getPosition().x - size / 2) * Constants.TILE_SIZE, (body.getPosition().y - size / 2) * Constants.TILE_SIZE);
     }
 
     @Override
@@ -97,9 +100,9 @@ public class Enemy extends DamageableActor{
 
             weapon.setDesiredAngleRotation(targetPosition.x - body.getPosition().x, targetPosition.y - body.getPosition().y);
             weapon.updateAngleRotation(ROTATION_SPEED);
-            if(weapon.hasRotated()) weapon.shoot(manager,getStage(),body.getWorld(),body.getPosition(), damageListener);
+            if(weapon.hasRotated()) weapon.shoot(manager,entityGroup,body.getWorld(),body.getPosition(), damageListener);
         }
-        setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
+        setPosition((body.getPosition().x - size / 2) * Constants.TILE_SIZE, (body.getPosition().y - size / 2) * Constants.TILE_SIZE);
         setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 
         super.act(delta);
@@ -143,9 +146,9 @@ public class Enemy extends DamageableActor{
     public boolean hasRotated(){return currentAngleRotation == desiredAngleRotation;}
 
     private void drop(){
-        int num1 = Utils.getRandomInt(5,16);
+        int num1 = Utils.getRandomInt(5,10);
         for(int i =0; i <num1;i++)
-            getStage().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition(), damageListener));
+            entityGroup.addActor(new GoldNugget(manager,body.getWorld(),body.getPosition(), damageListener));
     }
 
 }

@@ -19,8 +19,8 @@ public class Map {
 
     public int getColumns() {return cA;}
     public int getRows() {return rA;}
-    public float getWidth(){return cA*Constants.tileSize;}
-    public float getHeight(){return rA*Constants.tileSize;}
+    public float getWidth(){return cA*Constants.TILE_SIZE;}
+    public float getHeight(){return rA*Constants.TILE_SIZE;}
 
     public void getLevel (int num){
         FileHandle file = Gdx.files.internal("levels/levels.txt");

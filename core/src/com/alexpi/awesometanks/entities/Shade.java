@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities;
 
+import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -13,17 +14,29 @@ import com.alexpi.awesometanks.utils.Constants;
  */
 public class Shade extends Image {
     private float posX, posY;
-    public Shade( AssetManager manager, float posX, float posY){
+    private Tank player;
+    private boolean isFading;
+    public Shade(AssetManager manager, Tank player, float posX, float posY){
         setDrawable(new TextureRegionDrawable(new TextureRegion(manager.get("sprites/shade.png",Texture.class))));
-        setBounds(posX* Constants.tileSize,posY*Constants.tileSize,Constants.tileSize/2,Constants.tileSize/2);
+        setBounds(posX* Constants.TILE_SIZE,posY*Constants.TILE_SIZE,Constants.TILE_SIZE /2,Constants.TILE_SIZE /2);
         this.posX = posX+.25f;
         this.posY = posY+.25f;
+        this.player = player;
     }
 
     public void fadeOut(){addAction(Actions.fadeOut(.75f));}
 
     @Override
-    public void act(float delta) {super.act(delta);if(!isVisible())remove();}
+    public void act(float delta) {
+        super.act(delta);
+        if(!isFading){
+            float distanceFromTank = (float) Utils.fastHypot(getPosX() - player.getPosX(), getPosY() - player.getPosY());
+            if(distanceFromTank < player.visibilityRadius){
+                isFading = true;
+                fadeOut();
+            }
+        } else if(!isVisible()) remove();
+    }
 
     public float getPosX() {return posX;}
     public float getPosY() {return posY;}

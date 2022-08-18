@@ -6,12 +6,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -45,44 +47,47 @@ public class Settings extends BaseScreen {
     public void show() {
         settings = Gdx.app.getPreferences("settings");
         stage = new Stage();
+        Image background = new Image(game.getManager().get("sprites/background.png", Texture.class));
+        background.setBounds(0,0,Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT);
         skin = game.getManager().get("uiskin/uiskin.json", Skin.class);
         table = new Table();
         table.setFillParent(true);table.top();
 
-        left = new CheckBox("Align to left.",getCheckBoxStyle((int) (Constants.tileSize/3)));
-        right = new CheckBox("Align to right.",getCheckBoxStyle((int) (Constants.tileSize/3)));
+        left = new CheckBox("Align to left.",getCheckBoxStyle((int) (Constants.TILE_SIZE /3)));
+        right = new CheckBox("Align to right.",getCheckBoxStyle((int) (Constants.TILE_SIZE /3)));
 
         align = new ButtonGroup(left,right);
 
-        soundFX = new CheckBox("Enable sounds.",getCheckBoxStyle((int) (Constants.tileSize/3)));
+        soundFX = new CheckBox("Enable sounds.",getCheckBoxStyle((int) (Constants.TILE_SIZE /3)));
 
         if(settings.getBoolean("isAlignedToLeft"))left.setChecked(true); else right.setChecked(true);
         if(settings.getBoolean("areSoundsActivated"))soundFX.setChecked(true);
 
-        title = new Label("Settings", Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize)));
-        alignment = new Label("Joystick's alignment",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
-        sounds = new Label("Sounds",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
-        tankColor = new Label("Tank Color",Styles.getLabelStyle(game.getManager(), (int) (Constants.tileSize/2)));
+        title = new Label("Settings", Styles.getLabelStyle(game.getManager(), (int) (Constants.TILE_SIZE)));
+        alignment = new Label("Joystick's alignment",Styles.getLabelStyle(game.getManager(), (int) (Constants.TILE_SIZE /2)));
+        sounds = new Label("Sounds",Styles.getLabelStyle(game.getManager(), (int) (Constants.TILE_SIZE /2)));
+        tankColor = new Label("Tank Color",Styles.getLabelStyle(game.getManager(), (int) (Constants.TILE_SIZE /2)));
 
 
         Array array = new Array();
         for(int i =0;i<10;i++)
             array.add(Constants.colorNames[i]);
 
-        list = new List(Styles.getListStyle(game.getManager(), (int) (Constants.tileSize/3)));
+        list = new List(Styles.getListStyle(game.getManager(), (int) (Constants.TILE_SIZE /3)));
         list.setItems(array);
         list.setSelectedIndex(settings.getInteger("tankColor",0));
 
         pane = new ScrollPane(list, skin);
 
-        table.add(title).pad(Constants.tileSize / 6).center().row();
+        table.add(title).pad(Constants.TILE_SIZE / 6).center().row();
         //table.add(alignment).pad(Constants.tileSize / 4).center().row();
         //table.add(left).left();table.row();
         //table.add(right).left();table.row();
-        table.add(sounds).pad(Constants.tileSize/4).center().row();
+        table.add(sounds).pad(Constants.TILE_SIZE /4).center().row();
         table.add(soundFX).left().row();
-        table.add(tankColor).pad(Constants.tileSize/4).center().row();
-        table.add(pane).size(Constants.tileSize*4,Constants.tileSize*2);
+        table.add(tankColor).pad(Constants.TILE_SIZE /4).center().row();
+        table.add(pane).size(Constants.TILE_SIZE *4,Constants.TILE_SIZE *2);
+        stage.addActor(background);
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setCatchBackKey(true);

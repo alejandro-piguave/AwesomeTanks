@@ -2,14 +2,18 @@ package com.alexpi.awesometanks.screens;
 
 import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
 
+import com.alexpi.awesometanks.widget.GameButton;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -29,24 +33,19 @@ import com.alexpi.awesometanks.utils.Styles;
  */
 public class LevelScreen extends BaseScreen {
     private Stage stage;
-    private ScrollPane pane;
-    private TextButton play;
-    private Table table;
     private List list;
-    private Skin skin;
     private Preferences gameValues;
     private Label unlockedLevel;
 
     public LevelScreen(MainGame game) {super(game);}
     @Override
     public void show() {
+        final boolean soundsOn = game.getGameSettings().getBoolean("areSoundsActivated");
         gameValues = Gdx.app.getPreferences("values");
-        skin = game.getManager().get("uiskin/uiskin.json");
-        play = new TextButton("Play",Styles.getTextButtonStyle(game.getManager(), (int) (Constants.tileSize/3)));
-
-        play.addListener(new ClickListener(){
+        Skin skin = game.getManager().get("uiskin/uiskin.json");
+        GameButton play = new GameButton(game.getManager(), new GameButton.OnClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
+            public void onClick() {
                 if(gameValues.getBoolean("unlocked"+list.getSelectedIndex()) || list.getSelectedIndex() == 0)
                     stage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {
                         @Override public void run() {game.setScreen(new GameScreen(game,list.getSelectedIndex()));}})));
@@ -60,27 +59,30 @@ public class LevelScreen extends BaseScreen {
                     }, 1f);
                 }
             }
-        });
+        },"Play", soundsOn);
 
         stage = new Stage();
-        table = new Table(skin);
+        Image background = new Image(game.getManager().get("sprites/background.png", Texture.class));
+        background.setBounds(0,0,Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT);
+        Table table = new Table(skin);
         table.setFillParent(true);
 
-        unlockedLevel  = new Label("Locked Level", Styles.getLabelStyle(game.getManager(), (int) Constants.tileSize));
+        unlockedLevel  = new Label("Locked Level", Styles.getLabelStyle(game.getManager(), (int) Constants.TILE_SIZE));
         unlockedLevel.setColor(Color.RED);
         unlockedLevel.setPosition(stage.getWidth() / 2, stage.getHeight() / 2, Align.center);
         unlockedLevel.setSize(0, 0);
         unlockedLevel.addAction(Actions.alpha(0));
 
-        list = new List(Styles.getListStyle(game.getManager(), (int) (Constants.tileSize/3)));
+        list = new List(Styles.getListStyle(game.getManager(), (int) (Constants.TILE_SIZE /3)));
         Array array = new Array();
         for(int i=1;i<=30;i++) array.add("Level "+i);
         list.setItems(array);
-        pane = new ScrollPane(list,skin);
+        ScrollPane pane = new ScrollPane(list, skin);
 
-        table.add(new Label("Select level",Styles.getLabelStyle(game.getManager(), (int)(Constants.tileSize/2)))).row();
-        table.add(pane).width(Constants.centerY).height(Constants.tileSize * 5).row();
-        table.add(play).size(Constants.tileSize * 3, Constants.tileSize).pad(Constants.tileSize / 8);
+        table.add(new Label("Select level",Styles.getLabelStyle(game.getManager(), (int)(Constants.TILE_SIZE /2)))).row();
+        table.add(pane).width(Constants.CENTER_Y).height(Constants.TILE_SIZE * 5).row();
+        table.add(play).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).pad(Constants.TILE_SIZE / 8);
+        stage.addActor(background);
         stage.addActor(table);
         stage.addActor(unlockedLevel);
         Gdx.input.setInputProcessor(stage);

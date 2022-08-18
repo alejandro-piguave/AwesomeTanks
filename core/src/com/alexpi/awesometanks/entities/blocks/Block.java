@@ -51,8 +51,8 @@ public abstract class Block extends DamageableActor{
 
         shape.dispose();
 
-        setSize(size * Constants.tileSize, size * Constants.tileSize);
-        setPosition((body.getPosition().x - size / 2) * Constants.tileSize, (body.getPosition().y - size / 2) * Constants.tileSize);
+        setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE);
+        setPosition((body.getPosition().x - size / 2) * Constants.TILE_SIZE, (body.getPosition().y - size / 2) * Constants.TILE_SIZE);
     }
 
 

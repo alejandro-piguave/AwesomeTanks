@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks;
+package com.alexpi.awesometanks.entities;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;

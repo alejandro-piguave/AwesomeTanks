@@ -5,7 +5,7 @@ import com.alexpi.awesometanks.entities.projectiles.Rail;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Timer;
 
 /**
@@ -18,13 +18,13 @@ public class RailGun extends Weapon {
     }
 
     @Override
-    public void shoot(final AssetManager manager, final Stage stage, final World world, final Vector2 currentPosition, final DamageListener listener) {
+    public void shoot(final AssetManager manager, final Group group, final World world, final Vector2 currentPosition, final DamageListener listener) {
         if(hasAmmo() && !isCoolingDown) {
             if (isSound()) shotSound.play(.4f);
             Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
                 @Override
                 public void run() {
-                    stage.addActor(new Rail(manager,world, currentPosition, listener,currentAngleRotation, power, filter));
+                    group.addActor(new Rail(manager,world, currentPosition, listener,currentAngleRotation, power, filter));
                     if(isCoolingDown) isCoolingDown = false;
                 }
             }, .5f);
@@ -33,5 +33,5 @@ public class RailGun extends Weapon {
     }
 
     @Override
-    public void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener) { }
+    public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position, DamageListener listener) { }
 }

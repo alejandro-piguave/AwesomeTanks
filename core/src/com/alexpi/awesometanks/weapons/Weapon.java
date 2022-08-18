@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.Timer;
 
 /**
@@ -75,9 +75,9 @@ public abstract class Weapon {
         return sound;
     }
 
-    public void shoot(AssetManager assetManager, Stage stage, World world, Vector2 position, DamageListener listener){
+    public void shoot(AssetManager assetManager, Group group, World world, Vector2 position, DamageListener listener){
         if(canShoot()) {
-            createProjectile(stage, assetManager, world, position, listener);
+            createProjectile(group, assetManager, world, position, listener);
             if (sound) shotSound.play();
             if (!unlimitedAmmo) decreaseAmmo();
             isCoolingDown = true;
@@ -89,7 +89,7 @@ public abstract class Weapon {
         }
     }
 
-    public abstract void createProjectile(Stage stage, AssetManager assetManager, World world, Vector2 position, DamageListener listener);
+    public abstract void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position, DamageListener listener);
 
     private boolean canShoot(){return (hasAmmo() || unlimitedAmmo) && !isCoolingDown;}
 

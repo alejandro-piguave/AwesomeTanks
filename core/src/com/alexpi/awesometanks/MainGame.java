@@ -1,12 +1,20 @@
 package com.alexpi.awesometanks;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.alexpi.awesometanks.screens.LevelScreen;
 import com.alexpi.awesometanks.screens.MainScreen;
@@ -20,16 +28,21 @@ public class MainGame extends Game {
     public LevelScreen levelScreen;
 	public Upgrades upgrades;
     public Settings settings;
+	private Preferences gameSettings;
 
 	@Override
 	public void create() {
 		manager = new AssetManager();
 
+		loadFonts();
+
 		manager.load("uiskin/uiskin.json", Skin.class);
         manager.load("uiskin/uiskin.atlas", TextureAtlas.class);
-        manager.load("uiskin/default.fnt", BitmapFont.class);
 
 		manager.load("sounds/explosion.ogg",Sound.class);
+		manager.load("sounds/click_down.ogg",Sound.class);
+		manager.load("sounds/click_up.ogg",Sound.class);
+		manager.load("sounds/purchase.ogg",Sound.class);
 		manager.load("sounds/gun_change.ogg",Sound.class);
 		manager.load("sounds/minigun.ogg", Sound.class);
 		manager.load("sounds/shotgun.ogg", Sound.class);
@@ -39,7 +52,15 @@ public class MainGame extends Game {
 		manager.load("sounds/laser.ogg",Sound.class);
 		manager.load("sounds/railgun.ogg",Sound.class);
 
-        manager.load("touchBackground.png", Texture.class);
+		manager.load("sprites/background.png",Texture.class);
+		manager.load("sprites/button_background.9.png",Texture.class);
+		manager.load("sprites/button_background_down.9.png",Texture.class);
+		manager.load("sprites/label_background.9.png",Texture.class);
+		manager.load("sprites/progress_bar_background.9.png",Texture.class);
+		manager.load("sprites/progress_bar_foreground.9.png",Texture.class);
+
+
+		manager.load("touchBackground.png", Texture.class);
         manager.load("touchKnob.png", Texture.class);
 
 		manager.load("sprites/tank_wheels.png", Texture.class);
@@ -84,11 +105,9 @@ public class MainGame extends Game {
 		manager.load("weapons/railgun.png", Texture.class);
 
 
-		for(int i=0;i<7;i++)
-			manager.load("icons/icon_"+i+".png",Texture.class);
+		for(int i=0;i<7;i++) manager.load("icons/icon_"+i+".png",Texture.class);
 
-		for(int i = 0; i <7; i++)
-			manager.load("icons/icon_disabled_"+i+".png", Texture.class);
+		for(int i = 0; i <7; i++) manager.load("icons/icon_disabled_"+i+".png", Texture.class);
 
 		manager.finishLoading();//TERMINA DE CARGAR
 
@@ -97,7 +116,63 @@ public class MainGame extends Game {
         settings = new Settings(this);
 		upgrades = new Upgrades(this);
 
+		gameSettings = Gdx.app.getPreferences("settings");
+
 		setScreen(mainScreen);//PONE LA PANTALLA PRINCIPAL
+	}
+
+	private void loadFonts(){
+		FileHandleResolver resolver = new InternalFileHandleResolver();
+		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
+		manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+
+		FreetypeFontLoader.FreeTypeFontLoaderParameter gameTitleParam = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+		gameTitleParam.fontFileName = "fonts/font.ttf";
+		gameTitleParam.fontParameters.size = 120;
+		gameTitleParam.fontParameters.borderColor = new Color(.859f,.675f,.063f,1f);
+		gameTitleParam.fontParameters.borderWidth = 4f;
+		gameTitleParam.fontParameters.color = new Color(.420f,.275f,0f,1f);
+		gameTitleParam.fontParameters.shadowColor = Color.BLACK;
+		gameTitleParam.fontParameters.shadowOffsetX = 8;
+		gameTitleParam.fontParameters.shadowOffsetY = 8;
+		manager.load("title_font1.ttf", BitmapFont.class, gameTitleParam);
+
+		FreetypeFontLoader.FreeTypeFontLoaderParameter gameTitleParam2 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+		gameTitleParam2.fontParameters.color = new Color(.580f,.133f,.008f,1f);
+		gameTitleParam2.fontFileName = "fonts/font.ttf";
+		gameTitleParam2.fontParameters.size = 120;
+		gameTitleParam2.fontParameters.borderColor = new Color(.859f,.675f,.063f,1f);
+		gameTitleParam2.fontParameters.borderWidth = 4f;
+		gameTitleParam2.fontParameters.shadowColor = Color.BLACK;
+		gameTitleParam2.fontParameters.shadowOffsetX = 8;
+		gameTitleParam2.fontParameters.shadowOffsetY = 8;
+		manager.load("title_font2.ttf", BitmapFont.class, gameTitleParam2);
+
+		FreetypeFontLoader.FreeTypeFontLoaderParameter buttonFontParam1 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+		buttonFontParam1.fontParameters.color = new Color(.745f,.373f,0f,1f);
+		buttonFontParam1.fontFileName = "fonts/font.ttf";
+		buttonFontParam1.fontParameters.size = 32;
+		manager.load("button_font1.ttf", BitmapFont.class, buttonFontParam1);
+
+
+		FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontParam1 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+		labelFontParam1.fontParameters.color = new Color(1f,.714f,0.04f,1f);
+		labelFontParam1.fontFileName = "fonts/font.ttf";
+		labelFontParam1.fontParameters.size = 64;
+		manager.load("label_font1.ttf", BitmapFont.class, labelFontParam1);
+
+		FreetypeFontLoader.FreeTypeFontLoaderParameter labelFontSmallParam1 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+		labelFontSmallParam1.fontParameters.color = new Color(1f,.714f,0.04f,1f);
+		labelFontSmallParam1.fontFileName = "fonts/font.ttf";
+		labelFontSmallParam1.fontParameters.size = 20;
+		manager.load("label_font2.ttf", BitmapFont.class, labelFontSmallParam1);
+
+		FreetypeFontLoader.FreeTypeFontLoaderParameter buttonFontSmallParam1 = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+		buttonFontSmallParam1.fontParameters.color = new Color(.745f,.373f,0f,1f);
+		buttonFontSmallParam1.fontFileName = "fonts/font.ttf";
+		buttonFontSmallParam1.fontParameters.size = 20;
+		manager.load("button_font2.ttf", BitmapFont.class, buttonFontSmallParam1);
+
 	}
 
 	@Override
@@ -107,5 +182,9 @@ public class MainGame extends Game {
 
 	public AssetManager getManager() {
 		return manager;
+	}
+
+	public Preferences getGameSettings() {
+		return gameSettings;
 	}
 }
