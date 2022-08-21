@@ -27,7 +27,7 @@ class EnemyTank(
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
-    200f,true, Gdx.app.getPreferences("settings").getBoolean("areSoundsActivated")) {
+    100f,true, Gdx.app.getPreferences("settings").getBoolean("areSoundsActivated")) {
 
     private val weapon: Weapon
 

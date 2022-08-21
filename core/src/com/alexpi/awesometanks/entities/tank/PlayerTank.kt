@@ -26,7 +26,7 @@ class PlayerTank (
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
     1200f + gameValues.getInteger("health") * 200, false, allowSounds){
 
-    private var currentWeapon = 0
+    var currentWeapon = 0
     private val weapons: List<Weapon> = (0..6).map {
         Weapon.getWeaponAt(
             it, manager, gameValues.getInteger("ammo$it"), gameValues.getInteger(

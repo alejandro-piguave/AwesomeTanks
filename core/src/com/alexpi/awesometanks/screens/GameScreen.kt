@@ -3,35 +3,37 @@ package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.*
-import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.utils.viewport.FillViewport
-import com.badlogic.gdx.math.Vector2
-import com.alexpi.awesometanks.entities.tank.EnemyTank
-import com.alexpi.awesometanks.world.ContactManager
+import com.alexpi.awesometanks.entities.blocks.*
+import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
-import com.alexpi.awesometanks.entities.items.FreezingBall
-import com.alexpi.awesometanks.utils.MapGenerator
-import com.alexpi.awesometanks.entities.blocks.*
+import com.alexpi.awesometanks.entities.tank.EnemyTank
 import com.alexpi.awesometanks.entities.tank.PlayerTank
 import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION
+import com.alexpi.awesometanks.utils.MapGenerator
 import com.alexpi.awesometanks.utils.Styles
 import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.world.ContactManager
 import com.badlogic.gdx.*
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
+import com.badlogic.gdx.utils.viewport.FillViewport
+import ktx.actors.onClick
 import kotlin.math.abs
 
 /**
@@ -53,6 +55,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private lateinit var money: Label
     private lateinit var ammoAmount: Label
     private lateinit var gameValues: Preferences
+    private val weaponMenuTable: Table = Table()
     private var screenPointer = 0
     private var soundFX = false
     private var isPaused = false
@@ -392,44 +395,70 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             true
         }
 
-        /*
-        float buttonsAlignment = Constants.screenWidth - Constants.tileSize;
-        Table weaponsTable = new Table();
-        weaponsTable.top();
-        weaponsTable.setBounds(buttonsAlignment, 0, Constants.tileSize, Constants.screenHeight);
-        for(ImageButton i: buttons)
-            weaponsTable.add(i).width(Constants.screenHeight/7).height(Constants.screenHeight / 7).row();
+        val weaponMenuButtonSize = 96f
+        val weaponMenuButton = ImageButton(TextureRegionDrawable(game.manager.get("sprites/gun_menu_icon.png",Texture::class.java)))
+        weaponMenuButton.setColor(
+            weaponMenuButton.color.r,
+            weaponMenuButton.color.g,
+            weaponMenuButton.color.b,
+            0.5f
+        )
 
-        for (int i = 0; i < BUTTON_COUNT; i++) {
-            if(i > 0){
-                buttons[i].setDisabled(gameValues.getBoolean("weapon"+i,true));
-                buttons[i].setColor(buttons[i].getColor().r,buttons[i].getColor().g,buttons[i].getColor().b,.5f);
+        weaponMenuTable.setPosition(Constants.CENTER_X, Constants.CENTER_Y)
+        buttons.forEach { button ->
+            val index = buttons.indexOf(button)
+
+            if(index > 0) {
+                button.isDisabled = gameValues.getBoolean("weapon$index",true);
+                button.setColor(button.color.r,button.color.g,button.color.b,.5f);
             }
-            if(!buttons[i].isDisabled()) {
-                final int finalI = i;
-                buttons[i].addListener(new ClickListener(){
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if(soundFX) gunChangeSound.play();
-                    tank.setCurrentWeapon(finalI);
-                    for (Button ib: buttons) ib.setColor(ib.getColor().r,ib.getColor().g,ib.getColor().b,.5f);
+            if(!button.isDisabled) {
+                button.onClick {
+                    if (soundFX) gunChangeSound.play()
+                    tank.currentWeapon = index
+                    buttons.forEach { ib ->
+                        ib.setColor(ib.color.r, ib.color.g, ib.color.b,
+                            if(tank.currentWeapon == buttons.indexOf(ib)) 1f else .5f)
+                    }
 
-                    buttons[finalI].setColor(buttons[finalI].getColor().r, buttons[finalI].getColor().g, buttons[finalI].getColor().b, 1f);
+                    button.setColor(
+                        button.color.r,
+                        button.color.g,
+                        button.color.b,
+                        1f
+                    );
 
-                    ammoAmount.setText(tank.getCurrentWeapon().getAmmo()+"/100");
-                    ammoAmount.setVisible(finalI != 0);
+                    ammoAmount.setText("${tank.getCurrentWeapon().ammo} /100");
+                    ammoAmount.isVisible = index != 0;
 
-                    gunName.setText(tank.getCurrentWeapon().getName());
-                    gunName.addAction(Actions.alpha(1f));
-                    Timer.schedule(new Timer.Task() {@Override public void run() {
-                        gunName.addAction(Actions.fadeOut(TRANSITION_DURATION));}}, 2f);
+                    gunName.setText(tank.getCurrentWeapon().name)
+                    gunName.addAction(Actions.alpha(1f))
+                    Timer.schedule(object : Timer.Task() {
+                        override fun run() {
+                            gunName.addAction(Actions.fadeOut(TRANSITION_DURATION))
+                        }
+
+                    }, 2f)
                 }
-            });
             }
-        }*/
+            weaponMenuTable.add(button).width(96f).height(96f)
+        }
+        weaponMenuButton.onClick {
+            isPaused = if(weaponMenuButton.hasParent()){
+                UIStage.addActor(weaponMenuTable)
+                true
+            } else {
+                weaponMenuButton.remove()
+                false
+            }
+        }
+
+        weaponMenuButton.setBounds(aimTouchpad.x - weaponMenuButtonSize - 10, aimTouchpad.y +10 , weaponMenuButtonSize, weaponMenuButtonSize)
+
         UIStage.addActor(movementTouchpad)
         UIStage.addActor(aimTouchpad)
-        //UIStage.addActor(weaponsTable);
+        if(Gdx.app.type != Application.ApplicationType.Desktop)
+            UIStage.addActor(weaponMenuButton)
         UIStage.addActor(gunName)
         UIStage.addActor(money)
         UIStage.addActor(ammoAmount)
@@ -505,39 +534,44 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun keyDown(keycode: Int): Boolean {
         if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
-            isPaused = true
-            val pauseMenu = Dialog(
-                "Pause Menu",
-                Styles.getWindowStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
-            )
-            val back = TextButton(
-                "Back",
-                Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
-            )
-            back.addListener(object : ClickListener() {
-                override fun clicked(event: InputEvent, x: Float, y: Float) {
-                    isPaused = false
-                    UIStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                    gameStage.addAction(
-                        Actions.sequence(
-                            Actions.fadeOut(Constants.TRANSITION_DURATION),
-                            Actions.run { game.screen = game.levelScreen }
+            if(Gdx.app.type != Application.ApplicationType.Desktop && weaponMenuTable.parent != null){
+                weaponMenuTable.remove()
+                isPaused = false
+            } else{
+                isPaused = true
+                val pauseMenu = Dialog(
+                    "Pause Menu",
+                    Styles.getWindowStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
+                )
+                val back = TextButton(
+                    "Back",
+                    Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
+                )
+                back.addListener(object : ClickListener() {
+                    override fun clicked(event: InputEvent, x: Float, y: Float) {
+                        isPaused = false
+                        UIStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                        gameStage.addAction(
+                            Actions.sequence(
+                                Actions.fadeOut(Constants.TRANSITION_DURATION),
+                                Actions.run { game.screen = game.levelScreen }
+                            )
                         )
-                    )
-                }
-            })
-            val resume = TextButton(
-                "Resume",
-                Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
-            )
-            resume.addListener(object : ClickListener() {
-                override fun clicked(event: InputEvent, x: Float, y: Float) {
-                    isPaused = false
-                }
-            })
-            pauseMenu.button(back)
-            pauseMenu.button(resume)
-            pauseMenu.show(UIStage)
+                    }
+                })
+                val resume = TextButton(
+                    "Resume",
+                    Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
+                )
+                resume.addListener(object : ClickListener() {
+                    override fun clicked(event: InputEvent, x: Float, y: Float) {
+                        isPaused = false
+                    }
+                })
+                pauseMenu.button(back)
+                pauseMenu.button(resume)
+                pauseMenu.show(UIStage)
+            }
             return true
         } else if (keycode == Input.Keys.SPACE) {
             saveProgress()
