@@ -13,16 +13,11 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Wall extends Block {
 
     public Wall(AssetManager manager,World world, int posX, int posY){
-        super(manager,world,new PolygonShape(), null,1,posX,posY,1f);
-        sprite = new Sprite(manager.get("sprites/wall.png",Texture.class));
-    }
-
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        batch.draw(sprite, getX(), getY(), getWidth(), getHeight());
+        super(manager, "sprites/wall.png", world,new PolygonShape(),1,posX,posY,1f, false, null);
     }
 
 
+    //Makes it indestructible regardless of its health as long as its positive
     @Override
     public void takeDamage(float damage) { }
 }

@@ -83,7 +83,7 @@ public class Upgrades extends BaseScreen {
                 case 1: name = "speed";break;
                 case 2: name = "rotation";break;
                 case 3: name = "visibility";break;}
-            upgradables[i] = new UpgradeTable(game.getManager(), name, gameValues.getInteger(name),5f,500);
+            upgradables[i] = new UpgradeTable(game.getManager(), name, gameValues.getInteger(name),6f,500);
             upgradables[i].changePrice(500+ upgradables[i].getValue()*500);
         }
 

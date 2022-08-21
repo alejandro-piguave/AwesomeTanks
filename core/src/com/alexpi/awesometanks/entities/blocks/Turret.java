@@ -23,17 +23,16 @@ public class Turret extends Block {
     private AssetManager manager;
     private Group entityGroup;
     private final static float ROTATION_SPEED = .035f;
-    public Turret(AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, DamageListener listener, int posX, int posY, int type, boolean sound) {
-        super(manager, world,new PolygonShape(), listener,500, posX, posY, .8f);
+    public Turret(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, int posX, int posY, int type, boolean sound) {
+        super(manager,"sprites/turret_base.png",  world,new PolygonShape(),500, posX, posY, .8f, true, listener);
         this.manager = manager;
         this.entityGroup = entityGroup;
         Filter filter = new Filter();
         filter.categoryBits = Constants.CAT_ENEMY;
         fixture.setFilterData(filter);
         this.targetPosition = targetPosition;
-        sprite = new Sprite(manager.get("sprites/turret_base.png", Texture.class));
 
-        weapon = Weapon.getWeaponAt(type, manager, 1, 3, Constants.ENEMY_BULLET_MASK, sound);
+        weapon = Weapon.getWeaponAt(type, manager, 1, 3, false, sound);
         weapon.setUnlimitedAmmo(true);
         setOrigin(getWidth() / 2, getHeight() / 2);
     }
@@ -52,7 +51,7 @@ public class Turret extends Block {
         if(distanceFromTarget < 4 && isAlive()){
             weapon.setDesiredAngleRotation(targetPosition.x - body.getPosition().x, targetPosition.y - body.getPosition().y);
             weapon.updateAngleRotation(ROTATION_SPEED);
-            if(weapon.hasRotated())weapon.shoot(manager,entityGroup,body.getWorld(),body.getPosition(), damageListener);
+            if(weapon.hasRotated())weapon.shoot(manager,entityGroup,body.getWorld(),body.getPosition());
         }
     }
 

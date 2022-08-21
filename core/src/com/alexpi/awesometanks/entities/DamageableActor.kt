@@ -1,86 +1,91 @@
-package com.alexpi.awesometanks.entities;
+package com.alexpi.awesometanks.entities
 
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.utils.Timer;
-import com.alexpi.awesometanks.utils.Constants;
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.utils.Timer
 
 /**
  * Created by Alex on 23/02/2016.
  */
-public abstract class DamageableActor extends Actor implements Detachable {
+abstract class DamageableActor(private val manager: AssetManager,
+                               val maxHealth: Float,
+                               private val isFlammable: Boolean,
+                               private val isFreezable: Boolean,
+                               private val damageListener: DamageListener? = null) :
+    Actor() {
+    var health: Float = maxHealth
+    private set
+    protected var isBurning = false
+    protected var isFrozen = false
+    private var lastHit: Long = System.currentTimeMillis()
+    var flameSprite: ParticleActor = ParticleActor(manager, "particles/flame.party", x, y, true)
+    private val frozenSprite: Sprite = Sprite(manager.get("sprites/frozen.png", Texture::class.java))
 
-    private float maxHealth, health;
-    private boolean isBurning, justHit;
-    public ParticleActor flame;
-    private Sprite healthBar;
-    private AssetManager manager;
-    protected DamageListener damageListener;
-
-    public DamageableActor(AssetManager manager, DamageListener listener, int health){
-        this.manager = manager;
-        this.damageListener = listener;
-        maxHealth = this.health = health;
-        flame = new ParticleActor(manager,"particles/flame.party", getX(), getY(), true);
-        healthBar = new Sprite(manager.get("sprites/health_bar.png",Texture.class));
-    }
-
-    public void takeDamage(float damage) {
-        if(health - damage > 0) {
-            health -= damage;
-            if(!justHit){
-                justHit = true;Timer.schedule(new Timer.Task() {@Override public void run() {justHit = false;}},1.5f);
+    open fun takeDamage(damage: Float) {
+        if (health - damage > 0) {
+            health -= damage
+            if(lastHit + HEALTH_BAR_DURATION < System.currentTimeMillis()){
+                damageListener?.onDamage(this)
+                lastHit = System.currentTimeMillis()
             }
-        } else {
-            health = 0;
-            if(damageListener != null) damageListener.onDeath(this);
+        }
+        else health = 0f
+    }
+
+    override fun act(delta: Float) {
+        super.act(delta)
+        if (!isAlive) {
+            detach()
+            return
+        }
+        if (isBurning && isFlammable) {
+            flameSprite.setPosition(x + width / 2, y + height / 2)
+            flameSprite.act(delta)
+            takeDamage(.25f)
         }
     }
 
-    public float getCenterX(){return getX() + getWidth()/2;}
-    public float getCenterY(){return getY() + getHeight()/2;}
-
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        if(isBurning){
-            flame.setPosition(getX()+getWidth()/2,getY()+getHeight()/2);flame.act(delta);
-            takeDamage(.25f);
-        }
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        if (isBurning && isFlammable) flameSprite.draw(batch, parentAlpha)
+        if (isFrozen && isFreezable) batch.draw(frozenSprite, x, y, width, height)
     }
 
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        if(isBurning)flame.draw(batch, parentAlpha);
-        if(justHit)batch.draw(healthBar, (getX() + getWidth() / 2) - (Constants.TILE_SIZE / 2),
-                (getY() + getHeight() / 2) + (Constants.TILE_SIZE / 2), Constants.TILE_SIZE * (health / maxHealth), Constants.TILE_SIZE / 8);
+    fun burn(duration: Float) {
+        isBurning = true
+        Timer.schedule(object : Timer.Task() {
+            override fun run() {
+                if (isBurning) isBurning = false
+            }
+        }, duration)
     }
 
-    public void burn(float duration) {
-        isBurning = true;
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {if (isBurning) isBurning = false;}
-        }, duration);}
-
-    @Override
-    public void detach(){
-        getStage().addActor(new ParticleActor(manager, "particles/explosion.party", getX() + getWidth() / 2, getY() + getHeight() / 2, false));
+    open fun detach() {
+        stage.addActor(
+            ParticleActor(
+                manager,
+                "particles/explosion.party",
+                x + width / 2,
+                y + height / 2,
+                false
+            )
+        )
     }
 
-    public boolean isAlive() {return health > 0;}
+    val isAlive: Boolean
+        get() = health > 0
 
-    public void heal(int healthValue){
-        if(health+healthValue< maxHealth)
-            health+=healthValue;
-        else  health = maxHealth;
+    fun heal(healthValue: Int) {
+        if (health + healthValue < maxHealth) health += healthValue.toFloat()
+        else health = maxHealth
+    }
+
+    companion object{
+        private const val HEALTH_BAR_DURATION = 1500
+        const val HEALTH_BAR_DURATION_SECONDS = 1.5f
 
     }
 
-    public void setJustHit(boolean justHit) {
-        this.justHit = justHit;
-    }
 }

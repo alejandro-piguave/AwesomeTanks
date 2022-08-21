@@ -34,13 +34,14 @@ public class Constants {
     public static final int RAILGUN = 6;
 
 
-    public static final short CAT_BULLET = 1;
+    public static final short CAT_PLAYER_BULLET = 1;
     public static final short CAT_ITEM = 2;
-    public static final short CAT_TANK = 4;
+    public static final short CAT_PLAYER = 4;
     public static final short CAT_BLOCK = 8;
     public static final short CAT_ENEMY = 16;
-    public static final short ENEMY_BULLET_MASK = CAT_TANK | CAT_BLOCK;
-    public static final short TANK_BULLET_MASK = CAT_ENEMY | CAT_BLOCK;
+    public static final short CAT_ENEMY_BULLET = 32;
+    public static final short ENEMY_BULLET_MASK = CAT_PLAYER | CAT_BLOCK;
+    public static final short PLAYER_BULLET_MASK = CAT_ENEMY | CAT_BLOCK;
 
 
 }

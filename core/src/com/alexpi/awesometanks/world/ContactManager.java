@@ -1,8 +1,6 @@
 package com.alexpi.awesometanks.world;
 
 import com.alexpi.awesometanks.entities.DamageableActor;
-import com.alexpi.awesometanks.entities.Detachable;
-import com.alexpi.awesometanks.entities.Tank;
 import com.alexpi.awesometanks.entities.blocks.Mine;
 import com.alexpi.awesometanks.entities.blocks.Spawner;
 import com.alexpi.awesometanks.entities.items.FreezingBall;
@@ -11,6 +9,7 @@ import com.alexpi.awesometanks.entities.items.HealthPack;
 import com.alexpi.awesometanks.entities.items.Item;
 import com.alexpi.awesometanks.entities.projectiles.Flame;
 import com.alexpi.awesometanks.entities.projectiles.Projectile;
+import com.alexpi.awesometanks.entities.tank.PlayerTank;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -65,8 +64,8 @@ public class ContactManager implements ContactListener {
             }
         }
 
-        if((fixtureA.getUserData()instanceof Item && fixtureB.getUserData()instanceof Tank)
-                || (contact.getFixtureB().getUserData()instanceof Item && fixtureA.getUserData()instanceof Tank)){
+        if((fixtureA.getUserData()instanceof Item && fixtureB.getUserData()instanceof PlayerTank)
+                || (contact.getFixtureB().getUserData()instanceof Item && fixtureA.getUserData()instanceof PlayerTank)){
 
             Item item = fixtureA.getUserData()instanceof Item?
                     (Item)fixtureA.getUserData(): (Item)fixtureB.getUserData();

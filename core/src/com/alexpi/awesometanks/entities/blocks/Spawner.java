@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.blocks;
 
 import com.alexpi.awesometanks.entities.DamageListener;
+import com.alexpi.awesometanks.entities.tank.EnemyTank;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
@@ -9,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.alexpi.awesometanks.entities.Enemy;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 /**
@@ -22,14 +22,14 @@ public class Spawner extends Block {
     private final int maxType;
     private final Group entityGroup;
 
-    public Spawner(AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, DamageListener listener, int posX, int posY, int level) {
-        super(manager,world,new PolygonShape(),listener, getHealth(level), posX, posY,1f);
+    public Spawner(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, int posX, int posY, int level) {
+        super(manager,"sprites/spawner.png", world,new PolygonShape(), getHealth(level), posX, posY,1f, true, listener);
         this.manager = manager;
         this.entityGroup = entityGroup;
         this.targetPosition = targetPosition;
+        this.fixture.getFilterData().maskBits = Constants.CAT_PLAYER | Constants.CAT_PLAYER_BULLET | Constants.CAT_ITEM;
         lastSpawn = System.currentTimeMillis();
         interval = 1000;
-        sprite = new Sprite(manager.get("sprites/spawner.png",Texture.class));
         maxType = getMaxType(level);
     }
 
@@ -49,7 +49,7 @@ public class Spawner extends Block {
         if(lastSpawn + interval <  System.currentTimeMillis()){
             lastSpawn = System.currentTimeMillis();
             interval = Utils.getRandomInt(10000,15000);
-            entityGroup.addActor(new Enemy(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, damageListener, .75f, Utils.getRandomInt(maxType+1)));
+            entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, .75f, Utils.getRandomInt(maxType+1)));
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles;
 
-import com.alexpi.awesometanks.entities.DamageListener;
-import com.alexpi.awesometanks.entities.Detachable;
+import com.alexpi.awesometanks.utils.Constants;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,23 +13,21 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.alexpi.awesometanks.utils.Constants;
 
 /**
  * Created by Alex on 16/01/2016.
  */
-public abstract class Projectile extends Actor implements Detachable {
+public abstract class Projectile extends Actor{
     public Body body;
     private Fixture fixture;
     protected Sprite sprite;
-    protected DamageListener listener;
+    private boolean destroyed = false;
 
     protected boolean used;
     public float damage,height, width, speed;
 
-    public Projectile(World world, Vector2 position, Shape shape, DamageListener listener, float angle, float speed, float measure, float damage, short filter){
+    public Projectile(World world, Vector2 position, Shape shape, float angle, float speed, float measure, float damage, boolean isPlayer){
         this.damage = damage;
-        this.listener = listener;
         used = true;
         this.speed = speed;
         BodyDef bodyDef = new BodyDef();
@@ -48,8 +45,8 @@ public abstract class Projectile extends Actor implements Detachable {
         fixtureDef.density = 0.1f;
         fixtureDef.shape = shape;
         fixtureDef.restitution = .9f;
-        fixtureDef.filter.categoryBits = Constants.CAT_BULLET;
-        fixtureDef.filter.maskBits = filter;
+        fixtureDef.filter.categoryBits = isPlayer? Constants.CAT_PLAYER_BULLET : Constants.CAT_ENEMY_BULLET;
+        fixtureDef.filter.maskBits = isPlayer? Constants.PLAYER_BULLET_MASK : Constants.ENEMY_BULLET_MASK;
 
         body = world.createBody(bodyDef);
         fixture = body.createFixture(fixtureDef);
@@ -68,19 +65,23 @@ public abstract class Projectile extends Actor implements Detachable {
 
     public boolean isEnemy(){return fixture.getFilterData().maskBits == Constants.ENEMY_BULLET_MASK;}
 
-    @Override
     public void detach(){
+
         body.destroyFixture(fixture);
         body.getWorld().destroyBody(body);
         remove();
     }
 
     public void destroy(){
-        listener.onDeath(this);
+        destroyed = true;
     }
 
     @Override
     public void act(float delta) {
+        if(destroyed){
+            detach();
+            return;
+        }
         setPosition((body.getPosition().x - width/2) * Constants.TILE_SIZE, (body.getPosition().y - height/2) * Constants.TILE_SIZE);
     }
 

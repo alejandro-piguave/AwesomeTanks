@@ -1,5 +1,7 @@
 package com.alexpi.awesometanks.entities;
 
+import com.alexpi.awesometanks.entities.tank.PlayerTank;
+import com.alexpi.awesometanks.entities.tank.Tank;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -14,13 +16,14 @@ import com.alexpi.awesometanks.utils.Constants;
  */
 public class Shade extends Image {
     private float posX, posY;
-    private Tank player;
+    private PlayerTank player;
     private boolean isFading;
-    public Shade(AssetManager manager, Tank player, float posX, float posY){
+    private static final float SIZE = 1f;
+    public Shade(AssetManager manager, PlayerTank player, float posX, float posY){
         setDrawable(new TextureRegionDrawable(new TextureRegion(manager.get("sprites/shade.png",Texture.class))));
-        setBounds(posX* Constants.TILE_SIZE,posY*Constants.TILE_SIZE,Constants.TILE_SIZE /2,Constants.TILE_SIZE /2);
-        this.posX = posX+.25f;
-        this.posY = posY+.25f;
+        setBounds(posX* Constants.TILE_SIZE * SIZE,posY*Constants.TILE_SIZE * SIZE,Constants.TILE_SIZE * SIZE,Constants.TILE_SIZE * SIZE);
+        this.posX = posX+SIZE*.5f;
+        this.posY = posY+SIZE*.5f;
         this.player = player;
     }
 

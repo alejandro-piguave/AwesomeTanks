@@ -1,4 +1,5 @@
 buildscript {
+    ext.kotlinVersion = '1.7.10'
     repositories {
         mavenLocal()
         mavenCentral()
@@ -9,6 +10,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.4'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.16'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+
     }
 }
 
@@ -21,13 +24,12 @@ allprojects {
         appName = "Awesome Tanks"
         gdxVersion = '1.11.0'
         roboVMVersion = '1.12.0'
-        box2DLightsVersion = '1.4'
-        ashleyVersion = '1.7.0'
-        aiVersion = '1.7.0'
+        aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'
     }
 
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
         gradlePluginPortal()
@@ -39,6 +41,7 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "java-library"
+    apply plugin: "kotlin"
 
     dependencies {
         implementation project(":core")
@@ -48,11 +51,13 @@ project(":desktop") {
         api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
         implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
 
 project(":android") {
-    apply plugin: "com.android.application"
+    apply plugin: "android"
+    apply plugin: "kotlin-android"
 
     configurations { natives }
 
@@ -74,17 +79,23 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
         api "com.badlogicgames.gdx-controllers:gdx-controllers-android:$gdxControllersVersion"
+        api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
+        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
     }
 }
 
 project(":core") {
     apply plugin: "java"
-
+    apply plugin: "kotlin"
 
     dependencies {
         implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        implementation "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+        api group: 'io.github.libktx', name: 'ktx-actors', version: '1.11.0-rc2'
     }
 }
