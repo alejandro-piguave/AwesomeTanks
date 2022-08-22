@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.world;
 
-import com.alexpi.awesometanks.entities.DamageableActor;
+import com.alexpi.awesometanks.entities.actors.DamageableActor;
 import com.alexpi.awesometanks.entities.blocks.Mine;
 import com.alexpi.awesometanks.entities.blocks.Spawner;
 import com.alexpi.awesometanks.entities.items.FreezingBall;
@@ -9,7 +9,7 @@ import com.alexpi.awesometanks.entities.items.HealthPack;
 import com.alexpi.awesometanks.entities.items.Item;
 import com.alexpi.awesometanks.entities.projectiles.Flame;
 import com.alexpi.awesometanks.entities.projectiles.Projectile;
-import com.alexpi.awesometanks.entities.tank.PlayerTank;
+import com.alexpi.awesometanks.entities.tanks.PlayerTank;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;

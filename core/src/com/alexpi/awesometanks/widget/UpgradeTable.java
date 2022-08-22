@@ -36,12 +36,17 @@ public class UpgradeTable extends Table {
     public void changePrice(int price){this.price=price;buy.setText("Buy " + price + " $");}
 
     public boolean canBuy(int money){
-        return (money >=price && bar.getValue() < bar.getMaxValue());}
+        return (money >=price && bar.getValue() < bar.getMaxValue());
+    }
 
     public int getPrice(){return price;}
     public TextButton getBuyButton() {return buy;}
     public String getName(){return nameLabel.getText().toString();}
-    public void increaseValue(int i) {bar.setValue(bar.getValue()+i);}
+    public void increaseValue(int i) {
+        if(bar.getValue() + i > bar.getMaxValue()){
+            bar.setValue(bar.getMaxValue());
+        } else bar.setValue(bar.getValue()+i);
+    }
     public void setValue(float value){bar.setValue(value);}
     public int getValue(){return (int) bar.getValue();}
 

@@ -1,5 +1,7 @@
-package com.alexpi.awesometanks.entities.tank
+package com.alexpi.awesometanks.entities.tanks
 
+import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.entities.ai.EnemyAI
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
@@ -9,9 +11,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.utils.Timer
 import kotlin.experimental.or
-import kotlin.math.atan2
 
 /**
  * Created by Alex on 17/02/2016.
@@ -21,29 +21,23 @@ class EnemyTank(
     entityGroup: Group,
     world: World,
     position: Vector2,
-    private val targetPosition: Vector2,
+    targetPosition: Vector2,
     size: Float,
-    type: Int) : Tank(manager, entityGroup, world, position, size,
+    type: Int, damageListener: DamageListener?) : Tank(manager, entityGroup, world, position, size,
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
-    100f,true, Gdx.app.getPreferences("settings").getBoolean("areSoundsActivated")) {
+    200f,true, Gdx.app.getPreferences("settings").getBoolean("areSoundsActivated"), damageListener),
+    EnemyAI.Callback {
 
+    private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
     private val weapon: Weapon
 
     override fun act(delta: Float) {
-        val dX = targetPosition.x - body.position.x
-        val dY = targetPosition.y - body.position.y
-        val distanceFromTarget = Utils.fastHypot(dX.toDouble(), dY.toDouble()).toFloat()
-        if (distanceFromTarget < 7 && !isFrozen && isAlive) {
-            val angle = atan2(dY, dX)
-            setOrientation(angle)
-            weapon.setDesiredAngleRotation(dX, dY)
-            isMoving = true
-            isShooting = true
-        } else {
-            isShooting = false
-            isMoving = false
+        if(isAlive && !isFrozen){
+            enemyAI.update(delta)
+        }else{
+            await()
         }
         super.act(delta)
     }
@@ -74,6 +68,17 @@ class EnemyTank(
     init {
         weapon = Weapon.getWeaponAt(type, manager, 1, 2, false, allowSounds)
         weapon.setUnlimitedAmmo(true)
+    }
 
+    override fun attack(angle: Float) {
+        setOrientation(angle)
+        weapon.setDesiredAngleRotation(angle)
+        isMoving = true
+        isShooting = true
+    }
+
+    override fun await() {
+        isShooting = false
+        isMoving = false
     }
 }

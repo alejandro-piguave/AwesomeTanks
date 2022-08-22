@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.entities.tank
+package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
@@ -59,7 +59,8 @@ class PlayerTank (
     private fun updateVisibleArea(){
         val cell = map.toCell(body.position)
         map.setPlayerCell(cell)
-        for(i in 1..8) map.scanOctant(1,i, 1.0, 0.0)
+        map.scanCircle()
+        //for(i in 1..8) map.scanOctant(1,i, 1.0, 0.0)
     }
 
     override fun getCurrentWeapon(): Weapon  = weapons[currentWeapon]

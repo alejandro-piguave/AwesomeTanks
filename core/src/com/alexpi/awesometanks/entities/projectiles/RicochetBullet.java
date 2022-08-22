@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.alexpi.awesometanks.entities.ParticleActor;
+import com.alexpi.awesometanks.entities.actors.ParticleActor;
 import com.badlogic.gdx.graphics.Texture;
 
 /**

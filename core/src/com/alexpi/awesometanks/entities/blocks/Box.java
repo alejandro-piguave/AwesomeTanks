@@ -4,11 +4,9 @@ import com.alexpi.awesometanks.entities.DamageListener;
 import com.alexpi.awesometanks.entities.items.FreezingBall;
 import com.alexpi.awesometanks.entities.items.GoldNugget;
 import com.alexpi.awesometanks.entities.items.HealthPack;
-import com.alexpi.awesometanks.entities.tank.EnemyTank;
+import com.alexpi.awesometanks.entities.tanks.EnemyTank;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -42,7 +40,7 @@ public class Box extends Block {
             case 2:
                 entityGroup.addActor(new HealthPack(manager,body.getWorld(),body.getPosition()));break;
             case 3:
-                entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition,.5f, maxType));break;
+                entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition,.5f, Utils.getRandomInt(maxType +1), getDamageListener()));break;
         }
     }
 

@@ -1,5 +1,6 @@
-package com.alexpi.awesometanks.entities
+package com.alexpi.awesometanks.entities.actors
 
+import com.alexpi.awesometanks.entities.DamageListener
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -14,7 +15,7 @@ abstract class DamageableActor(private val manager: AssetManager,
                                val maxHealth: Float,
                                private val isFlammable: Boolean,
                                private val isFreezable: Boolean,
-                               private val damageListener: DamageListener? = null) :
+                               protected val damageListener: DamageListener? = null) :
     Actor() {
     var health: Float = maxHealth
     private set
@@ -61,7 +62,15 @@ abstract class DamageableActor(private val manager: AssetManager,
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
+        drawBurning(batch, parentAlpha)
+        drawFrozen(batch)
+    }
+
+    protected fun drawBurning(batch: Batch, parentAlpha: Float){
         if (isBurning && isFlammable) flameSprite.draw(batch, parentAlpha)
+    }
+
+    protected fun drawFrozen(batch: Batch){
         if (isFrozen && isFreezable) batch.draw(frozenSprite, x, y, width, height)
     }
 

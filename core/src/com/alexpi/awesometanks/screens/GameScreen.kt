@@ -3,12 +3,13 @@ package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.*
+import com.alexpi.awesometanks.entities.actors.*
 import com.alexpi.awesometanks.entities.blocks.*
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
-import com.alexpi.awesometanks.entities.tank.EnemyTank
-import com.alexpi.awesometanks.entities.tank.PlayerTank
+import com.alexpi.awesometanks.entities.tanks.EnemyTank
+import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.*
 import com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION
 import com.alexpi.awesometanks.world.ContactManager

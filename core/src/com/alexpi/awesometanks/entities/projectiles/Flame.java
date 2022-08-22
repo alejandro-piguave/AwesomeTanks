@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.alexpi.awesometanks.entities.ParticleActor;
+import com.alexpi.awesometanks.entities.actors.ParticleActor;
 
 /**
  * Created by Alex on 16/01/2016.

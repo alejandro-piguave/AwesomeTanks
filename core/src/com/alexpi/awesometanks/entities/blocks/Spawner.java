@@ -1,12 +1,10 @@
 package com.alexpi.awesometanks.entities.blocks;
 
 import com.alexpi.awesometanks.entities.DamageListener;
-import com.alexpi.awesometanks.entities.tank.EnemyTank;
+import com.alexpi.awesometanks.entities.tanks.EnemyTank;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.utils.Utils;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -49,7 +47,7 @@ public class Spawner extends Block {
         if(lastSpawn + interval <  System.currentTimeMillis()){
             lastSpawn = System.currentTimeMillis();
             interval = Utils.getRandomInt(10000,15000);
-            entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, .75f, Utils.getRandomInt(maxType+1)));
+            entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, .75f, Utils.getRandomInt(maxType+1), getDamageListener() ));
         }
     }
 }

@@ -1,6 +1,7 @@
-package com.alexpi.awesometanks.entities.tank
+package com.alexpi.awesometanks.entities.tanks
 
-import com.alexpi.awesometanks.entities.DamageableActor
+import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.assets.AssetManager
@@ -31,7 +32,8 @@ abstract class Tank(
     maxHealth: Float,
     isFreezable: Boolean,
     protected val allowSounds: Boolean,
-    ) : DamageableActor(manager, maxHealth, true, isFreezable){
+    damageListener: DamageListener? = null
+    ) : DamageableActor(manager, maxHealth, true, isFreezable, damageListener){
 
     private val bodySprite: Sprite = Sprite(manager.get("sprites/tank_body.png", Texture::class.java))
     private val wheelsSprite: Sprite = Sprite(manager.get("sprites/tank_wheels.png", Texture::class.java))
@@ -129,12 +131,6 @@ abstract class Tank(
     }
 
     abstract fun getCurrentWeapon(): Weapon
-
-    val posY: Float
-        get() = body.position.y
-    val posX: Float
-        get() = body.position.x
-
     init {
         val bodyDef = BodyDef()
         bodyDef.type = BodyDef.BodyType.DynamicBody

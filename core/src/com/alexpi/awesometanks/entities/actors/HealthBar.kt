@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.entities
+package com.alexpi.awesometanks.entities.actors
 
 import com.alexpi.awesometanks.utils.Constants
 import com.badlogic.gdx.assets.AssetManager

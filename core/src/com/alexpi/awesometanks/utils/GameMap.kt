@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import java.io.BufferedReader
 import java.io.IOException
@@ -76,327 +77,34 @@ class GameMap(level: Int){
     }
 
     fun toCell(pos: Vector2): Cell {
-        return Cell(map.size - pos.y.toInt(), pos.x.toInt())
+        return Cell(map.size - pos.y.toInt() -1, pos.x.toInt())
     }
 
     fun isVisible(row: Int, col: Int) = visibleArea[row][col]
-    //  Octant data
-    //
-    //    \ 1 | 2 /
-    //   8 \  |  / 3
-    //   -----+-----
-    //   7 /  |  \ 4
-    //    / 6 | 5 \
-    //
-    //  1 = NNW, 2 =NNE, 3=ENE, 4=ESE, 5=SSE, 6=SSW, 7=WSW, 8 = WNW
-    fun scanOctant(pDepth: Int, pOctant: Int, pStartSlope: Double, pEndSlope: Double){
-        val visualRange2 = visualRange * visualRange
-        var pStartSlopeAux = pStartSlope
-        var x = 0
-        var y = 0
-        when(pOctant){
-            //nnw
-            1 -> {
-                y = playerRow - pDepth
-                if(y < 0 ) return
-                x = playerCol - (pStartSlopeAux * pDepth).toInt()
-                if(x < 0 ) x = 0
 
-                while(getSlope(x, y, playerCol, playerRow,false) >= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-
-                            if (y + 1 < map.size && !Constants.solidBlocks.contains(map[y + 1][x])){
-
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x - 0.5, y + 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), false));
-                            }
-                            visibleArea[y][x] = true
-                        } else{
-
-                            if (x - 1 >= 0 && Constants.solidBlocks.contains(map[y][x-1])){
-
-                                pStartSlopeAux = getSlope(x - 0.5, y - 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), false);
-                            }
-
-                            visibleArea[y][x] = true
-                        }
-                    }
-
-                    x++
-                }
-
-                x--
-            }
-            //nne
-            2 -> {
-                y = playerRow - pDepth
-                if(y < 0) return
-
-                x = playerCol + (pStartSlopeAux * pDepth).toInt()
-                if(x >= map[0].size ) x = map[0].size -1
-
-                while(getSlope(x, y, playerCol, playerRow,false) <= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-
-                            if (x + 1 < map[0].size && !Constants.solidBlocks.contains(map[y][x+1])){
-
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x + 0.5, y + 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), false));
-                            }
-                            visibleArea[y][x] = true
-
-                        } else{
-
-                            if (x + 1 < map[0].size && Constants.solidBlocks.contains(map[y][x+1])){
-
-                                pStartSlopeAux = -getSlope(x + 0.5, y - 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), false);
-                            }
-
-                            visibleArea[y][x] = true
-                        }
-                    }
-
-                    x--
-                }
-
-                x++
-            }
-            3 -> {
-                x = playerCol + pDepth
-                if(x >= map[0].size ) return
-
-                y = playerRow - (pStartSlopeAux * pDepth).toInt()
-                if(y < 0) y = 0
-
-                while(getSlope(x, y, playerCol, playerRow,true) <= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-                            if (y - 1 >= 0 && !Constants.solidBlocks.contains(map[y-1][x])){
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x - 0.5, y - 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), true));
-                            }
-                            visibleArea[y][x] = true
-
-                        } else{
-                            if (y - 1 >= 0 && Constants.solidBlocks.contains(map[y-1][x])){
-                                pStartSlopeAux = -getSlope(x + 0.5, y - 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), true);
-                            }
-                            visibleArea[y][x] = true
-                        }
-                    }
-                    y++
-                }
-                y--
-            }
-            4 -> {
-                x = playerCol + pDepth
-                if(x >= map[0].size ) return
-
-                y = playerRow + (pStartSlopeAux * pDepth).toInt()
-                if(y >= map.size) y = map.size -1
-
-                while(getSlope(x, y, playerCol, playerRow,true) >= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-                            if (y + 1 < map.size && !Constants.solidBlocks.contains(map[y+1][x])){
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x - 0.5, y + 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), true));
-                            }
-                            visibleArea[y][x] = true
-
-                        } else{
-                            if (y + 1 < map.size && Constants.solidBlocks.contains(map[y+1][x])){
-                                pStartSlopeAux = getSlope(x + 0.5, y + 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), true);
-                            }
-                            visibleArea[y][x] = true
-                        }
-                    }
-                    y--
-                }
-                y++
-            }
-            5 -> {
-                y = playerRow + pDepth
-                if(y >= map.size) return
-
-                x = playerCol + (pStartSlopeAux * pDepth).toInt()
-                if(x >= map[0].size ) x = map[0].size -1
-
-                while(getSlope(x, y, playerCol, playerRow,false) >= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-
-                            if (x + 1 < map[0].size && !Constants.solidBlocks.contains(map[y][x+1])){
-
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x + 0.5, y - 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), false));
-                            }
-                            visibleArea[y][x] = true
-
-                        } else{
-
-                            if (x + 1 < map[0].size && Constants.solidBlocks.contains(map[y][x+1])){
-
-                                pStartSlopeAux = getSlope(x + 0.5, y + 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), false);
-                            }
-
-                            visibleArea[y][x] = true
-                        }
-                    }
-
-                    x--
-                }
-
-                x++
-            }
-            6 -> {
-                y = playerRow + pDepth
-                if(y >= map.size) return
-
-                x = playerCol - (pStartSlopeAux * pDepth).toInt()
-                if(x < 0 ) x = 0
-
-                while(getSlope(x, y, playerCol, playerRow,false) <= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-
-                            if (y + 1 < map.size && !Constants.solidBlocks.contains(map[y + 1][x])){
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x - 0.5, y + 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), false));
-                            }
-                            visibleArea[y][x] = true
-
-                        } else{
-
-                            if (x - 1 >= 0 && Constants.solidBlocks.contains(map[y][x-1])){
-                                pStartSlopeAux = -getSlope(x - 0.5, y + 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), false);
-                            }
-
-                            visibleArea[y][x] = true
-                        }
-                    }
-
-                    x++
-                }
-
-                x--
-            }
-            7 -> {
-                x = playerCol - pDepth
-                if(x <0) return
-                y = playerRow + (pStartSlope * pDepth).toInt()
-                if(y >= map.size) y = map.size -1
-
-                while(getSlope(x, y, playerCol, playerRow,true) <= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-
-                            if (y + 1 < map.size && !Constants.solidBlocks.contains(map[y+1][x])){
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x + 0.5, y + 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), true));
-                            }
-                            visibleArea[y][x] = true
-
-                        } else{
-
-                            if (y + 1 < map.size && Constants.solidBlocks.contains(map[y+1][x])){
-
-                                pStartSlopeAux = -getSlope(x - 0.5, y + 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), true);
-                            }
-
-                            visibleArea[y][x] = true
-                        }
-                    }
-
-                    y--
-                }
-
-                y++
-            }
-            //wnw
-            8 -> {
-                x = playerCol - pDepth
-                if(x < 0 ) return
-
-                y = playerRow - (pStartSlope * pDepth).toInt()
-                if(y < 0) y = 0
-
-                while(getSlope(x.toDouble(), y.toDouble(), playerCol.toDouble(), playerRow.toDouble(),true) >= pEndSlope){
-
-                    if(getVisDistance(x,y,playerCol,playerRow) <= visualRange2){
-
-                        if(Constants.solidBlocks.contains(map[y][x])){
-
-                            if (y - 1 >= 0 && !Constants.solidBlocks.contains(map[y-1][x])){
-
-                                scanOctant(pDepth + 1, pOctant, pStartSlopeAux, getSlope(x + 0.5, y - 0.5,
-                                    playerCol.toDouble(),
-                                    playerRow.toDouble(), true));
-                            }
-                            visibleArea[y][x] = true
-
-                        } else{
-
-                            if (y - 1 >= 0 && Constants.solidBlocks.contains(map[y-1][x])){
-
-                                pStartSlopeAux = getSlope(x - 0.5, y - 0.5,
-                                    playerCol.toDouble(), playerRow.toDouble(), true);
-                            }
-
-                            visibleArea[y][x] = true
-                        }
-                    }
-
-                    y++
-                }
-
-                y--
-            }
+    fun scanCircle(){
+        for(i in 0 until 360 step 2){
+            val x = MathUtils.cos(i*.01745f)
+            val y = MathUtils.sin(i*.01745f)
+            doFOV(x,y)
         }
+    }
 
+    private fun doFOV(x: Float, y: Float) {
+        var ox: Float = playerCol + 0.5f
+        var oy: Float = playerRow + 0.5f
+        for (i in 0 until visualRange){
+            val oxInt = ox.toInt()
+            val oyInt = oy.toInt()
+            if(oxInt < 0 || oxInt >= map[0].size || oyInt < 0 || oyInt >= map.size)
+                return
+            visibleArea[oy.toInt()][ox.toInt()] = true //Set the tile to visible.
+            if (Constants.solidBlocks.contains(map[oy.toInt()][ox.toInt()] ))
+                return
+            ox += x
+            oy += y
 
-        if (x < 0)
-            x = 0;
-        else if (x >= map[0].size)
-            x = map[0].size - 1
-
-        if (y < 0)
-            y = 0;
-        else if (y >= map.size)
-            y = map.size - 1
-
-        if (pDepth < visualRange && !Constants.solidBlocks.contains(map[y][x]))
-            scanOctant(pDepth + 1, pOctant, pStartSlopeAux, pEndSlope);
+        }
     }
 
     private fun getSlope(pX1: Double, pY1: Double, pX2: Double, pY2: Double, pInvert: Boolean): Double {

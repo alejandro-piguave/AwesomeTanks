@@ -50,6 +50,11 @@ public abstract class Weapon {
         if(desiredAngleRotation <0) desiredAngleRotation +=Math.PI*2;
     }
 
+    public void setDesiredAngleRotation(float angle) {
+        desiredAngleRotation = angle;
+        if(desiredAngleRotation <0) desiredAngleRotation +=Math.PI*2;
+    }
+
     public boolean hasRotated(){return currentAngleRotation == desiredAngleRotation;}
     public void updateAngleRotation(float rotationSpeed) {
         float diff = desiredAngleRotation -currentAngleRotation;

@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
-import com.alexpi.awesometanks.entities.DamageableActor
+import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.utils.Constants
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
@@ -33,8 +33,12 @@ abstract class Block(
     var fixture: Fixture
     protected var size = 0f
     override fun draw(batch: Batch, parentAlpha: Float) {
-        batch.draw(sprite, x, y, width, height)
+        drawSprite(batch)
         super.draw(batch, parentAlpha)
+    }
+
+    protected fun drawSprite(batch: Batch){
+        batch.draw(sprite, x, y, width, height)
     }
 
     override fun detach() {
