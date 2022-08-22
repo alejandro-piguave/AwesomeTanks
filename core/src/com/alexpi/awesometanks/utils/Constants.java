@@ -9,8 +9,10 @@ public class Constants {
     public static final float SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 720,
             CENTER_Y = SCREEN_HEIGHT /2, CENTER_X = SCREEN_WIDTH /2,
             TILE_SIZE =80;
-    public static final char wall = 'X', space = ' ',start = 'S', end = 'E', gate = 'G', bricks = 'B', box = '*'
+    public static final char wall = 'X', space = ' ',start = 'S', gate = 'G', bricks = 'B', box = '*'
             , bomb = 'O', spawner = '+';
+
+    public static final char[] solidBlocks = {wall, gate, bricks};
 
     public static final String[]colorNames ={"White","Green","Red","Blue","Yellow","Orange","Purple","Sky","Grey","Light Grey"};
     public static final Color[] colors = {Color.WHITE,Color.CHARTREUSE,Color.SCARLET,Color.ROYAL, Color.GOLD, Color.ORANGE,Color.PURPLE, Color.SKY,Color.GRAY,  Color.LIGHT_GRAY};

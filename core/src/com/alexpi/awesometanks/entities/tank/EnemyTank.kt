@@ -55,15 +55,6 @@ class EnemyTank(
 
     override fun getCurrentWeapon(): Weapon = weapon
 
-    fun freeze(freezingTime: Float) {
-        isFrozen = true
-        Timer.schedule(object : Timer.Task() {
-            override fun run() {
-                isFrozen = false
-            }
-        }, freezingTime)
-    }
-
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(5, 10)
         for (i in 0 until num1) entityGroup.addActor(

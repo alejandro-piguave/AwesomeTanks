@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.*
 import kotlin.experimental.or
 
@@ -19,8 +20,7 @@ abstract class Block(
     world: World,
     shape: Shape,
     health: Int,
-    protected var posX: Int,
-    protected var posY: Int,
+    pos: Vector2,
     size: Float,
     isFlammable: Boolean, damageListener: DamageListener? = null
 ) : DamageableActor(
@@ -48,7 +48,7 @@ abstract class Block(
         val bodyDef = BodyDef()
         val fixtureDef = FixtureDef()
         bodyDef.type = BodyDef.BodyType.StaticBody
-        bodyDef.position[posX + .5f] = posY + .5f
+        bodyDef.position.set(pos.x + .5f, pos.y + .5f)
         if (shape.type == Shape.Type.Polygon) (shape as PolygonShape).setAsBox(
             size / 2,
             size / 2

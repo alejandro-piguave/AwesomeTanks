@@ -22,8 +22,8 @@ public class Box extends Block {
     private Vector2 targetPosition;
     private Group entityGroup;
     private int maxType;
-    public Box(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, int posX, int posY, int level){
-        super(manager,"sprites/box.png", world,new PolygonShape(),50, posX, posY, .8f, true, listener);
+    public Box(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, Vector2 pos, int level){
+        super(manager,"sprites/box.png", world,new PolygonShape(),50, pos, .8f, true, listener);
         this.manager = manager;
         this.entityGroup = entityGroup;
         this.targetPosition = targetPosition;

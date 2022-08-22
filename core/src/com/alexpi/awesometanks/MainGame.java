@@ -29,6 +29,7 @@ public class MainGame extends Game {
 	public Upgrades upgrades;
     public Settings settings;
 	private Preferences gameSettings;
+	private Preferences gameValues;
 
 	@Override
 	public void create() {
@@ -119,6 +120,7 @@ public class MainGame extends Game {
 		upgrades = new Upgrades(this);
 
 		gameSettings = Gdx.app.getPreferences("settings");
+		gameValues = Gdx.app.getPreferences("values");
 
 		setScreen(mainScreen);//PONE LA PANTALLA PRINCIPAL
 	}
@@ -188,5 +190,9 @@ public class MainGame extends Game {
 
 	public Preferences getGameSettings() {
 		return gameSettings;
+	}
+
+	public Preferences getGameValues() {
+		return gameValues;
 	}
 }

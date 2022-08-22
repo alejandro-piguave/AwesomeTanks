@@ -23,8 +23,8 @@ public class Turret extends Block {
     private AssetManager manager;
     private Group entityGroup;
     private final static float ROTATION_SPEED = .035f;
-    public Turret(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, int posX, int posY, int type, boolean sound) {
-        super(manager,"sprites/turret_base.png",  world,new PolygonShape(),500, posX, posY, .8f, true, listener);
+    public Turret(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, Vector2 pos, int type, boolean sound) {
+        super(manager,"sprites/turret_base.png",  world,new PolygonShape(),500, pos, .8f, true, listener);
         this.manager = manager;
         this.entityGroup = entityGroup;
         Filter filter = new Filter();

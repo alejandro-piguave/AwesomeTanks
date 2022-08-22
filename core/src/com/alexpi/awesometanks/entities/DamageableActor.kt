@@ -21,7 +21,7 @@ abstract class DamageableActor(private val manager: AssetManager,
     protected var isBurning = false
     protected var isFrozen = false
     private var lastHit: Long = System.currentTimeMillis()
-    var flameSprite: ParticleActor = ParticleActor(manager, "particles/flame.party", x, y, true)
+    private val flameSprite: ParticleActor = ParticleActor(manager, "particles/flame.party", x, y, true)
     private val frozenSprite: Sprite = Sprite(manager.get("sprites/frozen.png", Texture::class.java))
 
     open fun takeDamage(damage: Float) {
@@ -32,7 +32,19 @@ abstract class DamageableActor(private val manager: AssetManager,
                 lastHit = System.currentTimeMillis()
             }
         }
-        else health = 0f
+        else {
+            health = 0f
+            damageListener?.onDeath(this)
+        }
+    }
+
+    fun freeze(freezingTime: Float) {
+        isFrozen = true
+        Timer.schedule(object : Timer.Task() {
+            override fun run() {
+                isFrozen = false
+            }
+        }, freezingTime)
     }
 
     override fun act(delta: Float) {

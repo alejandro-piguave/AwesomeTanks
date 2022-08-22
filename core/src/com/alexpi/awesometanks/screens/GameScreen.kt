@@ -9,11 +9,8 @@ import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tank.EnemyTank
 import com.alexpi.awesometanks.entities.tank.PlayerTank
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.utils.*
 import com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION
-import com.alexpi.awesometanks.utils.MapGenerator
-import com.alexpi.awesometanks.utils.Styles
-import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.world.ContactManager
 import com.badlogic.gdx.*
 import com.badlogic.gdx.audio.Sound
@@ -41,41 +38,40 @@ import kotlin.math.abs
  */
 class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, DamageListener {
     private lateinit var buttons: List<ImageButton>
+    private val gameMap = GameMap(level)
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
     private val spawnerGroup: Group = Group()
     private val healthBarGroup: Group = Group()
-    private lateinit var gameStage: Stage
-    private lateinit var UIStage: Stage
-    private lateinit var world: World
+    private val gameStage: Stage = Stage(FillViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+    private val uiStage: Stage = Stage(FillViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+    private val world = World(Vector2(0f, 0f), true)
     private lateinit var movementTouchpad: Touchpad
     private lateinit var aimTouchpad: Touchpad
-    private lateinit var tank: PlayerTank
     private lateinit var gunName: Label
     private lateinit var money: Label
     private lateinit var ammoAmount: Label
-    private lateinit var gameValues: Preferences
     private val weaponMenuTable: Table = Table()
     private var screenPointer = 0
-    private var soundFX = false
+    private val soundFX = game.gameSettings.getBoolean("areSoundsActivated")
     private var isPaused = false
     private var alreadyExecuted = false
     private var isLevelCompleted = false
-    private lateinit var gunChangeSound: Sound
-    private lateinit var explosionSound: Sound
+    private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
+    private val explosionSound: Sound = game.manager.get("sounds/explosion.ogg")
+    private val tank: PlayerTank = PlayerTank(
+        game.manager,
+        entityGroup,
+        world,
+        game.gameValues,
+        gameMap,
+        soundFX
+    )
+
     override fun show() {
-        UIStage = Stage()
-        gameStage = Stage(FillViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
-        world = World(Vector2(0f, 0f), true)
-        gunChangeSound = game.manager.get("sounds/gun_change.ogg")
-        explosionSound = game.manager.get("sounds/explosion.ogg")
-        gameValues = Gdx.app.getPreferences("values")
-        soundFX = game.gameSettings.getBoolean("areSoundsActivated")
         addContactManager()
         createGameScene()
         createUIScene()
-        Gdx.input.inputProcessor = inputProcessor
-        Gdx.input.isCatchBackKey = true
     }
 
     override fun render(delta: Float) {
@@ -84,13 +80,13 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         if (!isPaused) {
             world.step(1 / 60f, 6, 2)
             gameStage.act(delta)
-            //ammoAmount.setText(tank.getCurrentWeapon().getAmmo() + "/100");
+            ammoAmount.setText("${tank.getCurrentWeapon().ammo}/100");
             checkLevelState()
             gameStage.camera.position.set(tank.centerX, tank.centerY, 0f)
         }
         gameStage.draw()
-        UIStage.act(delta)
-        UIStage.draw()
+        uiStage.act(delta)
+        uiStage.draw()
     }
 
 
@@ -126,7 +122,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
 
             override fun onFreezingBallFound(freezingBall: FreezingBall) {
-                for (a: Actor? in gameStage.actors) if (a is EnemyTank) a.freeze(5f)
+                for (a: Actor in entityGroup.children) if (a is EnemyTank) a.freeze(5f)
+                for (a: Actor in blockGroup.children) if (a is Turret) a.freeze(5f)
+                for (a: Actor in spawnerGroup.children) if (a is Spawner) a.freeze(5f)
             }
 
             override fun onBulletCollision(x: Float, y: Float) {
@@ -194,119 +192,84 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private fun createGameScene() {
         val shadeGroup = Group()
-        val map = MapGenerator.getLevelMap(level)
-        var playerX = 0
-        var playerY = 0
-        for (y in map.indices) for (x in 0 until map[y].size) if (map[y][x] == Constants.start) {
-            playerX = x
-            playerY = y
-            tank = PlayerTank(
-                game.manager,
-                entityGroup,
-                world,
-                Vector2(x.toFloat(), (map.size - y).toFloat()),
-                gameValues,
-                Constants.colors[game.gameSettings.getInteger("tankColor")],
-                gameValues.getInteger("money", 0),
-                soundFX
-            )
-            entityGroup.addActor(tank)
-        }
-        for (y in map.indices) {
-            for (x in 0 until map[y].size) {
-
-                //Put shadows everywhere except around the player AND on walls
-                if (((y < playerY - 1) || (y > playerY + 1) || (x < playerX - 1) || (x > playerX + 1)) && (x > 0) && (y > 0) && (x < map.size - 1) && (y < map[y].size - 1)) {
-                    /*for(int i = 0; i <2; i++)
-                        for (int j = 0; j <2;j++)
-                            shadeGroup.addActor(new Shade(game.getManager(), tank,x + i * .5f, (map.length - y) + j * .5f));*/
-                    shadeGroup.addActor(
-                        Shade(
-                            game.manager,
-                            tank,
-                            x.toFloat(),
-                            ((map.size - y).toFloat())
-                        )
+        gameMap.forCell { row, col, value, isVisible ->
+            Gdx.app.debug("Cell", "row $row col $col")
+            if (!isVisible) {
+                shadeGroup.addActor(
+                    Shade(
+                        game.manager,
+                        gameMap,
+                        row, col
                     )
-                }
-                if (map[y][x] == Constants.wall) blockGroup.addActor(
-                    Wall(
+                )
+            }
+            if (value == Constants.wall) blockGroup.addActor(
+                Wall(
+                    game.manager,
+                    world, gameMap.toWorldPos(row, col)
+                )
+            ) else {
+                if(value == Constants.start){
+                    tank.setPos(row,col)
+                    entityGroup.addActor(tank)
+                } else if (value == Constants.gate) blockGroup.addActor(
+                    Gate(
+                        this,
+                        game.manager,
+                        world, gameMap.toWorldPos(row,col)
+                    )
+                ) else if (value== Constants.bricks) blockGroup.addActor(
+                    Bricks(
+                        this,
+                        game.manager,
+                        world, gameMap.toWorldPos(row,col)
+                    )
+                ) else if (value == Constants.box) blockGroup.addActor(
+                    Box(
+                        this,
+                        game.manager,
+                        entityGroup,
+                        world,
+                        tank.body.position,
+                        gameMap.toWorldPos(row,col),
+                        level
+                    )
+                ) else if (value == Constants.spawner) spawnerGroup.addActor(
+                    Spawner(
+                        this,
+                        game.manager,
+                        entityGroup,
+                        world,
+                        tank.body.position,
+                        gameMap.toWorldPos(row,col),
+                        level
+                    )
+                ) else if (value == Constants.bomb) blockGroup.addActor(
+                    Mine(
+                        this,
                         game.manager,
                         world,
-                        x,
-                        map.size - y
+                        gameMap.toWorldPos(row,col),
                     )
-                ) else {
-                    if (map[y][x] == Constants.gate) blockGroup.addActor(
-                        Gate(this,
-                            game.manager,
-                            world,
-                            x,
-                            map.size - y
-                        )
-                    ) else if (map[y][x] == Constants.bricks) blockGroup.addActor(
-                        Bricks(this,
-                            game.manager,
-                            world,
-                            x,
-                            map.size - y
-                        )
-                    ) else if (map[y][x] == Constants.box) blockGroup.addActor(
-                        Box(this,
+                ) else if (Character.isDigit(value)) {
+                    val num = Character.getNumericValue(value)
+                    blockGroup.addActor(
+                        Turret(
+                            this,
                             game.manager,
                             entityGroup,
                             world,
                             tank.body.position,
-                            x,
-                            map.size - y,
-                            level
+                            gameMap.toWorldPos(row,col),
+                            num,
+                            soundFX
                         )
-                    ) else if (map[y][x] == Constants.spawner) spawnerGroup.addActor(
-                        Spawner(this,
-                            game.manager,
-                            entityGroup,
-                            world,
-                            tank.body.position,
-                            x,
-                            map.size - y,
-                            level
-                        )
-                    ) else if (map[y][x] == Constants.bomb) blockGroup.addActor(
-                        Mine(this,
-                            game.manager,
-                            world,
-                            x,
-                            map.size - y
-                        )
-                    ) else if (Character.isDigit(
-                            map[y][x]
-                        )
-                    ) {
-                        val num = Character.getNumericValue(map[y][x])
-                        blockGroup.addActor(
-                            Turret(this,
-                                game.manager,
-                                entityGroup,
-                                world,
-                                tank.body.position,
-                                x,
-                                map.size - y,
-                                num,
-                                soundFX
-                            )
-                        )
-                    }
-                    val space = Image(game.manager.get("sprites/sand.png", Texture::class.java))
-                    space.setBounds(
-                        x * Constants.TILE_SIZE,
-                        (map.size - y) * Constants.TILE_SIZE,
-                        Constants.TILE_SIZE,
-                        Constants.TILE_SIZE
                     )
-                    gameStage.addActor(space)
                 }
+                gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(row, col)))
             }
         }
+
         healthBarGroup.addActor(HealthBar(game.manager, tank))
         gameStage.addActor(spawnerGroup)
         gameStage.addActor(entityGroup)
@@ -319,7 +282,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         val uiSkin = game.manager.get<Skin>("uiskin/uiskin.json")
         gunName =
             Label("Minigun", Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
-        gunName.setPosition(UIStage.width / 2 - gunName.width / 2, 10f)
+        gunName.setPosition(uiStage.width / 2 - gunName.width / 2, 10f)
         gunName.setAlignment(Align.center)
         ammoAmount = Label(
             tank.getCurrentWeapon().ammo.toString() + "/100",
@@ -409,7 +372,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             val index = buttons.indexOf(button)
 
             if(index > 0) {
-                button.isDisabled = gameValues.getBoolean("weapon$index",true);
+                button.isDisabled = game.gameValues.getBoolean("weapon$index",true);
                 button.setColor(button.color.r,button.color.g,button.color.b,.5f);
             }
             if(!button.isDisabled) {
@@ -445,7 +408,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         }
         weaponMenuButton.onClick {
             isPaused = if(weaponMenuButton.hasParent()){
-                UIStage.addActor(weaponMenuTable)
+                uiStage.addActor(weaponMenuTable)
                 true
             } else {
                 weaponMenuButton.remove()
@@ -455,28 +418,33 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
         weaponMenuButton.setBounds(aimTouchpad.x - weaponMenuButtonSize - 10, aimTouchpad.y +10 , weaponMenuButtonSize, weaponMenuButtonSize)
 
-        UIStage.addActor(movementTouchpad)
-        UIStage.addActor(aimTouchpad)
+        uiStage.addActor(movementTouchpad)
+        uiStage.addActor(aimTouchpad)
         if(Gdx.app.type != Application.ApplicationType.Desktop)
-            UIStage.addActor(weaponMenuButton)
-        UIStage.addActor(gunName)
-        UIStage.addActor(money)
-        UIStage.addActor(ammoAmount)
+            uiStage.addActor(weaponMenuButton)
+        uiStage.addActor(gunName)
+        uiStage.addActor(money)
+        uiStage.addActor(ammoAmount)
+
+
+        Gdx.input.inputProcessor = inputProcessor
+        Gdx.input.isCatchBackKey = true
     }
 
     private val inputProcessor: InputProcessor
         get() {
             val multiplexer = InputMultiplexer()
-            multiplexer.addProcessor(UIStage)
+            multiplexer.addProcessor(uiStage)
             multiplexer.addProcessor(this)
             return multiplexer
         }
 
     private fun saveProgress() {
-        if (isLevelCompleted) gameValues.putBoolean("unlocked" + (level+1), true)
-        tank.saveProgress(gameValues)
-        gameValues.putInteger("money", tank.money)
-        gameValues.flush()
+        if (isLevelCompleted) game.gameValues.putBoolean("unlocked" + (level+1), true)
+        tank.saveProgress(game.gameValues)
+        val savedMoney = game.gameValues.getInteger("money")
+        game.gameValues.putInteger("money",savedMoney + tank.money)
+        game.gameValues.flush()
     }
 
     private fun showLevelFailedDialog() {
@@ -492,7 +460,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 isPaused = false
                 saveProgress()
-                UIStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
                 gameStage.addAction(
                     Actions.sequence(
                         Actions.fadeOut(Constants.TRANSITION_DURATION),
@@ -502,7 +470,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
         })
         levelFailed.button(back)
-        levelFailed.show(UIStage)
+        levelFailed.show(uiStage)
     }
 
     private fun showLevelCompletedDialog() {
@@ -518,7 +486,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 isPaused = false
                 saveProgress()
-                UIStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
                 gameStage.addAction(
                     Actions.sequence(
                         Actions.fadeOut(Constants.TRANSITION_DURATION),
@@ -528,7 +496,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
         })
         levelCompleted.button(continueButton)
-        levelCompleted.show(UIStage)
+        levelCompleted.show(uiStage)
         saveProgress()
     }
 
@@ -550,7 +518,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 back.addListener(object : ClickListener() {
                     override fun clicked(event: InputEvent, x: Float, y: Float) {
                         isPaused = false
-                        UIStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                        uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
                         gameStage.addAction(
                             Actions.sequence(
                                 Actions.fadeOut(Constants.TRANSITION_DURATION),
@@ -570,7 +538,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 })
                 pauseMenu.button(back)
                 pauseMenu.button(resume)
-                pauseMenu.show(UIStage)
+                pauseMenu.show(uiStage)
             }
             return true
         } else if (keycode == Input.Keys.SPACE) {
@@ -587,7 +555,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun hide() {
-        UIStage.dispose()
+        uiStage.dispose()
         gameStage.dispose()
         world.dispose()
         Gdx.input.inputProcessor = null
@@ -655,5 +623,12 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun onDamage(actor: DamageableActor) {
         healthBarGroup.addActor(HealthBar(game.manager, actor, DamageableActor.HEALTH_BAR_DURATION_SECONDS))
+    }
+
+    override fun onDeath(actor: DamageableActor) {
+        if(actor is Block){
+            val cell = gameMap.toCell(actor.body.position)
+            gameMap.clear(cell)
+        }
     }
 }

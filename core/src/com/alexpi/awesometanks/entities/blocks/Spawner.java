@@ -22,8 +22,8 @@ public class Spawner extends Block {
     private final int maxType;
     private final Group entityGroup;
 
-    public Spawner(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, int posX, int posY, int level) {
-        super(manager,"sprites/spawner.png", world,new PolygonShape(), getHealth(level), posX, posY,1f, true, listener);
+    public Spawner(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, Vector2 pos, int level) {
+        super(manager,"sprites/spawner.png", world,new PolygonShape(), getHealth(level), pos,1f, true, listener);
         this.manager = manager;
         this.entityGroup = entityGroup;
         this.targetPosition = targetPosition;

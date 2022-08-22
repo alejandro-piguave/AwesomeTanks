@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -12,8 +13,8 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class Wall extends Block {
 
-    public Wall(AssetManager manager,World world, int posX, int posY){
-        super(manager, "sprites/wall.png", world,new PolygonShape(),1,posX,posY,1f, false, null);
+    public Wall(AssetManager manager, World world, Vector2 pos){
+        super(manager, "sprites/wall.png", world,new PolygonShape(),1,pos,1f, false, null);
     }
 
 

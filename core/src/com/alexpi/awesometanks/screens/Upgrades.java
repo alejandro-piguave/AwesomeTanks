@@ -171,7 +171,19 @@ public class Upgrades extends BaseScreen {
                     weaponPower.setVisible(true);
                 }}});
 
-        weaponAmmo = new UpgradeTable(game.getManager(), "Ammo",values[0][0],100f,100);
+
+        weaponPower = new UpgradeTable(game.getManager(), "Power",values[0][0],5,200 + 100 * values[0][0]);
+        weaponPower.getBuyButton().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (weaponPower.canBuy(moneyValue) && !currentWeaponImage.isDisabled()) {
+                    if(soundsOn)purchaseSound.play();
+                    weaponPower.increaseValue(1);
+                    values[0][currentWeapon] = weaponPower.getValue();
+                    money.setText((moneyValue -= weaponPower.getPrice()) + " $");
+                }}});
+
+        weaponAmmo = new UpgradeTable(game.getManager(), "Ammo",values[1][0],100f,100);
         weaponAmmo.setVisible(false);
         weaponAmmo.getBuyButton().addListener(new ClickListener() {
             @Override
@@ -183,16 +195,6 @@ public class Upgrades extends BaseScreen {
                     money.setText((moneyValue -= weaponAmmo.getPrice()) + " $");
                 }}});
 
-        weaponPower = new UpgradeTable(game.getManager(), "Power",values[1][0],5,200 + 100 * values[0][0]);
-        weaponPower.getBuyButton().addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (weaponPower.canBuy(moneyValue) && !currentWeaponImage.isDisabled()) {
-                    if(soundsOn)purchaseSound.play();
-                    weaponPower.increaseValue(1);
-                    values[0][currentWeapon] = weaponPower.getValue();
-                    money.setText((moneyValue -= weaponPower.getPrice()) + " $");
-                }}});
 
         for(final UpgradeTable p: upgradables){
             p.getBuyButton().addListener(new ClickListener(){
