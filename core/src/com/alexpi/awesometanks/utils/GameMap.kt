@@ -27,7 +27,7 @@ class GameMap(level: Int){
         try {
             line = reader.readLine()
             while (!line.contains(level.toString())) line = reader.readLine()
-            while (reader.readLine().also { line = it } != null && !line.contains("#")) ans.add(
+            while (reader.readLine().also { line = it } != null && !line.contains(".")) ans.add(
                 line
             )
             reader.close()
@@ -42,6 +42,7 @@ class GameMap(level: Int){
         for (i in 0 until rA) {
 
             if(i == 0 || i == rA -1){
+                //set to true for development purposes
                 visibleArea[i] = BooleanArray(cA) { true }
             }
             visibleArea[i][0] = true

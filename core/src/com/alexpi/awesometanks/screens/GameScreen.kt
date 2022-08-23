@@ -263,6 +263,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                             num
                         )
                     )
+                } else if(value in Constants.MINIGUN_BOSS..Constants.RAILGUN_BOSS){
+                    val type = value.code - Constants.MINIGUN_BOSS.code
+                    entityGroup.addActor(EnemyTank(game.manager, entityGroup, world, gameMap.toWorldPos(row, col),tank.body.position,EnemyTank.Tier.BOSS,type,this ))
                 }
                 gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(row, col)))
             }

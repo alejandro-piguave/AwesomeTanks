@@ -25,10 +25,12 @@ import ktx.actors.onClick
 class MainScreen(game: MainGame) : BaseScreen(game) {
     private lateinit var stage: Stage
     override fun show() {
-        stage =  Stage(FillViewport(
+        stage =  Stage(
+            FillViewport(
             Constants.SCREEN_WIDTH,
             Constants.SCREEN_HEIGHT
-        ))
+        )
+        )
         val background = Image(game.manager.get("sprites/background.png", Texture::class.java))
         background.setBounds(0f, 0f, Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT)
         val table = Table()
@@ -48,12 +50,13 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
             if(Settings.soundsOn)"sprites/sound_on.png" else "sprites/sound_off.png")))
         soundButton.setPosition(Constants.SCREEN_WIDTH - 92f, Constants.SCREEN_HEIGHT - 92f)
         soundButton.onClick {
+            Gdx.app.log("MainScreen", "Sound button clicked")
             if (Settings.soundsOn){
-                game.gameSettings.putBoolean("areSoundsActivated",false)
+                game.gameSettings.putBoolean("areSoundsActivated",false).flush()
                 Settings.soundsOn = false
                 soundButton.style.imageUp = TextureRegionDrawable(game.manager.get<Texture>("sprites/sound_off.png"))
             }else{
-                game.gameSettings.putBoolean("areSoundsActivated",true)
+                game.gameSettings.putBoolean("areSoundsActivated",true).flush()
                 Settings.soundsOn = true
                 soundButton.style.imageUp = TextureRegionDrawable(game.manager.get<Texture>("sprites/sound_on.png"))
             }

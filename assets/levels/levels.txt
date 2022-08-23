@@ -1,21 +1,21 @@
-0#
+0.
 XXXXXXXXXXXXXXXXX
-XXXXX *  BBB O  X
-X   G      G    X
-X S G      G  + X
-X   G      G    X
-XXXXXB BBBBB *  X
+XXXXX *  ### O  X
+X   @      @    X
+X S @      @  + X
+X   @      @    X
+XXXXX# ##### *  X
 XXXXXXXXXXXXXXXXX
-1#
+1.
 XXXXXXXXXXX
 X    *    X
-X GG   BB X
-X G     B X
+X @@   ## X
+X @     # X
 X         X
 X    +    X
 X      O  X
-X G     B X
-X GO   BB X
+X @     # X
+X @O   ## X
 X         X
 X         X
 XXX     XXX
@@ -25,59 +25,59 @@ XX*     *XX
 XX   S   XX
 XX       XX
 XXXXXXXXXXX
-2#
+2.
 XXXXXXXXXXX
-X   G B   X
-X S G B 0 X
-X   G B   X
-XXXXX B   X
+X   @ #   X
+X S @ # 0 X
+X   @ #   X
+XXXXX #   X
 X         X
 X O O O O X
 X         X
-X + BBB * X
+X + ### * X
 X         X
 XXXXXXXXXXX
-3#
+3.
 XXXXXXXXXXXXXXXXX
 XXXXXXX   XXXXXXX
 XXXXXXX S XXXXXXX
 X   XXX   XXX   X
 X * XO     OX * X
-X   X       X   X
-X+O G       G O X
-X   G       G   X
-X B X       X B X
-X   XXXGGGXXX   X
+X   X       X B X
+X+O @       @ O X
+X   @       @   X
+X # X       X # X
+X   XXX@@@XXX   X
 X   X       X+  X
-XBBXX *   * XXBBX
+X##XX *   * XX##X
 X  XX       XX  X
-X  XXXXGGGXXXX  X
+X  XXXX@@@XXXX  X
 X               X
 X*  O   O   O   X
 XXXXXXXXXXXXXXXXX
-4#
+4.
 XXXXXXXXXXX
-X   B  B  X
-X+  B     X
-XB BB  + BX
+X   #  #  X
+X+  #     X
+X# ##  + #X
 X         X
-XBB O O BBX
-XBB B*B BBX
-XBB BBB BBX
+X## O O ##X
+X## #*# ##X
+X## ### ##X
 X        0X
 XXXXX XXXXX
 XXXXX XXXXX
 XXXX   XXXX
 XXXX S XXXX
 XXXXXXXXXXX
-5#
+5.
 XXXXXXXXXXXXXXXXX
 X               X
-X    B OGO B    X
-X  + B  G  B +  X
+X    # O@O #    X
+X  + #  @  # +  X
 X     O * O     X
 X               X
-XGGGXXXGGGXXXGGGX
+X@@@XXX@@@XXX@@@X
 X    *X   X*    X
 X     X   X     X
 XXXX  X   X  XXXX
@@ -85,109 +85,109 @@ X               X
 X       S       X
 X               X
 XXXXXXXXXXXXXXXXX
-6#
+6.
 XXXXXXXXXXXXXX
-X   B        X
-X S B B O +  X
-X     B     *X
-XXXXXXXXXXBBBX
-X* + B   B   X
-X0 B B B B   X
+X   #        X
+X S # # O +  X
+X     #     *X
+XXXXXXXXXX###X
+X* + #   #   X
+X0 # # # #   X
 XO     O     X
-XBBXXXXXXXXXXX
-X  BBB O    *X
-X  B      +  X
-XO   BBBB   *X
+X##XXXXXXXXXXX
+X  ### O    *X
+X  #      +  X
+XO   ####   *X
 XXXXXXXXXXXXXX
-7#
+7.
 XXXXXXXXXXXXXXXXXXXX
 XXXXX*         XXXXX
-XXXXX      B + XXXXX
+XXXXX      # + XXXXX
 XXXXX          XXXXX
 XXXXX    O         X
-XXXXX    XXX  GGGG X
-XXXXX    1XX  BB   X
-X   G    XXX  B    X
-X S G    XXX  B BB X
-X   G    XXX     B X
-XXXXXX   XXX  BB   X
+XXXXX    XXX  @@@@ X
+XXXXX    1XX  ##   X
+X   @    XXX  #    X
+X S @    XXX  # ## X
+X   @    XXX     # X
+XXXXXX   XXX  ##   X
 XXXXXX   XXX      *X
 XXXXXX    O    XXXXX
 XXXXXX         XXXXX
-XXXXXX  G  G + XXXXX
+XXXXXX  @  @ + XXXXX
 XXXXXX*        XXXXX
 XXXXXXXXXXXXXXXXXXXX
-8#
+8.
 XXXXXXXXXXXXXXX
 X   X         X
-X   G B B B * X
-X S G         X
-X   G B + + B X
+X   @ # # # * X
+X S @         X
+X   @ # + + # X
 XXXXX         X
-X   X B B B B X
+X   X # # # # X
 X * X         X
-X   XXXXGGGXXXX
+X   XXXX@@@XXXX
 X * X         X
-X   X BBB BBB X
-X * X B     B X
-X   X B     B X
+X   X ### ### X
+X * X #     # X
+X   X #     # X
 X * X    O    X
-X   X B     B X
-X * X B+    B X
-X   X  BB BBB X
-X   B+        X
+X   X #     # X
+X * X #+    # X
+X   X  ## ### X
+X   #+        X
 XXXXXXXXXXXXXXX
-9#
+9.
 XXXXXXXXXXXXX
-X    G     XX
-X    G     XX
-X  + G GGG XX
-X BBOG     XX
+X    @     XX
+X    @     XX
+X  + @ @@@ XX
+X ##O@     XX
 X    X   + XX
 X    XXXXXXXX
 X   *XXXX   X
 X   XXXXX S X
-XGGGXXXXX   X
+X@@@XXXXX   X
 X     O     X
-X G   2   B X
+X @   2   # X
 X   *       X
 XXXXXXXXXXXXX
-10#
+10.
 XXXXXXXXXXXXX
 X*      X* *X
 X       X   X
-X       XGGGX
+X       X@@@X
 X +   3 X  OX
 X       X   X
-XXXX   OG   X
-X       G   X
+XXXX   O@   X
+X       @   X
 X +     X   X
 X    XXXX   X
 X 1    *X   X
 X       X   X
-XXGGGXXXX   X
-X       B   X
-X S     B   X
-X       B   X
+XX@@@XXXX   X
+X       #   X
+X S     #   X
+X       #   X
 XXXXXXXXXXXXX
-11#
+11.
 XXXXXXXXXXXXXXXXXXXXXXXXXX
-XXXXXXX       G    XXXXXXX
-X        *    G          X
-X      O   O  G    GGB B X
-X    X   B    XXX    B   X
-X S  X  BBB + XXX2 +   B X
-X    X   B    XXX    B   X
-X      O   O  G *  GGB B X
-X             G          X
-XXXXXXX       G    XXXXXXX
+XXXXXXX       @    XXXXXXX
+X        *    @          X
+X      O   O  @    @@# # X
+X    X   #    XXX    #   X
+X S  X  ### + XXX2 +   # X
+X    X   #    XXX    #   X
+X      O   O  @ *  @@# # X
+X             @          X
+XXXXXXX       @    XXXXXXX
 XXXXXXXXXXXXXXXXXXXXXXXXXX
-12#
+12.
 XXXXXXXXXXXXXXXXXXX
 XXXXXX       XXXXXX
-XXXX    B +    XXXX
-XX* BB  O O  BB  XX
-XX  BB  XXX  BB  XX
+XXXX    # +    XXXX
+XX* ##  O O  ##  XX
+XX  ##  XXX  ##  XX
 XX 2  XXXXXXX    XX
 XO   XXXXXXXXX 1 OX
 X   OXXXXXXXXX*   X
@@ -197,378 +197,378 @@ X   XXXXXXXXXXX 4 X
 X    XXX   XXX    X
 X    XXX S XXX    X
 XX +  XX   XX +  XX
-XX     BGGGB     XX
-XX  B  B   B  B  XX
-XXX    B   B    XXX
-XXXXXX*B   B XXXXXX
+XX     #@@@#     XX
+XX  #  #   #  #  XX
+XXX    #   #    XXX
+XXXXXX*#   # XXXXXX
 XXXXXXXXXXXXXXXXXXX
-13#
+13.
 XXXXXXXXXXXXXXXXXX
-X        G       X
-X + XX + G       X
-X        G  +    X
-X BBO BB G    O  X
-X        B       X
-X GG  GG B  4    X
-X        B XXX O X
-X *B  B* B X     X
-X        B    G  X
-X BB  BB G * GG  X
-X        G       X
-X GG O   G       X
+X        @       X
+X + XX + @       X
+X        @  +    X
+X ##O ## @    O  X
+X        #       X
+X @@  @@ #  4    X
+X        # XXX O X
+X *#  #* # X     X
+X        #    @  X
+X ##  ## @ * @@  X
+X        @       X
+X @@ O   @       X
 X           XXXXXX
 XXXXXXX     XXXXXX
 XXXXXXX     XXXXXX
-XXXXXXXXGGGXXXXXXX
+XXXXXXXX@@@XXXXXXX
 XXXXXXXX S XXXXXXX
 XXXXXXXX   XXXXXXX
 XXXXXXXXXXXXXXXXXX
-14#
+14.
 XXXXXXXXXXXXXXXXXXXX
 X      X     X     X
-X +    X  O  X +B  X
-X      G     X BBB X
-X  O   G     X   4 X
-X      G  +  XO    X
+X +    X  O  X +#  X
+X      @     X ### X
+X  O   @     X   4 X
+X      @  +  XO    X
 X      XO    XOO   X
-XXXGGGXXXGGGXXXGGGXX
+XXX@@@XXX@@@XXX@@@XX
 X      X1    XO    X
-X *    X     X  BB X
-X *    X     G  B* X
-X    BBX     G  BB X
-X    BOX +  OG  4  X
-X  S BOX     X     X
+X *    X     X  ## X
+X *    X     @  #* X
+X    ##X     @  ## X
+X    #OX +  O@  4  X
+X  S #OX     X     X
 XXXXXXXXXXXXXXXXXXXX
-15#
+15.
 XXXXXXXXXXXXXXXXXXX
 XXXXXXX     XXXXXXX
 XXXXXXX  S  XXXXXXX
-XXXXXXXGGGGGXXXXXXX
+XXXXXXX@@@@@XXXXXXX
 X    XX     XX    X
-X +  X       X G+ X
-X    G       G    X
-X BB G  BB   G GG X
-X    XO B  O X    X
-X GG X     B X BB X
-X    G   B   G    X
-X GG G  *B   G BB X
-X    X    GG X    X
-X BB X  GGGG X BB X
-X    G  5G   G    X
-X *  G  GG O G  + X
+X +  X       X @+ X
+X    @       @    X
+X ## @  ##   @ @@ X
+X    XO #  O X    X
+X @@ X     # X ## X
+X    @   #   @    X
+X @@ @  *#   @ ## X
+X    X    @@ X    X
+X ## X  @@@@ X ## X
+X    @  5@   @    X
+X *  @  @@ O @  + X
 X    X       X    X
-XXXXXXGGXXXGGXXXXXX
+XXXXXX@@XXX@@XXXXXX
 XXXX           XXXX
-XXXX G   G   G XXXX
+XXXX @   @   @ XXXX
 XXXX   O   O   XXXX
-XXXX   G O B  *XXXX
+XXXX   @ O #  *XXXX
 XXXXXXXXXXXXXXXXXXX
-16#
+16.
 XXXXXXXXXXXXXXX
 XXXXXX   XXXXXX
 XXXXXX S XXXXXX
 XXXXXX   XXXXXX
 X   XX   XX   X
-X + XXGGGXX + X
+X + XX@@@XX + X
 X   XX   XX   X
 X 4         4 X
-X   BB   BB   X
-X   BB   BB   X
-XX  *B   BB  XX
+X   ##   ##   X
+X   ##   ##   X
+XX  *#   ##  XX
 XX O       O XX
 XX           XX
 XX           XX
-XXXXXXGGGXXXXXX
+XXXXXX@@@XXXXXX
 XXX         XXX
-XXX OBB BO  XXX
-XXX   B B   XXX
-XXX B     B XXX
-XXX BBB BBB XXX
+XXX O## #O  XXX
+XXX   # #   XXX
+XXX #     # XXX
+XXX ### ### XXX
 XXX         XXX
-XXX **4B +O XXX
-XXX    B    XXX
+XXX **4# +O XXX
+XXX    #    XXX
 XXXXXXXXXXXXXXX
-17#
+17.
 XXXXXXXXXXXXXXXXXXXXX
-XBB          B BB  OX
-X   GGG   +         X
-X  XXXX BBBBB XXXX  X
-X  XXXX      *XXXXG X
-X  XXXXXX   XXXXXXG X
+X##          # ##  OX
+X   @@@   +         X
+X  XXXX ##### XXXX  X
+X  XXXX      *XXXX@ X
+X  XXXXXX   XXXXXX@ X
 X  XXXXXX   XXXXXX  X
-X    XXXXGGGXXXX    X
+X    XXXX@@@XXXX    X
 X    XXX*    XXX    X
-X  G XXX     XXX B  X
-X+ G   G     G O B +X
-X  G   G  S  G   B  X
-X  G XXX     XXX B  X
+X  @ XXX     XXX #  X
+X+ @   @     @ O # +X
+X  @   @  S  @   #  X
+X  @ XXX     XXX #  X
 X    XXX    OXXX    X
-X   *XXXXGGGXXXX    X
-X  XXXXXX   XXXXXX BX
-XB XXXXXX   XXXXXX BX
-XB XXXX       XXXX  X
-X  XXXX B 6 B XXXX  X
-X   OG         GG   X
+X   *XXXX@@@XXXX    X
+X  XXXXXX   XXXXXX #X
+X# XXXXXX   XXXXXX #X
+X# XXXX       XXXX  X
+X  XXXX # 6 # XXXX  X
+X   O@         @@   X
 X         +        *X
 XXXXXXXXXXXXXXXXXXXXX
-18#
+18.
 XXXXXXXXXXXXXXXXXX
-XB*BBBBBBBBBBBBBBX
-XBB4BBBBBBBBBBBBBX
-XBBBBBBBBBBBBBB*BX
-XB   BBBBBBB5BBBBX
-XB + BSBBBBBBBBBBX
-XB   BBBBBBBBBBBBX
-XBBBBBBBBBBBB   BX
-XBBBBBBBBBBBB O BX
-XB*BBBBBBBBBB    X
-X4BBBBBBBB   BBBBX
-X   BBBBBB + BB*BX
-X O BBBBBB   BBBBX
-X   BBBBBBBBBBBBBX
-XBBBBBBBBBBBBBBBBX
-XBBBBBBBB   BBBBBX
-XB*   B*B O B   BX
-XBB + BBB   B + BX
-XBB   BBBBB*B   BX
+X#*##############X
+X##4#############X
+X##############*#X
+X#   #######5####X
+X# + #S##########X
+X#   ############X
+X############   #X
+X############ O #X
+X#*##########    X
+X4########   ####X
+X   ###### + ##*#X
+X O ######   ####X
+X   #############X
+X################X
+X########   #####X
+X#*   #*# O #   #X
+X## + ###   # + #X
+X##   #####*#   #X
 XXXXXXXXXXXXXXXXXX
-19#
+19.
 XXXXXXXXXXXXXXXXXXX
-X      G   G      X
-X   BB G + G GG + X
-X    B GGGGG G    X
-X GG           BB X
-X  G O       O B  X
+X      @   @      X
+X   ## @ + @ @@ + X
+X    # @@@@@ @    X
+X @@           ## X
+X  @ O       O #  X
 X        +        X
 X*       *        X
-XXXXGGXXGGGXXGGXXXX
+XXXX@@XX@@@XX@@XXXX
 X                 X
-X + GG   G B    + X
-X        BBB      X
-X O BB        BB  X
-X G *6    BB   3  X
-X     GGG B*   GXXX
-X     GGG       X*X
-X  B        B   G X
-X BB        BB  X X
-XXXXGGGGXXXXXXXXXXX
+X + @@   @ #    + X
+X        ###      X
+X O ##        ##  X
+X @ *6    ##   3  X
+X     @@@ #*   @XXX
+X     @@@       X*X
+X  #        #   @ X
+X ##        ##  X X
+XXXX@@@@XXXXXXXXXXX
 XXXX        XXXXXXX
 XXXX     S  XXXXXXX
 XXXX        XXXXXXX
 XXXXXXXXXXXXXXXXXXX
-20#
+20.
 XXXXXXXXXXXXXXX
 X   X     X   X
-X   G     G   X
-X + G  S  G + X
-X   G     G   X
+X   @     @   X
+X + @  S  @ + X
+X   @     @   X
 X  OX     XO  X
 X  XX     XX  X
-X  X  BBB  X  X
+X  X  ###  X  X
 X  XX     XX  X
-X   X B B X   X
-X 5 G B B G + X
-X   G B B G   X
-X  OX B B XO  X
+X   X # # X   X
+X 5 @ # # @ + X
+X   @ # # @   X
+X  OX # # XO  X
 X  XX     XX  X
-X  X  BBB  X  X
+X  X  ###  X  X
 X  XX     XX  X
 X  *X     X*  X
 X   X     X   X
-X   XXGGGXX   X
+X   XX@@@XX   X
 X 4         + X
 X   *  5  *   X
 XXXXXXXXXXXXXXX
-21#
+21.
 XXXXXXXXXXXXXXXXXXX
-X    X* G    X    X
-X       G    X +  X
-X S     G O  X    X
-X    X  B    G  G X
-XXXXXX  BGGG G  G X
-X**XXX  B    X    X
-X**  3 BO + XBB  X
+X    X* @    X    X
+X       @    X +  X
+X S     @ O  X    X
+X    X  #    @  @ X
+XXXXXX  #@@@ @  @ X
+X**XXX  #    X    X
+X**  3 #O + X##  X
 XXXXXX       XO   X
 XXXXXXXX  XXXX    X
 XXXXXX            X
-XXXXXX BBB   6  GGX
-XXXXXX B3B O    * X
+XXXXXX ###   6  @@X
+XXXXXX #3# O    * X
 XXXXXX            X
-XXXXXX          B X
+XXXXXX          # X
 XXXXXX            X
-XXXXXX +O BB  GG+ X
-XXXXXX        GGO X
+XXXXXX +O ##  @@+ X
+XXXXXX        @@O X
 XXXXXXXXXXXXXXXXXXX
-22#
+22.
 XXXXXXXXXXXXXXXXXXX
 X     X     X     X
-X  +  G     G   * X
-X     G  O  G     X
-X  5  G     G  O  X
+X  +  @     @   * X
+X     @  O  @     X
+X  5  @     @  O  X
 X     X+ *  X+    X
-X  O  XXXXXXXXGGGXX
+X  O  XXXXXXXX@@@XX
 X     X    0X     X
 X  5  X     X     X
 X     X  S  X O O X
 X  O  X     X     X
-X     X  0  XBBBBBX
-XXGGGXXXGGGXX     X
+X     X  0  X#####X
+XX@@@XXX@@@XX     X
 X     X     X O O X
-X     G     X     X
-X +   G     X  +  X
-X     G  5  X   5 X
+X     @     X     X
+X +   @     X  +  X
+X     @  5  X   5 X
 X     X     X+    X
 XXXXXXXXXXXXXXXXXXX
-23#
+23.
 XXXXXXXXXXXXXXXXXXXXXXX
 X       X     X   *   X
-X +   B X  S  X BB  + X
-X     B X     X B     X
-X   B B XGGXGGX    G  X
-X   B   G     B    GG X
-X       G   0 B       X
-X GG B  G   B B O  BB X
-X    O          G   B X
-X         B           X
-X    BB B     G  G    X
-X    *      B         X
-XGGXXXXXXGGGGGXXXXXXGGX
-X  XXXXXXGGGGGXXXXXX  X
-X  XXXXXXGGGGGXXXXXX  X
-XGGXXXXXX     XXXXXXGGX
+X +   # X  S  X ##  + X
+X     # X     X #     X
+X   # # X@@X@@X    @  X
+X   #   @     #    @@ X
+X       @   0 #       X
+X @@ #  @   # # O  ## X
+X    O          @   # X
+X         #           X
+X    ## #     @  @    X
+X    *      #         X
+X@@XXXXXX@@@@@XXXXXX@@X
+X  XXXXXX@@@@@XXXXXX  X
+X  XXXXXX@@@@@XXXXXX  X
+X@@XXXXXX     XXXXXX@@X
 X                     X
-X +  GG       GGGG  + X
-X    3G        GO     X
-X BB    BBBGG      G  X
-X              2  GG  X
-X *B    OBGGGBO       X
-X      BBB   BBB   GG  X
-X      B*  +  *B      X
+X +  @@       @@@@  + X
+X    3@        @O     X
+X ##    ###@@      @  X
+X              2  @@  X
+X *#    O#@@@#O       X
+X      ###   ###   @@  X
+X      #*  +  *#      X
 XXXXXXXXXXXXXXXXXXXXXXX
-24#
+24.
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-X   B  X       X                 X          X
-X S B  X 5   + X +  O          6 X B O B+B  X
-X   B  X       X        X        X          X
-XXXXX  X   X   XXXXXX   X   XXXXXX B B B B  X
+X   #  X       X                 X          X
+X S #  X 5   + X +  O          6 X # O #+#  X
+X   #  X       X        X        X          X
+XXXXX  X   X   XXXXXX   X   XXXXXX # # # #  X
 X      X   X            X                   X
-X *        X *          X *        6 B O+B  X
+X *        X *          X *        6 # O+#  X
 X          X            X                   X
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-25#
+25.
 XXXXXXXXXXXXXXXXXXXXXXXXX
 XXXXXXXXXXXXX        XXXX
-XXXXXXXXX     +   G   XXX
-XXXXXXX*  BBBB   GOG   XX
-XXXX      O  O    G     X
-XXX       BBBB      +   X
-XXX  3         6   GGG  X
-XXX OB XXXXXXXX         X
-XX     X*     X    BBB  X
-XX     X      X      B *X
-XX     X   S  XGG      XX
-X  + G X      XGO  +   XX
-X    G X      XGG      XX
-X   GG XGGGXXXX 2 B   XXX
-X              O  B   XXX
-XX   O B   BB  G BB   XXX
-XXX    B B   + G     XXXX
-XXX  6 B BB          XXXX
-XXX    B *B          XXXX
-XXXX     OB         XXXXX
+XXXXXXXXX     +   @   XXX
+XXXXXXX*  ####   @O@   XX
+XXXX      O  O    @     X
+XXX       ####      +   X
+XXX  3         6   @@@  X
+XXX O# XXXXXXXX         X
+XX     X*     X    ###  X
+XX     X      X      # *X
+XX     X   S  X@@      XX
+X  + @ X      X@O  +   XX
+X    @ X      X@@      XX
+X   @@ X@@@XXXX 2 #   XXX
+X              O  #   XXX
+XX   O #   ##  @ ##   XXX
+XXX    # #   + @     XXXX
+XXX  6 # ##          XXXX
+XXX    # *#          XXXX
+XXXX     O#         XXXXX
 XXXX               XXXXXX
 XXXXX           XXXXXXXXX
 XXXXXXXX    XXXXXXXXXXXXX
 XXXXXXXXXXXXXXXXXXXXXXXXX
-26#
+26.
 XXXXXXXXXXXXXXXXXXX
 X             X   X
 X 6 O O O O * X S X
 X             X   X
-X O XXXGGGGGXXX   X
+X O XXX@@@@@XXX   X
 X   X         X   X
-X O X *BB6 BB X   X
-X   X B    B  X   X
-X O X   BBBB  X   X
-X   X BBBBB   X   X
-X + X 5 B B * X   X
-X   X B   B B X   X
-X   X + B B 4 X   X
+X O X *##6 ## X   X
+X   X #    #  X   X
+X O X   ####  X   X
+X   X #####   X   X
+X + X 5 # # * X   X
+X   X #   # # X   X
+X   X + # # 4 X   X
 X   X     +   X   X
 X   XXXXXXXXXXX   X
 X                 X
 X      *     +    X
 X                 X
 XXXXXXXXXXXXXXXXXXX
-27#
+27.
 XXXXXXXXXXXXXXXXXXXXXXXXX
-X                B*X    X
-X +     O   GGG  BBX S  X
-X       B          X    X
-X BBXXXXXXXXXXXX  6XGGGGX
-X   X  B3     OX   X*   X
-X   X  B       X   X    X
-X   X          XO  X OB X
-X B*X B XXXX G*XO  X    X
-X BBX BBX  X GGXB  X    X
-X   X  *X+ X  6X   X GG X
-XB  X   X  X   X   X    X
-XO  X   X+ X   XBB X B+ X
-XB  X   XGGX   X*B X B  X
-X   XOB X      X GGX   2X
-X   XBB XO*O OOX   X   2X
-X  GX   XXXXXXXX   X G  X
-X  GX     2B*B     X G  X
-X  *X      BBB   + X    X
+X                #*X    X
+X +     O   @@@  ##X S  X
+X       #          X    X
+X ##XXXXXXXXXXXX  6X@@@@X
+X   X  #3     OX   X*   X
+X   X  #       X   X    X
+X   X          XO  X O# X
+X #*X # XXXX @*XO  X    X
+X ##X ##X  X @@X#  X    X
+X   X  *X+ X  6X   X @@ X
+X#  X   X  X   X   X    X
+XO  X   X+ X   X## X #+ X
+X#  X   X@@X   X*# X #  X
+X   XO# X      X @@X   2X
+X   X## XO*O OOX   X   2X
+X  @X   XXXXXXXX   X @  X
+X  @X     2#*#     X @  X
+X  *X      ###   + X    X
 X   X          O   X    X
-X   XXXXXXXXXXXXXXXX BB X
-X      OO            *B X
-X +  B      BB   +      X
+X   XXXXXXXXXXXXXXXX ## X
+X      OO            *# X
+X +  #      ##   +      X
 X                  O    X
 XXXXXXXXXXXXXXXXXXXXXXXXX
-28#
+28.
 XXXXXXXXXXXXXXXXXXX
 X          X*X    X
 X    +     X X +6 X
-X   XXXX   X G    X
-X   G  XGGGX G    X
-XXGGG        GGX  X
+X   XXXX   X @    X
+X   @  X@@@X @    X
+XX@@@        @@X  X
 X*             X  X
 XXXXX         XX  X
-X   G    S    G   X
-X 6 G         G + X
-X   G         G   X
+X   @    S    @   X
+X 6 @         @ + X
+X   @         @   X
 X  XX         XXXXX
 X  X             *X
-X  XGG       GGGXXX
-X    G XGGGX G    X
-X  + G X 6 XXX    X
+X  X@@       @@@XXX
+X    @ X@@@X @    X
+X  + @ X 6 XXX    X
 XX   X X +      + X
 X    X*X          X
 XXXXXXXXXXXXXXXXXXX
-29#
+29.
 XXXXXXXXXXXXXXXXXXXXXXXXX
 X                *      X
-X    *X        GGG   +  X
+X    *X        @@@   +  X
 X  XXXX     O           X
 X       0   X  +        X
-X     B XXXXX     O BB  X
-X   O B X*     XXXX     X
-X   B    BBBB  *        X
-X   B                   X
-X   XX  B GGGGG G       X
-X   XX3 B G   G G   XXX X
-X   X   B G S G G   O*  X
-X  XXBBBB G   G G       X
-X         GGGGG GX      X
-XB  +            X      X
-XB     OXXX      X      X
-XB        X      XXXO   X
-X           XXXX  6 *  BX
-X  OXXX                BX
-X    *X    +        B   X
-X                   B   X
+X     # XXXXX     O ##  X
+X   O # X*     XXXX     X
+X   #    ####  *        X
+X   #                   X
+X   XX  # @@@@@ @       X
+X   XX3 # @   @ @   XXX X
+X   X   # @ S @ @   O*  X
+X  XX#### @   @ @       X
+X         @@@@@ @X      X
+X#  +            X      X
+X#     OXXX      X      X
+X#        X      XXXO   X
+X           XXXX  6 *  #X
+X  OXXX                #X
+X    *X    +        #   X
+X                   #   X
 X  4     X    O  XXXX   X
-X    G   XXXXXX         X
-XGGGGG                  X
+X    @   XXXXXX         X
+X@@@@@                  X
 XXXXXXXXXXXXXXXXXXXXXXXXX

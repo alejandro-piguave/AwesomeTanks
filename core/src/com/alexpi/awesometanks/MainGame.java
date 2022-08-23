@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks;
 
+import com.alexpi.awesometanks.utils.Settings;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -114,14 +115,15 @@ public class MainGame extends Game {
 
 		manager.finishLoading();//TERMINA DE CARGAR
 
-        mainScreen = new MainScreen(this);
-        levelScreen = new LevelScreen(this);
-		upgrades = new Upgrades(this);
-
 		gameSettings = Gdx.app.getPreferences("settings");
 		gameValues = Gdx.app.getPreferences("values");
 
-		com.alexpi.awesometanks.utils.Settings.INSTANCE.setSoundsOn(gameSettings.getBoolean("areSoundsActivated"));
+		boolean soundsOn = gameSettings.getBoolean("areSoundsActivated",true);
+		Settings.INSTANCE.setSoundsOn(soundsOn);
+
+        mainScreen = new MainScreen(this);
+        levelScreen = new LevelScreen(this);
+		upgrades = new Upgrades(this);
 
 		setScreen(mainScreen);//PONE LA PANTALLA PRINCIPAL
 	}
