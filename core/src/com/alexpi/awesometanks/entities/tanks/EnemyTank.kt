@@ -8,6 +8,7 @@ import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -22,13 +23,14 @@ class EnemyTank(
     world: World,
     position: Vector2,
     targetPosition: Vector2,
-    size: Float,
-    type: Int, damageListener: DamageListener?) : Tank(manager, entityGroup, world, position, size,
+    tier: Tier,
+    type: Int, damageListener: DamageListener?) : Tank(manager, entityGroup, world, position, getSizeByTier(tier),
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
-    200f,true, Gdx.app.getPreferences("settings").getBoolean("areSoundsActivated"), damageListener),
+    getHealthByTier(tier),true, damageListener, getColorByTier(tier)),
     EnemyAI.Callback {
+
 
     private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
     private val weapon: Weapon
@@ -63,10 +65,32 @@ class EnemyTank(
     companion object {
         private const val ROTATION_SPEED = .035f
         private const val MOVEMENT_SPEED = 60f
+        private fun getSizeByTier(tier: Tier): Float{
+            return when (tier){
+                Tier.MINI -> .6f
+                Tier.NORMAL -> .75f
+                Tier.BOSS -> .9f
+            }
+        }
+        private fun getHealthByTier(tier: Tier): Float{
+            return when (tier){
+                Tier.MINI -> 150f
+                Tier.NORMAL -> 200f
+                Tier.BOSS -> 500f
+            }
+        }
+
+        private fun getColorByTier(tier: Tier): Color {
+            return when (tier){
+                Tier.MINI -> Color.SKY
+                Tier.NORMAL -> Color.GOLD
+                Tier.BOSS -> Color.RED
+            }
+        }
     }
 
     init {
-        weapon = Weapon.getWeaponAt(type, manager, 1, 2, false, allowSounds)
+        weapon = Weapon.getWeaponAt(type, manager, 1, 2, false)
         weapon.setUnlimitedAmmo(true)
     }
 
@@ -80,5 +104,9 @@ class EnemyTank(
     override fun await() {
         isShooting = false
         isMoving = false
+    }
+
+    enum class Tier{
+        MINI, NORMAL, BOSS
     }
 }

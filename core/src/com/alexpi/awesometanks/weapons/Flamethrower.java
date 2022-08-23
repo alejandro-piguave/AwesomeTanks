@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
  * Created by Alex on 04/01/2016.
  */
 public class Flamethrower extends Weapon {
-    public Flamethrower(AssetManager assetManager, int ammo, int power, boolean filter, boolean sound) {
-        super("Flamethrower", assetManager, "weapons/flamethrower.png", "sounds/flamethrower.ogg", ammo, power, filter, sound, .1f);
+    public Flamethrower(AssetManager assetManager, int ammo, int power, boolean filter) {
+        super("Flamethrower", assetManager, "weapons/flamethrower.png", "sounds/flamethrower.ogg", ammo, power, filter, .1f);
     }
 
     @Override

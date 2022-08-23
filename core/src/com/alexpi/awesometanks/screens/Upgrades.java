@@ -2,6 +2,7 @@ package com.alexpi.awesometanks.screens;
 
 import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
 
+import com.alexpi.awesometanks.utils.Settings;
 import com.alexpi.awesometanks.widget.GameButton;
 import com.alexpi.awesometanks.widget.UpgradeTable;
 import com.badlogic.gdx.Gdx;
@@ -38,7 +39,6 @@ public class Upgrades extends BaseScreen {
     private ImageButton[] weaponButtons;
     private UpgradeTable weaponPower,weaponAmmo;
     Skin uiSkin;
-    Preferences gameValues;
     int currentWeapon, moneyValue;
     int[][] values;
     boolean[] availableWeapons;
@@ -52,10 +52,7 @@ public class Upgrades extends BaseScreen {
 
     @Override
     public void show() {
-        final boolean soundsOn = game.getGameSettings().getBoolean("areSoundsActivated");
         final Sound purchaseSound = game.getManager().get("sounds/purchase.ogg",Sound.class);
-        gameValues = Gdx.app.getPreferences("values");
-
         weaponButtons = new ImageButton[WEAPON_COUNT];
         upgradables = new UpgradeTable[UPGRADE_COUNT];
         uiSkin = game.getManager().get("uiskin/uiskin.json");
@@ -70,11 +67,11 @@ public class Upgrades extends BaseScreen {
 
         values = new int[2][WEAPON_COUNT];
         for (int i = 0; i < WEAPON_COUNT;i++){
-            values[0][i] = gameValues.getInteger("power" + i, 0);
-            values[1][i] = gameValues.getInteger("ammo" + i, 20);}
+            values[0][i] = game.getGameValues().getInteger("power" + i, 0);
+            values[1][i] = game.getGameValues().getInteger("ammo" + i, 20);}
         availableWeapons = new boolean[7];
         for (int i = 0; i < WEAPON_COUNT;i++)
-            availableWeapons[i] = gameValues.getBoolean("weapon"+i,true);
+            availableWeapons[i] = game.getGameValues().getBoolean("weapon"+i,true);
 
         for(int i = 0;i< UPGRADE_COUNT;i++){
             String name = "";
@@ -83,7 +80,7 @@ public class Upgrades extends BaseScreen {
                 case 1: name = "speed";break;
                 case 2: name = "rotation";break;
                 case 3: name = "visibility";break;}
-            upgradables[i] = new UpgradeTable(game.getManager(), name, gameValues.getInteger(name),6f,500);
+            upgradables[i] = new UpgradeTable(game.getManager(), name, game.getGameValues().getInteger(name),6f,500);
             upgradables[i].changePrice(500+ upgradables[i].getValue()*500);
         }
 
@@ -91,20 +88,20 @@ public class Upgrades extends BaseScreen {
             @Override
             public void onClick() {
                 for(UpgradeTable p: upgradables)
-                    gameValues.putInteger(p.getName(),p.getValue());
+                    game.getGameValues().putInteger(p.getName(),p.getValue());
 
                 for(int i = 0; i< WEAPON_COUNT;i++){
-                    gameValues.putInteger("power"+i,values[0][i]);
-                    gameValues.putInteger("ammo"+i,values[1][i]);
-                    gameValues.putBoolean("weapon"+i,availableWeapons[i]);
+                    game.getGameValues().putInteger("power"+i,values[0][i]);
+                    game.getGameValues().putInteger("ammo"+i,values[1][i]);
+                    game.getGameValues().putBoolean("weapon"+i,availableWeapons[i]);
                 }
-                gameValues.putInteger("money",moneyValue);
-                gameValues.flush();
+                game.getGameValues().putInteger("money",moneyValue);
+                game.getGameValues().flush();
                 stage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.levelScreen);}})));
     }
-        },"Play", soundsOn);
+        },"Play");
 
-        moneyValue = gameValues.getInteger("money",1500);
+        moneyValue = game.getGameValues().getInteger("money",0);
         money = new Label(moneyValue + " $", Styles.getLabelStyleBackground(game.getManager()));
 
         for(int i = 0; i < WEAPON_COUNT;i++){
@@ -161,7 +158,7 @@ public class Upgrades extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(weaponButtons[currentWeapon].isDisabled() && (moneyValue-Constants.prices[2][currentWeapon])> 0){
-                    if(soundsOn)purchaseSound.play();
+                    if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
                     money.setText((moneyValue -= Constants.prices[2][currentWeapon]) + " $");
                     availableWeapons[currentWeapon] = false;
                     weaponButtons[currentWeapon].setDisabled(false);
@@ -177,7 +174,7 @@ public class Upgrades extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (weaponPower.canBuy(moneyValue) && !currentWeaponImage.isDisabled()) {
-                    if(soundsOn)purchaseSound.play();
+                    if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
                     weaponPower.increaseValue(1);
                     values[0][currentWeapon] = weaponPower.getValue();
                     money.setText((moneyValue -= weaponPower.getPrice()) + " $");
@@ -189,7 +186,7 @@ public class Upgrades extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (weaponAmmo.canBuy(moneyValue) && !currentWeaponImage.isDisabled()) {
-                    if(soundsOn)purchaseSound.play();
+                    if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
                     weaponAmmo.increaseValue(20);
                     values[1][currentWeapon] = weaponAmmo.getValue();
                     money.setText((moneyValue -= weaponAmmo.getPrice()) + " $");
@@ -201,7 +198,7 @@ public class Upgrades extends BaseScreen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (p.canBuy(moneyValue)) {
-                        if(soundsOn)purchaseSound.play();
+                        if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
                         p.increaseValue(1);
                         money.setText((moneyValue-=p.getPrice()) + " $");
                         p.changePrice(p.getPrice()+500);

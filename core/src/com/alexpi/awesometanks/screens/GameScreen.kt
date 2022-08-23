@@ -55,7 +55,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private lateinit var ammoBar: GameProgressBar
     private val weaponMenuTable: Table = Table()
     private var screenPointer = 0
-    private val soundFX = game.gameSettings.getBoolean("areSoundsActivated")
     private var isPaused = false
     private var alreadyExecuted = false
     private var isLevelCompleted = false
@@ -66,9 +65,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         entityGroup,
         world,
         game.gameValues,
-        gameMap,
-        soundFX
-    )
+        gameMap)
 
     override fun show() {
         addContactManager()
@@ -186,7 +183,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                         damageableActor.takeDamage(350 * (explosionRadius - distanceFromMine) / explosionRadius)
                     }
                 }
-                if (soundFX) explosionSound.play()
+                if (Settings.soundsOn) explosionSound.play()
             }
         })
         world.setContactListener(contactManager)
@@ -263,8 +260,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                             world,
                             tank.body.position,
                             gameMap.toWorldPos(row,col),
-                            num,
-                            soundFX
+                            num
                         )
                     )
                 }
@@ -374,7 +370,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
             if(!button.isDisabled) {
                 button.onClick {
-                    if (soundFX) gunChangeSound.play()
+                    if (Settings.soundsOn) gunChangeSound.play()
                     tank.currentWeaponIndex = index
                     buttons.forEach { ib ->
                         ib.setColor(ib.color.r, ib.color.g, ib.color.b,

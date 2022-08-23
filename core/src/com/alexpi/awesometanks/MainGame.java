@@ -18,7 +18,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.alexpi.awesometanks.screens.LevelScreen;
 import com.alexpi.awesometanks.screens.MainScreen;
-import com.alexpi.awesometanks.screens.Settings;
 import com.alexpi.awesometanks.screens.Upgrades;
 
 public class MainGame extends Game {
@@ -27,7 +26,6 @@ public class MainGame extends Game {
     public MainScreen mainScreen;
     public LevelScreen levelScreen;
 	public Upgrades upgrades;
-    public Settings settings;
 	private Preferences gameSettings;
 	private Preferences gameValues;
 
@@ -84,6 +82,8 @@ public class MainGame extends Game {
         manager.load("sprites/frozen.png",Texture.class);
 		manager.load("sprites/gun_menu_icon.png",Texture.class);
 
+		manager.load("sprites/sound_on.png",Texture.class);
+		manager.load("sprites/sound_off.png",Texture.class);
 
 		manager.load("sprites/bullet.png",Texture.class);
 		manager.load("sprites/laser_ray.png",Texture.class);
@@ -116,11 +116,12 @@ public class MainGame extends Game {
 
         mainScreen = new MainScreen(this);
         levelScreen = new LevelScreen(this);
-        settings = new Settings(this);
 		upgrades = new Upgrades(this);
 
 		gameSettings = Gdx.app.getPreferences("settings");
 		gameValues = Gdx.app.getPreferences("values");
+
+		com.alexpi.awesometanks.utils.Settings.INSTANCE.setSoundsOn(gameSettings.getBoolean("areSoundsActivated"));
 
 		setScreen(mainScreen);//PONE LA PANTALLA PRINCIPAL
 	}

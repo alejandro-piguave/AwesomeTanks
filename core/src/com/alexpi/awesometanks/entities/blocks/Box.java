@@ -40,7 +40,7 @@ public class Box extends Block {
             case 2:
                 entityGroup.addActor(new HealthPack(manager,body.getWorld(),body.getPosition()));break;
             case 3:
-                entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition,.5f, Utils.getRandomInt(maxType +1), getDamageListener()));break;
+                entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, EnemyTank.Tier.MINI, Utils.getRandomInt(maxType +1), getDamageListener()));break;
         }
     }
 

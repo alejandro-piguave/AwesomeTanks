@@ -20,23 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
  */
 public class Styles {
 
-    public static List.ListStyle getListStyle(AssetManager assetManager, int fontSize){
-        Skin skin = assetManager.get("uiskin/uiskin.json", Skin.class);
-
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
-
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = fontSize;
-        BitmapFont font = fontGenerator.generateFont(parameter);
-
-        List.ListStyle style = skin.get("default", List.ListStyle.class);
-        style.font = font;
-
-        fontGenerator.dispose();
-
-        return  style;
-    }
-
     public static Label.LabelStyle getGameTitleStyle1(AssetManager assetManager){
         Label.LabelStyle style1 = new Label.LabelStyle();
         style1.font = assetManager.get("title_font1.ttf",BitmapFont.class);
@@ -79,8 +62,6 @@ public class Styles {
 
         return  style;
     }
-
-
 
     public static TextButton.TextButtonStyle getTextButtonStyle(AssetManager assetManager, int fontSize){
         Skin skin = assetManager.get("uiskin/uiskin.json", Skin.class);

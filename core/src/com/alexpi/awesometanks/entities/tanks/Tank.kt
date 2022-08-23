@@ -5,6 +5,7 @@ import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -31,8 +32,8 @@ abstract class Tank(
     maskBits: Short,
     maxHealth: Float,
     isFreezable: Boolean,
-    protected val allowSounds: Boolean,
-    damageListener: DamageListener? = null
+    damageListener: DamageListener? = null,
+    tankColor: Color
     ) : DamageableActor(manager, maxHealth, true, isFreezable, damageListener){
 
     private val bodySprite: Sprite = Sprite(manager.get("sprites/tank_body.png", Texture::class.java))
@@ -59,16 +60,16 @@ abstract class Tank(
         batch.color = color
         batch.draw(bodySprite, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
         currentWeapon.draw(
-            batch,
-            parentAlpha,
+            batch,color,
             x,
-            y,
+            parentAlpha,
             originX,
             originY,
             width,
             height,
             scaleX,
             scaleY,
+            y,
         )
         batch.setColor(1f, 1f, 1f, parentAlpha)
         super.draw(batch, parentAlpha)
@@ -153,6 +154,7 @@ abstract class Tank(
         fixture.userData = this
         body.userData = this
         shape.dispose()
+        color = tankColor
         setSize(bodySize * Constants.TILE_SIZE, bodySize * Constants.TILE_SIZE)
         setOrigin(width / 2, height / 2)
         setPosition((body.position.x - bodySize / 2) * Constants.TILE_SIZE, (body.position.y - bodySize / 2) * Constants.TILE_SIZE)

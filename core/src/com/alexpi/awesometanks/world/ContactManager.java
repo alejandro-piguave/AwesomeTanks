@@ -49,9 +49,7 @@ public class ContactManager implements ContactListener {
                 damageableActor.burn(((Flame) projectile).burnDuration);
 
             if(!(projectile.isEnemy() && damageableActor instanceof Spawner)){
-                //boolean isAlive = d
                 damageableActor.takeDamage(projectile.damage);
-                //if(!isAlive) contactListener.onDetach(damageableActor);
             }
             projectile.destroy();
 

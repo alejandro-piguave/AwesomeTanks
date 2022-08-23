@@ -5,6 +5,7 @@ import com.alexpi.awesometanks.entities.projectiles.Laser
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
@@ -22,7 +23,6 @@ class LaserGun(
     ammo: Int,
     power: Int,
     isPlayer: Boolean,
-    sound: Boolean
 ) : Weapon(
     "Lasergun",
     assetManager,
@@ -31,7 +31,6 @@ class LaserGun(
     ammo,
     power,
     isPlayer,
-    sound,
     .05f
 ) {
     private val laserRay = Image(assetManager.get<Texture>("sprites/laser_ray.png"))
@@ -88,17 +87,21 @@ class LaserGun(
 
     override fun draw(
         batch: Batch,
-        parentAlpha: Float,
+        color: Color,
         x: Float,
-        y: Float,
+        parentAlpha: Float,
         originX: Float,
         originY: Float,
         width: Float,
         height: Float,
         scaleX: Float,
-        scaleY: Float) {
+        scaleY: Float,
+        y: Float
+    ) {
+        batch.color = Color(1f,1f,1f,parentAlpha)
         if(playSound) laserRay.draw(batch,parentAlpha)
-        super.draw(batch, parentAlpha, x, y, originX, originY, width, height, scaleX, scaleY)
+        batch.color = color
+        super.draw(batch,color, x, parentAlpha, originX, originY, width, height, scaleX, scaleY, y)
     }
 
     override fun await() {
@@ -106,7 +109,7 @@ class LaserGun(
     }
 
     override fun createProjectile(group: Group, assetManager: AssetManager, world: World, position: Vector2) {
-        group.addActor(Laser(assetManager, world, position, currentAngleRotation, power.toFloat(), isPlayer))
+        group.addActor(Laser( world, position, currentAngleRotation, power.toFloat(), isPlayer))
     }
 
     companion object {

@@ -26,7 +26,6 @@ import com.badlogic.gdx.utils.Timer;
  */
 public class LevelScreen extends BaseScreen {
     private Stage stage;
-    private Preferences gameValues;
     private Label lockedLevelLabel;
     private static final int LEVEL_COUNT = 30;
     private static final int LEVEL_TABLE_COLUMN_COUNT = 10;
@@ -34,8 +33,6 @@ public class LevelScreen extends BaseScreen {
     public LevelScreen(MainGame game) {super(game);}
     @Override
     public void show() {
-        final boolean soundsOn = game.getGameSettings().getBoolean("areSoundsActivated");
-        gameValues = Gdx.app.getPreferences("values");
 
         stage = new Stage();
         Image background = new Image(game.getManager().get("sprites/background.png", Texture.class));
@@ -55,7 +52,7 @@ public class LevelScreen extends BaseScreen {
             GameButton levelButton = new GameButton(game.getManager(), new GameButton.OnClickListener() {
                 @Override
                 public void onClick() {
-                    if(gameValues.getBoolean("unlocked"+ finalI) || finalI == 0)
+                    if(game.getGameValues().getBoolean("unlocked"+ finalI) || finalI == 0)
                         stage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run(new Runnable() {
                             @Override public void run() {game.setScreen(new GameScreen(game,finalI));}})));
                     else{
@@ -68,7 +65,7 @@ public class LevelScreen extends BaseScreen {
                         }, 1f);
                     }
                 }
-            },String.valueOf(finalI+1), soundsOn);
+            },String.valueOf(finalI+1));
             Cell<GameButton> gameButtonCell = levelTable.add(levelButton).size(80).pad(16);
             if((i+1) % LEVEL_TABLE_COLUMN_COUNT == 0)gameButtonCell.row();
         }

@@ -24,8 +24,7 @@ class Turret(
     world: World,
     targetPosition: Vector2,
     pos: Vector2,
-    type: Int,
-    sound: Boolean
+    type: Int
 ) : Block(
     manager, "sprites/turret_base.png", world, PolygonShape(), 500, pos, .8f, true, listener
 ), EnemyAI.Callback {
@@ -33,7 +32,7 @@ class Turret(
     private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
-        weapon.draw(batch, parentAlpha, x, y, originX, originY, width, height, scaleX, scaleY)
+        weapon.draw(batch,color, x, parentAlpha, originX, originY, width, height, scaleX, scaleY, y)
         drawBurning(batch, parentAlpha)
         drawFrozen(batch)
     }
@@ -71,7 +70,7 @@ class Turret(
         val filter = Filter()
         filter.categoryBits = Constants.CAT_ENEMY
         fixture.filterData = filter
-        weapon = Weapon.getWeaponAt(type, manager, 1, 3, false, sound)
+        weapon = Weapon.getWeaponAt(type, manager, 1, 3, false)
         weapon.setUnlimitedAmmo(true)
         setOrigin(width / 2, height / 2)
     }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.utils.TimeUtils
 import kotlin.experimental.or
 
 /**
@@ -40,8 +41,9 @@ class Spawner(
     private val maxType: Int
     override fun act(delta: Float) {
         super.act(delta)
-        if (lastSpawn + interval < System.currentTimeMillis()) {
-            lastSpawn = System.currentTimeMillis()
+
+        if (lastSpawn + interval < TimeUtils.millis()) {
+            lastSpawn = TimeUtils.millis()
             interval = Utils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
             maxSpan += 5000
             entityGroup.addActor(
@@ -51,7 +53,7 @@ class Spawner(
                     body.world,
                     body.position,
                     targetPosition,
-                    .75f,
+                    EnemyTank.Tier.NORMAL,
                     Utils.getRandomInt(maxType + 1),
                     damageListener
                 )
@@ -89,7 +91,7 @@ class Spawner(
     init {
         fixture.filterData.maskBits =
             (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ITEM)
-        lastSpawn = System.currentTimeMillis()
+        lastSpawn = TimeUtils.millis()
         interval = 1000
         maxType = getMaxType(level)
     }

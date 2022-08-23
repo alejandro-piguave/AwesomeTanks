@@ -12,14 +12,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite
  * Created by Alex on 17/01/2016.
  */
 class Laser(
-    manager: AssetManager,
     world: World,
     pos: Vector2,
     angle: Float,
     power: Float,
     filter: Boolean
-) : Projectile(world, pos, PolygonShape(), angle, 35f, .2f, 20 + power * 5, filter) {
-    init {
-        //sprite = Sprite(manager.get("sprites/laser.png", Texture::class.java))
-    }
-}
+) : Projectile(world, pos, PolygonShape(), angle, 35f, .2f, 20 + power * 5, filter)

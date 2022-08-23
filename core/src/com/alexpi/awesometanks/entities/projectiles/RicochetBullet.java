@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles;
 
+import com.alexpi.awesometanks.utils.Settings;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -18,14 +19,12 @@ public class RicochetBullet extends Projectile {
     ParticleActor particleActor;
     int hits;
     Sound hitSound;
-    boolean soundFX;
 
     private final static int MAX_HITS = 3;
 
-    public RicochetBullet(AssetManager manager, World world, Vector2 pos, Sound sound, float angle, boolean soundFX, float power, boolean isPlayer) {
+    public RicochetBullet(AssetManager manager, World world, Vector2 pos, Sound sound, float angle, float power, boolean isPlayer) {
         super(world,pos,new CircleShape(), angle,20f,.2f,25+power*2,isPlayer);
         hitSound = sound;
-        this.soundFX = soundFX;
         sprite = new Sprite(manager.get("sprites/ricochet_bullet.png",Texture.class));
         particleActor = new ParticleActor(manager,"particles/ricochets.party",getX()+getWidth()/2,getY()+getHeight()/2,true);
     }
@@ -52,7 +51,7 @@ public class RicochetBullet extends Projectile {
     public void destroy() {
         if(hits <MAX_HITS){
             hits++;
-            if(soundFX)hitSound.play();
+            if(Settings.INSTANCE.getSoundsOn())hitSound.play();
         } else{
             super.destroy();
         }

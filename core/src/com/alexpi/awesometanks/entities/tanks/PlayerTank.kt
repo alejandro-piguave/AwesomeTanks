@@ -2,9 +2,12 @@ package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
+import com.alexpi.awesometanks.utils.Settings
+import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -15,14 +18,13 @@ class PlayerTank (
     entityGroup: Group,
     world: World,
     gameValues: Preferences,
-    private val map: GameMap,
-    allowSounds: Boolean)
+    private val map: GameMap)
     : Tank(manager,entityGroup, world, Vector2(-1f,-1f), .75f,
     .07f + gameValues.getInteger("rotation") / 40f,
     150 + gameValues.getInteger("speed") * 10f,
     Constants.CAT_PLAYER,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
-    1000f + gameValues.getInteger("health") * 200, false, allowSounds){
+    1000f + gameValues.getInteger("health") * 200, false, null, Color.WHITE){
 
     private val visibilityRadius = 3
     init {
@@ -39,7 +41,7 @@ class PlayerTank (
         Weapon.getWeaponAt(
             it, manager, gameValues.getInteger("ammo$it"), gameValues.getInteger(
                 "power$it"
-            ), true, allowSounds)
+            ), true)
     }
 
     fun saveProgress(gameValues: Preferences) {
