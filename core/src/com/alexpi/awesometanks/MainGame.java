@@ -86,7 +86,6 @@ public class MainGame extends Game {
 
 
 		manager.load("sprites/bullet.png",Texture.class);
-		manager.load("sprites/laser.png",Texture.class);
 		manager.load("sprites/laser_ray.png",Texture.class);
 
 

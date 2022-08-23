@@ -2,7 +2,9 @@ package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.EnemyAI
+import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -47,6 +49,22 @@ class Turret(
 
     companion object {
         private const val ROTATION_SPEED = .035f
+    }
+
+    override fun detach() {
+        super.detach()
+        dropLoot()
+    }
+
+    private fun dropLoot() {
+        val num1 = Utils.getRandomInt(5, 10)
+        for (i in 0 until num1) entityGroup.addActor(
+            GoldNugget(
+                manager,
+                body.world,
+                body.position
+            )
+        )
     }
 
     init {

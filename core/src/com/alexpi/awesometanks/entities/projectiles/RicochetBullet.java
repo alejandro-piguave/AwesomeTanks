@@ -20,6 +20,8 @@ public class RicochetBullet extends Projectile {
     Sound hitSound;
     boolean soundFX;
 
+    private final static int MAX_HITS = 3;
+
     public RicochetBullet(AssetManager manager, World world, Vector2 pos, Sound sound, float angle, boolean soundFX, float power, boolean isPlayer) {
         super(world,pos,new CircleShape(), angle,20f,.2f,25+power*2,isPlayer);
         hitSound = sound;
@@ -48,7 +50,7 @@ public class RicochetBullet extends Projectile {
 
     @Override
     public void destroy() {
-        if(hits <5){
+        if(hits <MAX_HITS){
             hits++;
             if(soundFX)hitSound.play();
         } else{

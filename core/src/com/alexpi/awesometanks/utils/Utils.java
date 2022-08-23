@@ -18,7 +18,7 @@ public class Utils {
     }
 
     public static float getRandomFloat(float max){
-        return (float)Math.floor(Math.random()*(max));
+        return (float)Math.random()*max;
     }
 
     public static float getRandomFloat(double max){

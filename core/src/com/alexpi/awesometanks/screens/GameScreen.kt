@@ -12,6 +12,7 @@ import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.*
 import com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION
+import com.alexpi.awesometanks.widget.GameProgressBar
 import com.alexpi.awesometanks.world.ContactManager
 import com.badlogic.gdx.*
 import com.badlogic.gdx.audio.Sound
@@ -51,7 +52,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private lateinit var aimTouchpad: Touchpad
     private lateinit var gunName: Label
     private lateinit var money: Label
-    private lateinit var ammoAmount: Label
+    private lateinit var ammoBar: GameProgressBar
     private val weaponMenuTable: Table = Table()
     private var screenPointer = 0
     private val soundFX = game.gameSettings.getBoolean("areSoundsActivated")
@@ -81,7 +82,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         if (!isPaused) {
             world.step(1 / 60f, 6, 2)
             gameStage.act(delta)
-            ammoAmount.setText("${tank.currentWeapon.ammo}/100");
+            ammoBar.value = tank.currentWeapon.ammo.toFloat()
             checkLevelState()
             gameStage.camera.position.set(tank.centerX, tank.centerY, 0f)
         }
@@ -285,15 +286,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             Label("Minigun", Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
         gunName.setPosition(uiStage.width / 2 - gunName.width / 2, 10f)
         gunName.setAlignment(Align.center)
-        ammoAmount = Label(
-            tank.currentWeapon.ammo.toString() + "/100",
-            Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 2).toInt())
-        )
-        val ammoAlignment =
-            if (game.gameSettings.getBoolean("isAlignedToLeft")) 10f else Constants.SCREEN_WIDTH - ammoAmount.width - 10f
-        ammoAmount.setPosition(ammoAlignment, Constants.SCREEN_HEIGHT - ammoAmount.height)
-        ammoAmount.setAlignment(Align.center)
-        ammoAmount.isVisible = false
+        ammoBar = GameProgressBar(game.manager,100f, tank.currentWeapon.ammo.toFloat())
+        ammoBar.setBounds(20f, Constants.SCREEN_HEIGHT - 30f - 20f, 300f, 30f)
+        ammoBar.isVisible = false
+
         Timer.schedule(object : Timer.Task() {
             override fun run() {
                 gunName.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
@@ -392,8 +388,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                         1f
                     );
 
-                    ammoAmount.setText("${tank.currentWeapon.ammo} /100");
-                    ammoAmount.isVisible = index != 0;
+                    ammoBar.value = tank.currentWeapon.ammo.toFloat()
+                    ammoBar.isVisible = index != 0;
 
                     gunName.setText(tank.currentWeapon.name)
                     gunName.addAction(Actions.alpha(1f))
@@ -425,7 +421,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             uiStage.addActor(weaponMenuButton)
         uiStage.addActor(gunName)
         uiStage.addActor(money)
-        uiStage.addActor(ammoAmount)
+        uiStage.addActor(ammoBar)
 
 
         Gdx.input.inputProcessor = inputProcessor

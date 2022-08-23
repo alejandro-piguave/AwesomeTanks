@@ -60,7 +60,7 @@ class LaserGun(
                 shotSound.play()
                 playSound = true
             }
-            //if (!unlimitedAmmo) decreaseAmmo()
+            if (!unlimitedAmmo) decreaseAmmo()
             isCoolingDown = true
             Timer.schedule(object : Timer.Task() {
                 override fun run() {

@@ -1,55 +1,96 @@
-package com.alexpi.awesometanks.entities.blocks;
+package com.alexpi.awesometanks.entities.blocks
 
-import com.alexpi.awesometanks.entities.DamageListener;
-import com.alexpi.awesometanks.entities.tanks.EnemyTank;
-import com.alexpi.awesometanks.utils.Constants;
-import com.alexpi.awesometanks.utils.Utils;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Group;
+import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.entities.items.GoldNugget
+import com.alexpi.awesometanks.entities.tanks.EnemyTank
+import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.utils.Utils
+import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.PolygonShape
+import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.scenes.scene2d.Group
+import kotlin.experimental.or
 
 /**
  * Created by Alex on 15/02/2016.
  */
-public class Spawner extends Block {
-    private long lastSpawn, interval;
-    private final AssetManager manager;
-    private final Vector2 targetPosition;
-    private int maxSpan = 20000;
-    private final int maxType;
-    private final Group entityGroup;
-
-    public Spawner(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, Vector2 pos, int level) {
-        super(manager,"sprites/spawner.png", world,new PolygonShape(), getHealth(level), pos,1f, true, listener);
-        this.manager = manager;
-        this.entityGroup = entityGroup;
-        this.targetPosition = targetPosition;
-        this.fixture.getFilterData().maskBits = Constants.CAT_PLAYER | Constants.CAT_PLAYER_BULLET | Constants.CAT_ITEM;
-        lastSpawn = System.currentTimeMillis();
-        interval = 1000;
-        maxType = getMaxType(level);
-    }
-
-    private static int getHealth(int level){
-        return 200 + (800-200)/30*level;
-    }
-
-    public static int getMaxType(int level) {
-        if(level <=3)
-            return Constants.RICOCHET;
-        else return Constants.RAILGUN;
-    }
-
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        if(lastSpawn + interval <  System.currentTimeMillis()){
-            lastSpawn = System.currentTimeMillis();
-            interval = Utils.getRandomInt(maxSpan - 5000,maxSpan);
-            maxSpan += 5000;
-            entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, .75f, Utils.getRandomInt(maxType+1), getDamageListener() ));
+class Spawner(
+    listener: DamageListener,
+    private val manager: AssetManager,
+    private val entityGroup: Group,
+    world: World,
+    private val targetPosition: Vector2,
+    pos: Vector2,
+    level: Int
+) : Block(
+    manager,
+    "sprites/spawner.png",
+    world,
+    PolygonShape(),
+    getHealth(level),
+    pos,
+    1f,
+    true,
+    listener
+) {
+    private var lastSpawn: Long
+    private var interval: Long
+    private var maxSpan = 20000
+    private val maxType: Int
+    override fun act(delta: Float) {
+        super.act(delta)
+        if (lastSpawn + interval < System.currentTimeMillis()) {
+            lastSpawn = System.currentTimeMillis()
+            interval = Utils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
+            maxSpan += 5000
+            entityGroup.addActor(
+                EnemyTank(
+                    manager,
+                    entityGroup,
+                    body.world,
+                    body.position,
+                    targetPosition,
+                    .75f,
+                    Utils.getRandomInt(maxType + 1),
+                    damageListener
+                )
+            )
         }
+    }
+
+    companion object {
+        private fun getHealth(level: Int): Int {
+            return 200 + (800 - 200) / 30 * level
+        }
+
+        @JvmStatic
+        fun getMaxType(level: Int): Int {
+            return if (level <= 3) Constants.RICOCHET else Constants.RAILGUN
+        }
+    }
+
+    override fun detach() {
+        super.detach()
+        dropLoot()
+    }
+
+    private fun dropLoot() {
+        val num1 = Utils.getRandomInt(5, 10)
+        for (i in 0 until num1) entityGroup.addActor(
+            GoldNugget(
+                manager,
+                body.world,
+                body.position
+            )
+        )
+    }
+
+    init {
+        fixture.filterData.maskBits =
+            (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ITEM)
+        lastSpawn = System.currentTimeMillis()
+        interval = 1000
+        maxType = getMaxType(level)
     }
 }

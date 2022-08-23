@@ -16,7 +16,7 @@ public class GoldNugget extends Item {
 
     public GoldNugget(AssetManager manager, World world, Vector2 position){
         super(manager,"sprites/nugget.png",world,position, Utils.getRandomFloat(.1f,.25f));
-        value = (int) (size*500);
+        value = (int) (size*100);
         float angle =  Utils.getRandomFloat(Math.PI*2);
         body.applyLinearImpulse(MathUtils.cos(angle)*.025f, MathUtils.sin(angle)*.025f, body.getPosition().x, body.getPosition().y, true);
     }
