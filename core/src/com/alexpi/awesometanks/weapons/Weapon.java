@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.utils.Constants;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -24,8 +25,8 @@ public abstract class Weapon {
     protected boolean isPlayer;
     protected boolean isCoolingDown;
     private final boolean sound;
-    private boolean unlimitedAmmo = false;
-    private final float coolingDownTime;
+    protected boolean unlimitedAmmo = false;
+    protected final float coolingDownTime;
 
     public Weapon(String name, AssetManager assetManager, String texturePath, String shotSoundPath, int ammo, int power, boolean isPlayer, boolean sound, float coolingDownTime){
         this.name = name;
@@ -41,7 +42,7 @@ public abstract class Weapon {
 
     public String getName() {return name;}
     public int getAmmo(){return ammo;}
-    private void decreaseAmmo(){if(ammo>0)ammo--;}
+    protected void decreaseAmmo(){if(ammo>0)ammo--;}
 
     public boolean hasAmmo(){return ammo>0;}
 
@@ -71,6 +72,11 @@ public abstract class Weapon {
         sprite.setRotation(currentAngleRotation*MathUtils.radiansToDegrees);
     }
 
+    public void draw(Batch batch, float parentAlpha,float x, float y, float originX, float originY, float width, float height,
+                     float scaleX, float scaleY){
+        batch.draw(sprite, x, y, originX, originY, width, height, scaleX, scaleY, sprite.getRotation());
+    }
+
     public float getCurrentAngleRotation() {
         return currentAngleRotation;
     }
@@ -97,9 +103,13 @@ public abstract class Weapon {
         }
     }
 
+    public void await(){
+
+    }
+
     public abstract void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position);
 
-    private boolean canShoot(){return (hasAmmo() || unlimitedAmmo) && !isCoolingDown;}
+    protected boolean canShoot(){return (hasAmmo() || unlimitedAmmo) && !isCoolingDown && hasRotated();}
 
     public static Weapon getWeaponAt(int i, AssetManager assetManager, int ammo, int power, boolean isPlayer, boolean sound){
         Weapon weapon = null;

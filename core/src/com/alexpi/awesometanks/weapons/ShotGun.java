@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
  * Created by Alex on 04/01/2016.
  */
 public class ShotGun extends Weapon {
+    private final static float SHOOTING_ANGLE = .436332f;
 
     public ShotGun(AssetManager assetManager, int ammo, int power, boolean filter, boolean sound) {
         super("Shotgun", assetManager,"weapons/shotgun.png", "sounds/shotgun.ogg", ammo, power, filter, sound,1.25f);
@@ -19,7 +20,7 @@ public class ShotGun extends Weapon {
     @Override
     public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position) {
         for(int i = 0; i < 10;i++){
-            float num = (float) (Math.random()-.5f);
+            float num = Utils.getRandomFloat(SHOOTING_ANGLE) - SHOOTING_ANGLE/2;
             group.addActor(new Bullet(assetManager,world, position,currentAngleRotation + num, Utils.getRandomInt(10,30), .12f,10f+power, isPlayer));
         }
     }

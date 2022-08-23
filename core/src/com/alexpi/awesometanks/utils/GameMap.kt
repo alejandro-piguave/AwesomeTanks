@@ -38,8 +38,9 @@ class GameMap(level: Int){
         val cA = ans.firstElement()!!.length
         val rA = ans.size
         map = Array(rA) { CharArray(cA) }
-        visibleArea = Array(rA) { BooleanArray(cA) }
+        visibleArea = Array(rA) { BooleanArray(cA) { true } }
         for (i in 0 until rA) {
+
             if(i == 0 || i == rA -1){
                 visibleArea[i] = BooleanArray(cA) { true }
             }
@@ -83,6 +84,7 @@ class GameMap(level: Int){
     fun isVisible(row: Int, col: Int) = visibleArea[row][col]
 
     fun scanCircle(){
+        visibleArea[playerRow][playerCol] = true
         for(i in 0 until 360 step 2){
             val x = MathUtils.cos(i*.01745f)
             val y = MathUtils.sin(i*.01745f)
@@ -107,17 +109,6 @@ class GameMap(level: Int){
         }
     }
 
-    private fun getSlope(pX1: Double, pY1: Double, pX2: Double, pY2: Double, pInvert: Boolean): Double {
-        return if (pInvert) (pY1 - pY2) / (pX1 - pX2) else (pX1 - pX2) / (pY1 - pY2)
-    }
-
-    private fun getSlope(pX1: Int, pY1: Int, pX2: Int, pY2: Int, pInvert: Boolean): Double {
-        return getSlope(pX1.toDouble(), pY1.toDouble(), pX2.toDouble(), pY2.toDouble(), pInvert)
-    }
-
-    private fun getVisDistance(pX1: Int, pY1: Int, pX2: Int, pY2: Int): Int {
-        return (pX1 - pX2) * (pX1 - pX2) + (pY1 - pY2) * (pY1 - pY2)
-    }
 }
 
 data class Cell(val row: Int, val col: Int)

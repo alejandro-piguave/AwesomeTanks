@@ -17,6 +17,7 @@ public class Spawner extends Block {
     private long lastSpawn, interval;
     private final AssetManager manager;
     private final Vector2 targetPosition;
+    private int maxSpan = 20000;
     private final int maxType;
     private final Group entityGroup;
 
@@ -46,7 +47,8 @@ public class Spawner extends Block {
         super.act(delta);
         if(lastSpawn + interval <  System.currentTimeMillis()){
             lastSpawn = System.currentTimeMillis();
-            interval = Utils.getRandomInt(10000,15000);
+            interval = Utils.getRandomInt(maxSpan - 5000,maxSpan);
+            maxSpan += 5000;
             entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, .75f, Utils.getRandomInt(maxType+1), getDamageListener() ));
         }
     }

@@ -50,13 +50,17 @@ abstract class Tank(
     var isMoving: Boolean = false
     var isShooting = false
     private val movement: Vector2 = Vector2()
+
+    abstract val currentWeapon: Weapon
+
     override fun draw(batch: Batch, parentAlpha: Float) {
         color.a *= parentAlpha
         batch.draw(wheelsSprite, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
         batch.color = color
         batch.draw(bodySprite, x, y, originX, originY, width, height, scaleX, scaleY, rotation)
-        batch.draw(
-            getCurrentWeapon().sprite,
+        currentWeapon.draw(
+            batch,
+            parentAlpha,
             x,
             y,
             originX,
@@ -65,7 +69,6 @@ abstract class Tank(
             height,
             scaleX,
             scaleY,
-            getCurrentWeapon().sprite.rotation
         )
         batch.setColor(1f, 1f, 1f, parentAlpha)
         super.draw(batch, parentAlpha)
@@ -81,15 +84,15 @@ abstract class Tank(
             body.setLinearVelocity(0f, 0f)
             body.angularVelocity = 0f
         }
-        getCurrentWeapon().updateAngleRotation(rotationSpeed)
-        if (isShooting && getCurrentWeapon().hasRotated() && isAlive) {
-            getCurrentWeapon().shoot(
+        currentWeapon.updateAngleRotation(rotationSpeed)
+        if (isShooting && isAlive) {
+            currentWeapon.shoot(
                 manager,
                 entityGroup,
                 body.world,
                 body.position
             )
-        }
+        } else currentWeapon.await()
         setPosition(
             (body.position.x - bodySize*.5f) * Constants.TILE_SIZE,
             (body.position.y - bodySize*.5f) * Constants.TILE_SIZE
@@ -130,11 +133,14 @@ abstract class Tank(
         remove()
     }
 
-    abstract fun getCurrentWeapon(): Weapon
     init {
         val bodyDef = BodyDef()
         bodyDef.type = BodyDef.BodyType.DynamicBody
-        bodyDef.position.set(position.x + .5f, position.y + .5f)
+        //Position from enemies generated from spawners are given from the center of the block (+.5f)
+        // whereas the player position is passed with no decimal part,
+        // therefore we make sure to round the number to place the tank in the center in both cases
+        bodyDef.position.x = position.x.toInt() + .5f
+        bodyDef.position.y = position.y.toInt() + .5f
         val shape = PolygonShape()
         shape.setAsBox(bodySize / 2, bodySize / 2)
         val fixtureDef = FixtureDef()
@@ -149,6 +155,6 @@ abstract class Tank(
         shape.dispose()
         setSize(bodySize * Constants.TILE_SIZE, bodySize * Constants.TILE_SIZE)
         setOrigin(width / 2, height / 2)
-        setPosition((body.position.x - bodySize / 2) * width, (body.position.y - bodySize / 2) * height)
+        setPosition((body.position.x - bodySize / 2) * Constants.TILE_SIZE, (body.position.y - bodySize / 2) * Constants.TILE_SIZE)
     }
 }

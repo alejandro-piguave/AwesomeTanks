@@ -20,7 +20,7 @@ public class Constants {
     public static final int[][] prices = {
             {200, 500, 1000, 2000, 2000, 3500, 3500},//UPGRADE PRICES
             {0, 100, 200, 300, 300, 400, 400}, //AMMO PRICES
-            {0, 2750, 8000, 10000, 10000, 28000, 28000}//GUN PRICES
+            {0, 2750, 8000, 10000, 10000, 280, 28000}//GUN PRICES
     };
 
     public static final String[] WEAPON_NAMES = {"Minigun", "Shotgun", "Ricochet", "Flamethrower", "Canon", "Lasergun", "Railgun"};

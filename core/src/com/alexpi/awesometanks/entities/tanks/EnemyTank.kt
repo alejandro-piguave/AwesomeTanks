@@ -32,6 +32,8 @@ class EnemyTank(
 
     private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
     private val weapon: Weapon
+    override val currentWeapon: Weapon
+        get() = weapon
 
     override fun act(delta: Float) {
         if(isAlive && !isFrozen){
@@ -46,8 +48,6 @@ class EnemyTank(
         super.detach()
         dropLoot()
     }
-
-    override fun getCurrentWeapon(): Weapon = weapon
 
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(5, 10)

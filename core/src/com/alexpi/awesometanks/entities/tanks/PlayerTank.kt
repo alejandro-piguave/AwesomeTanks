@@ -34,7 +34,7 @@ class PlayerTank (
     }
 
     var money: Int = 0
-    var currentWeapon = 0
+    var currentWeaponIndex = 0
     private val weapons: List<Weapon> = (0..6).map {
         Weapon.getWeaponAt(
             it, manager, gameValues.getInteger("ammo$it"), gameValues.getInteger(
@@ -50,18 +50,17 @@ class PlayerTank (
 
     val centerY: Float
     get() = y + height*.5f
+    override val currentWeapon: Weapon
+        get() = weapons[currentWeaponIndex]
 
     override fun act(delta: Float) {
         super.act(delta)
-        if(isMoving || !getCurrentWeapon().hasRotated()) updateVisibleArea()
+        if(isMoving) updateVisibleArea()
     }
 
     private fun updateVisibleArea(){
         val cell = map.toCell(body.position)
         map.setPlayerCell(cell)
         map.scanCircle()
-        //for(i in 1..8) map.scanOctant(1,i, 1.0, 0.0)
     }
-
-    override fun getCurrentWeapon(): Weapon  = weapons[currentWeapon]
 }

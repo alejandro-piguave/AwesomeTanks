@@ -81,7 +81,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         if (!isPaused) {
             world.step(1 / 60f, 6, 2)
             gameStage.act(delta)
-            ammoAmount.setText("${tank.getCurrentWeapon().ammo}/100");
+            ammoAmount.setText("${tank.currentWeapon.ammo}/100");
             checkLevelState()
             gameStage.camera.position.set(tank.centerX, tank.centerY, 0f)
         }
@@ -286,7 +286,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         gunName.setPosition(uiStage.width / 2 - gunName.width / 2, 10f)
         gunName.setAlignment(Align.center)
         ammoAmount = Label(
-            tank.getCurrentWeapon().ammo.toString() + "/100",
+            tank.currentWeapon.ammo.toString() + "/100",
             Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 2).toInt())
         )
         val ammoAlignment =
@@ -352,7 +352,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             val x = aimTouchpad.knobPercentX
             val y = aimTouchpad.knobPercentY
             if (aimTouchpad.isTouched && (abs(x) > .2f || abs(y) > .2f)) {
-                tank.getCurrentWeapon().setDesiredAngleRotation(x, y)
+                tank.currentWeapon.setDesiredAngleRotation(x, y)
                 val distanceFromCenter = Utils.fastHypot(x.toDouble(), y.toDouble()).toFloat()
                 tank.isShooting = distanceFromCenter > 0.95f
             } else tank.isShooting = false
@@ -379,10 +379,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             if(!button.isDisabled) {
                 button.onClick {
                     if (soundFX) gunChangeSound.play()
-                    tank.currentWeapon = index
+                    tank.currentWeaponIndex = index
                     buttons.forEach { ib ->
                         ib.setColor(ib.color.r, ib.color.g, ib.color.b,
-                            if(tank.currentWeapon == buttons.indexOf(ib)) 1f else .5f)
+                            if(tank.currentWeaponIndex == buttons.indexOf(ib)) 1f else .5f)
                     }
 
                     button.setColor(
@@ -392,10 +392,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                         1f
                     );
 
-                    ammoAmount.setText("${tank.getCurrentWeapon().ammo} /100");
+                    ammoAmount.setText("${tank.currentWeapon.ammo} /100");
                     ammoAmount.isVisible = index != 0;
 
-                    gunName.setText(tank.getCurrentWeapon().name)
+                    gunName.setText(tank.currentWeapon.name)
                     gunName.addAction(Actions.alpha(1f))
                     Timer.schedule(object : Timer.Task() {
                         override fun run() {
@@ -408,11 +408,11 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             weaponMenuTable.add(button).width(96f).height(96f)
         }
         weaponMenuButton.onClick {
-            isPaused = if(weaponMenuButton.hasParent()){
+            isPaused = if(!isPaused){
                 uiStage.addActor(weaponMenuTable)
                 true
             } else {
-                weaponMenuButton.remove()
+                weaponMenuTable.remove()
                 false
             }
         }
@@ -565,7 +565,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     //EVENTS FOR DESKTOP
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            tank.getCurrentWeapon().setDesiredAngleRotation(
+            tank.currentWeapon.setDesiredAngleRotation(
                 screenX - Constants.CENTER_X,
                 (Constants.SCREEN_HEIGHT - screenY) - Constants.CENTER_Y
             )
@@ -578,7 +578,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             if (pointer == screenPointer) {
-                tank.getCurrentWeapon().setDesiredAngleRotation(
+                tank.currentWeapon.setDesiredAngleRotation(
                     screenX - Constants.CENTER_X,
                     (Constants.SCREEN_HEIGHT - screenY) - Constants.CENTER_Y
                 )
@@ -591,7 +591,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             if (pointer == screenPointer) {
-                tank.getCurrentWeapon().setDesiredAngleRotation(
+                tank.currentWeapon.setDesiredAngleRotation(
                     screenX - Constants.CENTER_X,
                     (Constants.SCREEN_HEIGHT - screenY) - Constants.CENTER_Y
                 )

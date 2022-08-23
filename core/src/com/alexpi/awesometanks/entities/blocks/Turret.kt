@@ -31,18 +31,7 @@ class Turret(
     private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
-        batch.draw(
-            weapon.sprite,
-            x,
-            y,
-            originX,
-            originY,
-            width,
-            height,
-            scaleX,
-            scaleY,
-            weapon.sprite.rotation
-        )
+        weapon.draw(batch, parentAlpha, x, y, originX, originY, width, height, scaleX, scaleY)
         drawBurning(batch, parentAlpha)
         drawFrozen(batch)
     }
@@ -72,9 +61,10 @@ class Turret(
     override fun attack(angle: Float) {
         weapon.setDesiredAngleRotation(angle)
         weapon.updateAngleRotation(ROTATION_SPEED)
-        if (weapon.hasRotated()) weapon.shoot(manager, entityGroup, body.world, body.position)
+        weapon.shoot(manager, entityGroup, body.world, body.position)
     }
 
     override fun await() {
+        weapon.await()
     }
 }

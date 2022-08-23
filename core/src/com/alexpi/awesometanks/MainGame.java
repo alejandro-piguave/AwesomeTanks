@@ -82,12 +82,13 @@ public class MainGame extends Game {
         manager.load("sprites/freezing_ball.png",Texture.class);
         manager.load("sprites/health_pack.png",Texture.class);
         manager.load("sprites/frozen.png",Texture.class);
-		manager.load("sprites/switch_gun_icon.png",Texture.class);
 		manager.load("sprites/gun_menu_icon.png",Texture.class);
 
 
 		manager.load("sprites/bullet.png",Texture.class);
 		manager.load("sprites/laser.png",Texture.class);
+		manager.load("sprites/laser_ray.png",Texture.class);
+
 
 		manager.load("sprites/health_bar.png",Texture.class);
         manager.load("sprites/ricochet_bullet.png",Texture.class);

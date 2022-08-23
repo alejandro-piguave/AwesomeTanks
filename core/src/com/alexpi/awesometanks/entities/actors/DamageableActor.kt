@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.utils.TimeUtils
 import com.badlogic.gdx.utils.Timer
 
 /**
@@ -57,7 +58,8 @@ abstract class DamageableActor(private val manager: AssetManager,
         if (isBurning && isFlammable) {
             flameSprite.setPosition(x + width / 2, y + height / 2)
             flameSprite.act(delta)
-            takeDamage(.25f)
+            takeDamage(.35f)
+            TimeUtils.millis()
         }
     }
 
