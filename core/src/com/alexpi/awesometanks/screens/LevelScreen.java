@@ -12,6 +12,7 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -20,6 +21,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
  * Created by Alex on 25/01/2016.
@@ -27,15 +32,17 @@ import com.badlogic.gdx.utils.Timer;
 public class LevelScreen extends BaseScreen {
     private Stage stage;
     private Label lockedLevelLabel;
+    private SpriteBatch batch;
+    private Texture background;
     private static final int LEVEL_TABLE_COLUMN_COUNT = 10;
 
     public LevelScreen(MainGame game) {super(game);}
     @Override
     public void show() {
 
-        stage = new Stage();
-        Image background = new Image(game.getManager().get("sprites/background.png", Texture.class));
-        background.setBounds(0,0,Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT);
+        stage = new Stage(new ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
+        batch = new SpriteBatch();
+        background = game.getManager().get("sprites/background.png", Texture.class);
         Table table = new Table();
         table.setFillParent(true);
 
@@ -72,7 +79,6 @@ public class LevelScreen extends BaseScreen {
         table.add(new Label("Select level",Styles.getLabelStyleBackground(game.getManager()))).padTop(32).row();
         table.add(levelTable).expandY().expandX().fillX().top().padTop(64).row();
 
-        stage.addActor(background);
         stage.addActor(table);
         stage.addActor(lockedLevelLabel);
         Gdx.input.setInputProcessor(stage);
@@ -84,6 +90,7 @@ public class LevelScreen extends BaseScreen {
     @Override
     public void hide() {
         stage.dispose();
+        batch.dispose();
         Gdx.input.setInputProcessor(null);
     }
 
@@ -91,6 +98,9 @@ public class LevelScreen extends BaseScreen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glClearColor(0f,0f,0f,1f);
+        batch.begin();
+        batch.draw(background,0f,0f,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
         stage.act();
         stage.draw();
         if(Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){

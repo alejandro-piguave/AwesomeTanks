@@ -101,7 +101,7 @@ class Turret(
         filter.categoryBits = Constants.CAT_ENEMY
         fixture.filterData = filter
         nuggetValue = getNuggetValue(type)
-        weapon = Weapon.getWeaponAt(type, manager, 1, 3, false)
+        weapon = Weapon.getWeaponAt(type, manager, 1f, 2, false)
         weapon.setUnlimitedAmmo(true)
         setOrigin(width / 2, height / 2)
     }

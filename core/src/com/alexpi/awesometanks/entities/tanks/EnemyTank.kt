@@ -110,10 +110,18 @@ class EnemyTank(
                 Tier.BOSS -> Color.RED
             }
         }
+
+        private fun powerByTier(tier: Tier): Int{
+            return when(tier){
+                Tier.MINI -> 0
+                Tier.NORMAL -> 1
+                Tier.BOSS -> 3
+            }
+        }
     }
 
     init {
-        weapon = Weapon.getWeaponAt(type, manager, 1, 2, false)
+        weapon = Weapon.getWeaponAt(type, manager, 1f, powerByTier(tier), false)
         weapon.setUnlimitedAmmo(true)
         nuggetValue = getNuggetValue(tier, type)
     }

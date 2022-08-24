@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.Timer
  */
 class LaserGun(
     assetManager: AssetManager,
-    ammo: Int,
+    ammo: Float,
     power: Int,
     isPlayer: Boolean,
 ) : Weapon(
@@ -31,7 +31,8 @@ class LaserGun(
     ammo,
     power,
     isPlayer,
-    .05f
+    .05f,
+    .25f
 ) {
     private val laserRay = Image(assetManager.get<Texture>("sprites/laser_ray.png"))
     private var playSound = false

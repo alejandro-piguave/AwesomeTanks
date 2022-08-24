@@ -13,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 public class ShotGun extends Weapon {
     private final static float SHOOTING_ANGLE = .436332f;
 
-    public ShotGun(AssetManager assetManager, int ammo, int power, boolean filter) {
-        super("Shotgun", assetManager,"weapons/shotgun.png", "sounds/shotgun.ogg", ammo, power, filter,1.25f);
+    public ShotGun(AssetManager assetManager, float ammo, int power, boolean filter) {
+        super("Shotgun", assetManager,"weapons/shotgun.png", "sounds/shotgun.ogg", ammo, power, filter,1f, 1f);
     }
 
     @Override

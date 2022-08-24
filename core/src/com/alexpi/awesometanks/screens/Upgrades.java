@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.screens;
 
 import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
-import static com.alexpi.awesometanks.utils.Constants.prices;
 import static com.alexpi.awesometanks.utils.Constants.upgradePrices;
 
 import com.alexpi.awesometanks.utils.Settings;
@@ -9,10 +8,10 @@ import com.alexpi.awesometanks.widget.GameButton;
 import com.alexpi.awesometanks.widget.UpgradeTable;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -28,22 +27,24 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.alexpi.awesometanks.MainGame;
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.utils.Styles;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 
 /**
  * Created by Alex on 29/01/2016.
  */
 public class Upgrades extends BaseScreen {
-    Stage stage;
-    Table table, performance, buttons, currentWeaponTable;
-    Label money;
+    private Stage stage;
+    private SpriteBatch batch;
+    private Label money;
     private UpgradeTable[] upgradables;
     private ImageButton[] weaponButtons;
     private UpgradeTable weaponPower,weaponAmmo;
-    Skin uiSkin;
-    int currentWeapon, moneyValue;
-    int[][] values;
-    boolean[] availableWeapons;
+    private Texture background;
+    private int currentWeapon, moneyValue;
+    private int[] weaponPowerValues;
+    private float[] weaponAmmoValues;
+    private boolean[] availableWeapons;
 
     private static final int UPGRADE_COUNT = 4;
     private static final int WEAPON_COUNT = 7;
@@ -57,22 +58,23 @@ public class Upgrades extends BaseScreen {
         final Sound purchaseSound = game.getManager().get("sounds/purchase.ogg",Sound.class);
         weaponButtons = new ImageButton[WEAPON_COUNT];
         upgradables = new UpgradeTable[UPGRADE_COUNT];
-        uiSkin = game.getManager().get("uiskin/uiskin.json");
-        stage = new Stage(new FillViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
-        Image background = new Image(game.getManager().get("sprites/background.png", Texture.class));
-        background.setBounds(0,0,Constants.SCREEN_WIDTH,Constants.SCREEN_HEIGHT);
-        table = new Table();
+        Skin uiSkin = game.getManager().get("uiskin/uiskin.json");
+        stage = new Stage(new ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
+        batch = new SpriteBatch();
+        background = game.getManager().get("sprites/background.png");
+        Table table = new Table();
         table.setFillParent(true);
-        performance = new Table();
-        buttons = new Table();
-        currentWeaponTable = new Table();
+        Table performance = new Table();
+        Table buttons = new Table();
+        Table currentWeaponTable = new Table();
 
-        values = new int[2][WEAPON_COUNT];
+        weaponPowerValues = new int[WEAPON_COUNT];
+        weaponAmmoValues = new float[WEAPON_COUNT];
         for (int i = 0; i < WEAPON_COUNT;i++){
             //POWER
-            values[0][i] = game.getGameValues().getInteger("power" + i, 0);
+            weaponPowerValues[i] = game.getGameValues().getInteger("power" + i, 0);
             //AMMO
-            values[1][i] = game.getGameValues().getInteger("ammo" + i, 100);}
+            weaponAmmoValues[i] = game.getGameValues().getFloat("ammo" + i, 100f);}
         availableWeapons = new boolean[7];
         for (int i = 0; i < WEAPON_COUNT;i++)
             availableWeapons[i] = game.getGameValues().getBoolean("weapon"+i,true);
@@ -114,8 +116,8 @@ public class Upgrades extends BaseScreen {
                     game.getGameValues().putInteger(p.getName(),p.getValue());
 
                 for(int i = 0; i< WEAPON_COUNT;i++){
-                    game.getGameValues().putInteger("power"+i,values[0][i]);
-                    game.getGameValues().putInteger("ammo"+i,values[1][i]);
+                    game.getGameValues().putInteger("power"+i, weaponPowerValues[i]);
+                    game.getGameValues().putFloat("ammo"+i, weaponAmmoValues[i]);
                     game.getGameValues().putBoolean("weapon"+i,availableWeapons[i]);
                 }
                 game.getGameValues().putInteger("money",moneyValue);
@@ -146,15 +148,15 @@ public class Upgrades extends BaseScreen {
                 public void clicked(InputEvent event, float x, float y) {
                     currentWeapon = finalI;
 
-                    weaponPower.setValue(values[0][currentWeapon]);
+                    weaponPower.setValue(weaponPowerValues[currentWeapon]);
                     if(weaponPower.isMaxValue()){
                         weaponPower.getBuyButton().setVisible(false);
                     } else {
-                        weaponPower.changePrice(Constants.gunUpgradePrices[currentWeapon][values[0][currentWeapon]]);
+                        weaponPower.changePrice(Constants.gunUpgradePrices[currentWeapon][weaponPowerValues[currentWeapon]]);
                         weaponPower.getBuyButton().setVisible(true);
                     }
 
-                    weaponAmmo.setValue(values[1][currentWeapon]);
+                    weaponAmmo.setValue(weaponAmmoValues[currentWeapon]);
                     weaponAmmo.changePrice(Constants.prices[0][currentWeapon]);
 
                     currentWeaponImage.setStyle(weaponButtons[finalI].getStyle());
@@ -195,23 +197,24 @@ public class Upgrades extends BaseScreen {
                 }}});
 
 
-        weaponPower = new UpgradeTable(game.getManager(), "Power",values[0][0],5,Constants.gunUpgradePrices[0][values[0][0]]);
+        weaponPower = new UpgradeTable(game.getManager(), "Power", weaponPowerValues[0],5,Constants.gunUpgradePrices[0][weaponPowerValues[0]]);
         weaponPower.getBuyButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (weaponPower.canBuy(moneyValue) && !currentWeaponImage.isDisabled()) {
                     if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
                     weaponPower.increaseValue(1);
-                    values[0][currentWeapon] = weaponPower.getValue();
+                    weaponPowerValues[currentWeapon] = weaponPower.getValue();
+                    money.setText((moneyValue -= weaponPower.getPrice()) + " $");
                     if(weaponPower.isMaxValue()){
                         weaponPower.getBuyButton().setVisible(false);
                     } else {
-                        weaponPower.changePrice(Constants.gunUpgradePrices[currentWeapon][values[0][currentWeapon]]);
+                        weaponPower.changePrice(Constants.gunUpgradePrices[currentWeapon][weaponPowerValues[currentWeapon]]);
                     }
-                    money.setText((moneyValue -= weaponPower.getPrice()) + " $");
+
                 }}});
 
-        weaponAmmo = new UpgradeTable(game.getManager(), "Ammo",values[1][0],100f,100);
+        weaponAmmo = new UpgradeTable(game.getManager(), "Ammo", weaponAmmoValues[0],100f,100);
         weaponAmmo.setVisible(false);
         weaponAmmo.getBuyButton().addListener(new ClickListener() {
             @Override
@@ -219,7 +222,7 @@ public class Upgrades extends BaseScreen {
                 if (weaponAmmo.canBuy(moneyValue) && !currentWeaponImage.isDisabled()) {
                     if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
                     weaponAmmo.increaseValue(20);
-                    values[1][currentWeapon] = weaponAmmo.getValue();
+                    weaponAmmoValues[currentWeapon] = weaponAmmo.getValue();
                     money.setText((moneyValue -= weaponAmmo.getPrice()) + " $");
                 }}});
 
@@ -243,7 +246,6 @@ public class Upgrades extends BaseScreen {
         table.add(currentWeaponTable).row();
         table.add(buttons).colspan(2).row();
         table.add(playButton).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).colspan(2).padBottom(16);
-        stage.addActor(background);
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
         Gdx.input.setCatchBackKey(true);
@@ -254,6 +256,7 @@ public class Upgrades extends BaseScreen {
     @Override
     public void hide() {
         stage.dispose();
+        batch.dispose();
         Gdx.input.setInputProcessor(null);
     }
 
@@ -261,6 +264,9 @@ public class Upgrades extends BaseScreen {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glClearColor(0f,0f,0f,1f);
+        batch.begin();
+        batch.draw(background,0f,0f,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
         stage.act(delta);
         stage.draw();
         if(Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run(new Runnable() {@Override public void run() {game.setScreen(game.mainScreen);}})));}

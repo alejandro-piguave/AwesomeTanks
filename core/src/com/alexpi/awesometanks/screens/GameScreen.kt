@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
+import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.FillViewport
 import ktx.actors.onClick
 import kotlin.math.abs
@@ -43,10 +44,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private val gameMap = GameMap(level)
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
-    private val spawnerGroup: Group = Group()
     private val healthBarGroup: Group = Group()
-    private val gameStage: Stage = Stage(FillViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
-    private val uiStage: Stage = Stage(FillViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+    private val gameStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+    private val uiStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
     private val world = World(Vector2(0f, 0f), true)
     private lateinit var movementTouchpad: Touchpad
     private lateinit var aimTouchpad: Touchpad
@@ -106,9 +106,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun isLevelCompleted(): Boolean {
-        for(actor: Actor in spawnerGroup.children) if(actor is Spawner) return false
         for (actor: Actor in blockGroup.children) if (actor is Turret) return false
-        for (actor: Actor in entityGroup.children) if (actor is EnemyTank) return false
+        for (actor: Actor in entityGroup.children) if (actor is EnemyTank || actor is Spawner) return false
         return true
     }
 
@@ -124,9 +123,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
 
             override fun onFreezingBallFound(freezingBall: FreezingBall) {
-                for (a: Actor in entityGroup.children) if (a is EnemyTank) a.freeze(5f)
+                for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
+                    (a as DamageableActor).freeze(5f)
+                }
                 for (a: Actor in blockGroup.children) if (a is Turret) a.freeze(5f)
-                for (a: Actor in spawnerGroup.children) if (a is Spawner) a.freeze(5f)
             }
 
             override fun onBulletCollision(x: Float, y: Float) {
@@ -186,7 +186,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                         game.manager,
                         world, gameMap.toWorldPos(row,col)
                     )
-                ) else if (value == Constants.box) blockGroup.addActor(
+                ) else if (value == Constants.box) entityGroup.addActor(//ITS ADDED TO THE ENTITY GROUP BECAUSE THE ITEMS IT DROPS BELONG TO THIS GROUP AND NOT TO THE BLOCK GROUP
                     Box(
                         this,
                         game.manager,
@@ -195,7 +195,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                         gameMap.toWorldPos(row,col),
                         level
                     )
-                ) else if (value == Constants.spawner) spawnerGroup.addActor(
+                ) else if (value == Constants.spawner) entityGroup.addActor(
                     Spawner(
                         this,
                         game.manager,
@@ -232,7 +232,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         }
 
         healthBarGroup.addActor(HealthBar(game.manager, tank))
-        gameStage.addActor(spawnerGroup)
         gameStage.addActor(entityGroup)
         gameStage.addActor(blockGroup)
         gameStage.addActor(healthBarGroup)
@@ -241,28 +240,20 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private fun createUIScene() {
         val uiSkin = game.manager.get<Skin>("uiskin/uiskin.json")
-        gunName =
-            Label("Minigun", Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
-        gunName.setPosition(uiStage.width / 2 - gunName.width / 2, 10f)
+        val uiTable = Table()
+        uiTable.setFillParent(true)
+        gunName = Label("Minigun", Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
         gunName.setAlignment(Align.center)
-        ammoBar = GameProgressBar(game.manager,100f, tank.currentWeapon.ammo.toFloat())
-        ammoBar.setBounds(20f, Constants.SCREEN_HEIGHT - 30f - 20f, 300f, 30f)
+        ammoBar = GameProgressBar(game.manager,100f, tank.currentWeapon.ammo)
+        ammoBar.setSize(300f, 30f)
         ammoBar.isVisible = false
 
-        Timer.schedule(object : Timer.Task() {
-            override fun run() {
-                gunName.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-            }
-        }, 2f)
+
         money = Label(
             tank.money.toString() + " $",
             Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
         )
-        money.setPosition(
-            Constants.CENTER_X,
-            Constants.SCREEN_HEIGHT - money.height,
-            Align.center
-        )
+
         buttons = (0 until BUTTON_COUNT).map {
             val texture = game.manager.get<Texture>("icons/icon_$it.png")
             val disabled = game.manager.get<Texture>("icons/icon_disabled_$it.png")
@@ -273,57 +264,46 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         }
 
         val joystickSize = Constants.SCREEN_HEIGHT / 2.25f
-        movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager))
-        aimTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager))
-        movementTouchpad.setColor(
-            movementTouchpad.color.r,
-            movementTouchpad.color.g,
-            movementTouchpad.color.b,
-            0.5f
-        )
-        aimTouchpad.setColor(
-            movementTouchpad.color.r,
-            movementTouchpad.color.g,
-            movementTouchpad.color.b,
-            0.5f
-        )
-        movementTouchpad.setBounds(10f, 10f, joystickSize, joystickSize)
-        aimTouchpad.setBounds(
-            Constants.SCREEN_WIDTH - joystickSize - 10,
-            10f,
-            joystickSize,
-            joystickSize
-        )
-        movementTouchpad.addListener {
-            val x = movementTouchpad.knobPercentX
-            val y = movementTouchpad.knobPercentY
-            if (movementTouchpad.isTouched && (abs(x) > .2f || abs(y) > .2f)) {
-                tank.setOrientation(x, y)
-                tank.isMoving = true
-            } else tank.isMoving = false
-            true
+        movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
+            setColor(color.r, color.g, color.b, 0.5f)
+            addListener {
+                val x = knobPercentX
+                val y = knobPercentY
+                if (isTouched && (abs(x) > .2f || abs(y) > .2f)) {
+                    tank.setOrientation(x, y)
+                    tank.isMoving = true
+                } else tank.isMoving = false
+                true
+            }
         }
-        aimTouchpad.addListener {
-            val x = aimTouchpad.knobPercentX
-            val y = aimTouchpad.knobPercentY
-            if (aimTouchpad.isTouched && (abs(x) > .2f || abs(y) > .2f)) {
-                tank.currentWeapon.setDesiredAngleRotation(x, y)
-                val distanceFromCenter = Utils.fastHypot(x.toDouble(), y.toDouble()).toFloat()
-                tank.isShooting = distanceFromCenter > 0.95f
-            } else tank.isShooting = false
-            true
+        aimTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
+            setColor(color.r, color.g, color.b, 0.5f)
+            addListener {
+                val x = knobPercentX
+                val y = knobPercentY
+                if (isTouched && (abs(x) > .2f || abs(y) > .2f)) {
+                    tank.currentWeapon.setDesiredAngleRotation(x, y)
+                    val distanceFromCenter = Utils.fastHypot(x.toDouble(), y.toDouble()).toFloat()
+                    tank.isShooting = distanceFromCenter > 0.95f
+                } else tank.isShooting = false
+                true
+            }
         }
 
-        val weaponMenuButtonSize = 96f
-        val weaponMenuButton = ImageButton(TextureRegionDrawable(game.manager.get("sprites/gun_menu_icon.png",Texture::class.java)))
-        weaponMenuButton.setColor(
-            weaponMenuButton.color.r,
-            weaponMenuButton.color.g,
-            weaponMenuButton.color.b,
-            0.5f
-        )
+        val weaponMenuButton = ImageButton(TextureRegionDrawable(game.manager.get("sprites/gun_menu_icon.png",Texture::class.java))).apply {
+            setColor(color.r, color.g, color.b, 0.5f)
+            onClick {
+                isPaused = if(!isPaused){
+                    uiStage.addActor(weaponMenuTable)
+                    true
+                } else {
+                    weaponMenuTable.remove()
+                    false
+                }
+            }
+        }
 
-        weaponMenuTable.setPosition(Constants.CENTER_X, Constants.CENTER_Y)
+
         buttons.forEach { button ->
             val index = buttons.indexOf(button)
 
@@ -347,7 +327,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                         1f
                     );
 
-                    ammoBar.value = tank.currentWeapon.ammo.toFloat()
+                    ammoBar.value = tank.currentWeapon.ammo
                     ammoBar.isVisible = index != 0;
 
                     gunName.setText(tank.currentWeapon.name)
@@ -362,29 +342,28 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
             weaponMenuTable.add(button).width(96f).height(96f)
         }
-        weaponMenuButton.onClick {
-            isPaused = if(!isPaused){
-                uiStage.addActor(weaponMenuTable)
-                true
-            } else {
-                weaponMenuTable.remove()
-                false
-            }
-        }
 
-        weaponMenuButton.setBounds(aimTouchpad.x - weaponMenuButtonSize - 10, aimTouchpad.y +10 , weaponMenuButtonSize, weaponMenuButtonSize)
+        weaponMenuTable.setFillParent(true)
+        val uiTopTable = Table()
+        uiTopTable.add(ammoBar).expandX().uniformX().pad(10f)
+        uiTopTable.add(money).expandX().uniform().pad(10f)
+        uiTopTable.add().expandX().uniformX()
+        uiTable.add(uiTopTable).colspan(3).growX().row()
+        uiTable.add().colspan(3).expand().row()
+        uiTable.add(movementTouchpad).size(joystickSize).left().pad(10f)
+        uiTable.add(weaponMenuButton).expandX().right()
+        uiTable.add(aimTouchpad).size(joystickSize).right().pad(10f).row()
 
-        uiStage.addActor(movementTouchpad)
-        uiStage.addActor(aimTouchpad)
-        if(Gdx.app.type != Application.ApplicationType.Desktop)
-            uiStage.addActor(weaponMenuButton)
-        uiStage.addActor(gunName)
-        uiStage.addActor(money)
-        uiStage.addActor(ammoBar)
-
+        uiStage.addActor(uiTable)
 
         Gdx.input.inputProcessor = inputProcessor
         Gdx.input.isCatchBackKey = true
+
+        Timer.schedule(object : Timer.Task() {
+            override fun run() {
+                gunName.addAction(Actions.fadeOut(TRANSITION_DURATION))
+            }
+        }, 2f)
     }
 
     private val inputProcessor: InputProcessor

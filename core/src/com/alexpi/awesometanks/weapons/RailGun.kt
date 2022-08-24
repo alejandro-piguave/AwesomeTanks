@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 04/01/2016.
  */
-class RailGun(assetManager: AssetManager, ammo: Int, power: Int, filter: Boolean) :
+class RailGun(assetManager: AssetManager, ammo: Float, power: Int, filter: Boolean) :
     Weapon(
         "Railgun",
         assetManager,
@@ -28,6 +28,7 @@ class RailGun(assetManager: AssetManager, ammo: Int, power: Int, filter: Boolean
         ammo,
         power,
         filter,
+        1f,
         1f
     ) {
 

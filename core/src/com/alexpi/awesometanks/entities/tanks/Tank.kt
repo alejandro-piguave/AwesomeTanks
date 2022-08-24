@@ -21,7 +21,7 @@ import kotlin.math.min
  * Created by Alex on 02/01/2016.
  */
 abstract class Tank(
-    protected val manager: AssetManager,
+    manager: AssetManager,
     world: World,
     position: Vector2,
     private val bodySize: Float,

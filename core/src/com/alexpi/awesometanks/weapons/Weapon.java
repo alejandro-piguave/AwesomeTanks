@@ -18,7 +18,7 @@ import com.badlogic.gdx.utils.Timer;
  * Created by Alex on 03/01/2016.
  */
 public abstract class Weapon {
-    protected int ammo;
+    protected float ammo;
     protected int power;
     public Sprite sprite;
     protected Sound shotSound;
@@ -28,10 +28,12 @@ public abstract class Weapon {
     protected boolean isCoolingDown;
     protected boolean unlimitedAmmo = false;
     protected final float coolingDownTime;
+    private final float ammoConsumption;
 
-    public Weapon(String name, AssetManager assetManager, String texturePath, String shotSoundPath, int ammo, int power, boolean isPlayer, float coolingDownTime){
+    public Weapon(String name, AssetManager assetManager, String texturePath, String shotSoundPath, float ammo, int power, boolean isPlayer, float coolingDownTime, float ammoConsumption){
         this.name = name;
         this.isCoolingDown = false;
+        this.ammoConsumption = ammoConsumption;
         this.sprite = new Sprite(assetManager.get(texturePath,Texture.class));
         this.shotSound = assetManager.get(shotSoundPath,Sound.class);
         this.ammo = ammo;
@@ -41,8 +43,12 @@ public abstract class Weapon {
     }
 
     public String getName() {return name;}
-    public int getAmmo(){return ammo;}
-    protected void decreaseAmmo(){if(ammo>0)ammo--;}
+    public float getAmmo(){return ammo;}
+    protected void decreaseAmmo(){
+        if(ammo - ammoConsumption >0)
+            ammo -= ammoConsumption;
+        else ammo = 0;
+    }
 
     public boolean hasAmmo(){return ammo>0;}
 
@@ -107,7 +113,7 @@ public abstract class Weapon {
 
     protected boolean canShoot(){return (hasAmmo() || unlimitedAmmo) && !isCoolingDown && hasRotated();}
 
-    public static Weapon getWeaponAt(int i, AssetManager assetManager, int ammo, int power, boolean isPlayer){
+    public static Weapon getWeaponAt(int i, AssetManager assetManager, float ammo, int power, boolean isPlayer){
         Weapon weapon = null;
         switch (i){
             case Constants.MINIGUN: weapon = new MiniGun(assetManager, ammo, power, isPlayer);break;

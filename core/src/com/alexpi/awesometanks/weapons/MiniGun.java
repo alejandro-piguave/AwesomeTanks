@@ -10,8 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
  * Created by Alex on 03/01/2016.
  */
 public class MiniGun extends Weapon {
-    public MiniGun(AssetManager assetManager, int ammo, int power, boolean isPlayer) {
-        super("Minigun",assetManager,"weapons/minigun.png","sounds/minigun.ogg", ammo, power, isPlayer, .06f);
+    public MiniGun(AssetManager assetManager, float ammo, int power, boolean isPlayer) {
+        super("Minigun",assetManager,"weapons/minigun.png","sounds/minigun.ogg", ammo, power, isPlayer, .06f, 1f);
         setUnlimitedAmmo(true);
     }
 

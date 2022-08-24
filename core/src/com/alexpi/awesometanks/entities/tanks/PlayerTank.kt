@@ -23,7 +23,7 @@ class PlayerTank (
     150 + gameValues.getInteger(Constants.MOVEMENT_SPEED) * 10f,
     Constants.CAT_PLAYER,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
-    600f, false, null, Color.WHITE){
+    500f, false, null, Color.WHITE){
 
     private val visibilityRadius = 2 + gameValues.getInteger(Constants.VISIBILITY)
     private val armor = gameValues.getInteger(Constants.ARMOR)
@@ -43,13 +43,12 @@ class PlayerTank (
     var currentWeaponIndex = 0
     private val weapons: List<Weapon> = (0..6).map {
         Weapon.getWeaponAt(
-            it, manager, gameValues.getInteger("ammo$it"), gameValues.getInteger(
-                "power$it"
-            ), true)
+            it, manager,
+            gameValues.getFloat("ammo$it"), gameValues.getInteger("power$it"), true)
     }
 
     fun saveProgress(gameValues: Preferences) {
-        for (i in weapons.indices) gameValues.putInteger("ammo$i", weapons[i].ammo)
+        for (i in weapons.indices) gameValues.putFloat("ammo$i", weapons[i].ammo)
     }
     val centerX: Float
     get() = x + width*.5f
