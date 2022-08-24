@@ -81,9 +81,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             ammoBar.value = tank.currentWeapon.ammo.toFloat()
             checkLevelState()
             gameStage.camera.position.set(tank.centerX, tank.centerY, 0f)
-            if (Rumble.getRumbleTimeLeft() > 0){
+            if (Rumble.rumbleTimeLeft > 0){
                 Rumble.tick(Gdx.graphics.deltaTime);
-                gameStage.camera.translate(Rumble.getPos().x, Rumble.getPos().y,0f)
+                gameStage.camera.translate(Rumble.pos.x, Rumble.pos.y,0f)
             }
         }
         gameStage.draw()
