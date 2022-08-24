@@ -23,7 +23,7 @@ class PlayerTank (
     150 + gameValues.getInteger("speed") * 10f,
     Constants.CAT_PLAYER,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
-    1000f + gameValues.getInteger("health") * 200, false, null, Color.WHITE){
+    800f + gameValues.getInteger("health") * 100f, false, null, Color.WHITE){
 
     private val visibilityRadius = 3
     init {

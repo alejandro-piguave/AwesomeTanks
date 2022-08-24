@@ -19,13 +19,13 @@ abstract class Block(
     texturePath: String,
     world: World,
     shape: Shape,
-    health: Int,
+    health: Float,
     pos: Vector2,
     size: Float,
     isFlammable: Boolean, damageListener: DamageListener? = null,
     rumble: Boolean = true
 ) : DamageableActor(
-    manager, health.toFloat(), isFlammable, false, damageListener, rumble
+    manager, health, isFlammable, false, damageListener, rumble
 ) {
     private val sprite: Sprite = Sprite(manager.get(texturePath, Texture::class.java))
     @JvmField
@@ -39,7 +39,7 @@ abstract class Block(
     texturePath: String,
     world: World,
     shape: Shape,
-    health: Int,
+    health: Float,
     pos: Vector2,
     size: Float,
     isFlammable: Boolean, damageListener: DamageListener? = null): this( manager, texturePath, world, shape, health, pos, size, isFlammable, damageListener, true)

@@ -38,6 +38,7 @@ class Spawner(
     private var interval: Long
     private var maxSpan = 20000
     private val maxType: Int
+    private val minType: Int
     override fun act(delta: Float) {
         super.act(delta)
 
@@ -52,7 +53,7 @@ class Spawner(
                     body.position,
                     targetPosition,
                     EnemyTank.Tier.NORMAL,
-                    Utils.getRandomInt(maxType + 1),
+                    Utils.getRandomInt(minType, maxType + 1),
                     damageListener
                 )
             )
@@ -61,12 +62,23 @@ class Spawner(
 
     companion object {
         private fun getHealth(level: Int): Int {
-            return 200 + (800 - 200) / 30 * level
+            return 200 + (600) / 30 * level
         }
 
         @JvmStatic
         fun getMaxType(level: Int): Int {
-            return if (level <= 3) Constants.RICOCHET else Constants.RAILGUN
+            return if (level <= 8) Constants.RICOCHET
+            else if(level <= 16) Constants.CANON
+            else if(level <= 25) Constants.LASERGUN
+            else Constants.RAILGUN
+        }
+
+        @JvmStatic
+        fun getMinType(level: Int): Int {
+            return if (level <= 10) Constants.MINIGUN
+            else if(level <= 12) Constants.SHOTGUN
+            else if(level <= 16) Constants.RICOCHET
+            else Constants.FLAMETHROWER
         }
     }
 
@@ -92,5 +104,6 @@ class Spawner(
         lastSpawn = TimeUtils.millis()
         interval = 1000
         maxType = getMaxType(level)
+        minType = getMinType(level)
     }
 }

@@ -28,7 +28,7 @@ class EnemyTank(
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
-    getHealthByTier(tier),true, damageListener, getColorByTier(tier)),
+    getHealthByTierAndType(tier, type),true, damageListener, getColorByTier(tier)),
     EnemyAICallback {
 
 
@@ -72,11 +72,11 @@ class EnemyTank(
                 Tier.BOSS -> .9f
             }
         }
-        private fun getHealthByTier(tier: Tier): Float{
+        private fun getHealthByTierAndType(tier: Tier, type: Int): Float{
             return when (tier){
-                Tier.MINI -> 150f
-                Tier.NORMAL -> 200f
-                Tier.BOSS -> 500f
+                Tier.MINI -> 100f + type/Constants.RAILGUN * 100f
+                Tier.NORMAL -> 150f + type/Constants.RAILGUN * 300f
+                Tier.BOSS -> 300f + type/Constants.RAILGUN * 500f
             }
         }
 
@@ -109,4 +109,5 @@ class EnemyTank(
     enum class Tier{
         MINI, NORMAL, BOSS
     }
+
 }

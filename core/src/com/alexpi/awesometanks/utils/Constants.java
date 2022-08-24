@@ -10,7 +10,9 @@ public class Constants {
             CENTER_Y = SCREEN_HEIGHT /2, CENTER_X = SCREEN_WIDTH /2,
             TILE_SIZE =80;
     public static final char wall = 'X', space = ' ',start = 'S', gate = '@', bricks = '#', box = '*'
-            , bomb = 'O', spawner = '+', MINIGUN_BOSS = 'A', RAILGUN_BOSS = 'G';
+            , bomb = 'O', spawner = '+',
+            MINIGUN_BOSS = 'A', SHOTGUN_BOSS = 'B', RICOCHET_BOSS = 'C', FLAMETHROWER_BOSS = 'D', CANON_BOSS = 'E',
+            LASERGUN_BOSS = 'F', RAILGUN_BOSS = 'G';
 
     public static final char[] solidBlocks = {wall, gate, bricks};
 

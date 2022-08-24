@@ -258,7 +258,7 @@ X    @  5@   @    X
 X *  @  @@ O @  + X
 X    X       X    X
 XXXXXX@@XXX@@XXXXXX
-XXXX           XXXX
+XXXX F         XXXX
 XXXX @   @   @ XXXX
 XXXX   O   O   XXXX
 XXXX   @ O #  *XXXX
@@ -334,7 +334,7 @@ X##   #####*#   #X
 XXXXXXXXXXXXXXXXXX
 19.
 XXXXXXXXXXXXXXXXXXX
-X      @   @      X
+X      @ C @      X
 X   ## @ + @ @@ + X
 X    # @@@@@ @    X
 X @@           ## X
@@ -442,7 +442,7 @@ X    3@        @O     X
 X ##    ###@@      @  X
 X              2  @@  X
 X *#    O#@@@#O       X
-X      ###   ###   @@  X
+X      ### D ###   @@  X
 X      #*  +  *#      X
 XXXXXXXXXXXXXXXXXXXXXXX
 24.

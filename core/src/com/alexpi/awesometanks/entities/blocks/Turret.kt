@@ -26,7 +26,7 @@ class Turret(
     pos: Vector2,
     type: Int
 ) : Block(
-    manager, "sprites/turret_base.png", world, PolygonShape(), 200, pos, .8f, true, listener
+    manager, "sprites/turret_base.png", world, PolygonShape(), getHealthByType(type), pos, .8f, true, listener
 ), EnemyAICallback {
     private val weapon: Weapon
     private val enemyAI = TurretAI(world, body.position, targetPosition, this)
@@ -48,6 +48,10 @@ class Turret(
 
     companion object {
         private const val ROTATION_SPEED = .035f
+
+        fun getHealthByType(type: Int): Float{
+            return 200f + type/Constants.RAILGUN * 400f
+        }
     }
 
     override fun detach() {
