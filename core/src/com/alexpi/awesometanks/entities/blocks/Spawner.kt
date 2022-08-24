@@ -18,7 +18,7 @@ import kotlin.experimental.or
  */
 class Spawner(
     listener: DamageListener,
-    private val manager: AssetManager,
+    manager: AssetManager,
     world: World,
     private val targetPosition: Vector2,
     pos: Vector2,
@@ -36,14 +36,16 @@ class Spawner(
 ) {
     private var lastSpawn: Long
     private var interval: Long
-    private var maxSpan = 20000
+    private var maxSpan = 15000
     private val maxType: Int
     private val minType: Int
+    private val nuggetValue: Int
     override fun act(delta: Float) {
         super.act(delta)
 
         if (lastSpawn + interval < TimeUtils.millis()) {
             lastSpawn = TimeUtils.millis()
+            //It increments the spawn interval by 5 seconds each time to prevent excessive enemy generation
             interval = Utils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
             maxSpan += 5000
             parent.addActor(
@@ -61,15 +63,19 @@ class Spawner(
     }
 
     companion object {
-        private fun getHealth(level: Int): Int {
-            return 200 + (600) / 30 * level
+        private fun getHealth(level: Int): Float {
+            return 400f + (1000f) / (Constants.LEVEL_COUNT - 1) * level
+        }
+
+        private fun getNuggetValue(level: Int): Int{
+            return 60 + (level.toFloat()/(Constants.LEVEL_COUNT -1)*80).toInt()
         }
 
         @JvmStatic
         fun getMaxType(level: Int): Int {
-            return if (level <= 8) Constants.RICOCHET
-            else if(level <= 16) Constants.CANON
-            else if(level <= 25) Constants.LASERGUN
+            return if (level <= 7) Constants.RICOCHET
+            else if(level <= 15) Constants.CANON
+            else if(level <= 22) Constants.LASERGUN
             else Constants.RAILGUN
         }
 
@@ -88,12 +94,13 @@ class Spawner(
     }
 
     private fun dropLoot() {
-        val num1 = Utils.getRandomInt(5, 10)
+        val num1 = Utils.getRandomInt(10, 15)
         for (i in 0 until num1) parent.addActor(
             GoldNugget(
                 manager,
                 body.world,
-                body.position
+                body.position,
+                Utils.getRandomInt(nuggetValue-10, nuggetValue+10)
             )
         )
     }
@@ -105,5 +112,6 @@ class Spawner(
         interval = 1000
         maxType = getMaxType(level)
         minType = getMinType(level)
+        nuggetValue = getNuggetValue(level)
     }
 }

@@ -33,6 +33,7 @@ class EnemyTank(
 
 
     private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
+    private val nuggetValue: Int
     private val weapon: Weapon
     override val currentWeapon: Weapon
         get() = weapon
@@ -52,12 +53,13 @@ class EnemyTank(
     }
 
     private fun dropLoot() {
-        val num1 = Utils.getRandomInt(5, 10)
+        val num1 = Utils.getRandomInt(5, 15)
         for (i in 0 until num1) parent.addActor(
             GoldNugget(
                 manager,
                 body.world,
-                body.position
+                body.position,
+                Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
             )
         )
     }
@@ -65,6 +67,27 @@ class EnemyTank(
     companion object {
         private const val ROTATION_SPEED = .035f
         private const val MOVEMENT_SPEED = 60f
+
+        private fun getNuggetValue(tier: Tier, type: Int): Int{
+            val tierMultiplier: Float = when(tier){
+                Tier.MINI -> .5f
+                Tier.NORMAL -> 1f
+                Tier.BOSS -> 1.5f
+            }
+
+            val typeMultiplier: Float = when(type){
+                Constants.MINIGUN -> 0f
+                Constants.SHOTGUN -> .2f
+                Constants.RICOCHET -> .3f
+                Constants.FLAMETHROWER -> .6f
+                Constants.CANON -> .6f
+                Constants.LASERGUN -> 1f
+                else -> 1f
+
+            }
+            return 50 + (typeMultiplier* 75 * tierMultiplier).toInt()
+        }
+
         private fun getSizeByTier(tier: Tier): Float{
             return when (tier){
                 Tier.MINI -> .6f
@@ -92,6 +115,7 @@ class EnemyTank(
     init {
         weapon = Weapon.getWeaponAt(type, manager, 1, 2, false)
         weapon.setUnlimitedAmmo(true)
+        nuggetValue = getNuggetValue(tier, type)
     }
 
     override fun attack(angle: Float) {

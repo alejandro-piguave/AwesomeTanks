@@ -12,11 +12,11 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class GoldNugget extends Item {
 
-    public int value;
+    public final int value;
 
-    public GoldNugget(AssetManager manager, World world, Vector2 position){
-        super(manager,"sprites/nugget.png",world,position, Utils.getRandomFloat(.1f,.25f));
-        value = (int) (size*250);
+    public GoldNugget(AssetManager manager, World world, Vector2 position, int value){
+        super(manager,"sprites/nugget.png",world,position, Utils.getRandomFloat(.15f,.25f));
+        this.value = value;
         float angle =  Utils.getRandomFloat(Math.PI*2);
         body.applyLinearImpulse(MathUtils.cos(angle)*.025f, MathUtils.sin(angle)*.025f, body.getPosition().x, body.getPosition().y, true);
     }

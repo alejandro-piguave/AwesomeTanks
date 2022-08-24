@@ -17,7 +17,7 @@ public class Rail extends Projectile {
     ParticleActor particleActor;
 
     public Rail(AssetManager manager, World world, Vector2 pos, float angle, float power, boolean filter) {
-        super( world, pos, new CircleShape(), angle, 35f, .25f, 80+power*10,filter);
+        super( world, pos, new CircleShape(), angle, 50f, .25f, 180+power*40,filter);
         particleActor = new ParticleActor(manager,"particles/railgun.party",getX()+getWidth()/2,getY()+getHeight()/2,true);
     }
 

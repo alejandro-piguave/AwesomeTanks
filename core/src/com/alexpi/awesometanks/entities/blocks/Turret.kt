@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
  */
 class Turret(
     listener: DamageListener,
-    private val manager: AssetManager,
+    manager: AssetManager,
     world: World,
     targetPosition: Vector2,
     pos: Vector2,
@@ -30,6 +30,7 @@ class Turret(
 ), EnemyAICallback {
     private val weapon: Weapon
     private val enemyAI = TurretAI(world, body.position, targetPosition, this)
+    private val nuggetValue: Int
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
         weapon.draw(batch,color, x, parentAlpha, originX, originY, width, height, scaleX, scaleY, y)
@@ -50,7 +51,31 @@ class Turret(
         private const val ROTATION_SPEED = .035f
 
         fun getHealthByType(type: Int): Float{
-            return 200f + type/Constants.RAILGUN * 400f
+            val typeMultiplier: Float = when(type){
+                Constants.MINIGUN -> 0f
+                Constants.SHOTGUN -> .2f
+                Constants.RICOCHET -> .3f
+                Constants.FLAMETHROWER -> .6f
+                Constants.CANON -> .6f
+                Constants.LASERGUN -> 1f
+                else -> 1f
+
+            }
+            return 300f + typeMultiplier * 500f
+        }
+
+        private fun getNuggetValue(type: Int): Int{
+            val typeMultiplier: Float = when(type){
+                Constants.MINIGUN -> 0f
+                Constants.SHOTGUN -> .2f
+                Constants.RICOCHET -> .3f
+                Constants.FLAMETHROWER -> .6f
+                Constants.CANON -> .6f
+                Constants.LASERGUN -> 1f
+                else -> 1f
+
+            }
+            return 60 + (typeMultiplier*75).toInt()
         }
     }
 
@@ -60,12 +85,13 @@ class Turret(
     }
 
     private fun dropLoot() {
-        val num1 = Utils.getRandomInt(5, 10)
+        val num1 = Utils.getRandomInt(10, 15)
         for (i in 0 until num1) parent.addActor(
             GoldNugget(
                 manager,
                 body.world,
-                body.position
+                body.position,
+                Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
             )
         )
     }
@@ -74,6 +100,7 @@ class Turret(
         val filter = Filter()
         filter.categoryBits = Constants.CAT_ENEMY
         fixture.filterData = filter
+        nuggetValue = getNuggetValue(type)
         weapon = Weapon.getWeaponAt(type, manager, 1, 3, false)
         weapon.setUnlimitedAmmo(true)
         setOrigin(width / 2, height / 2)

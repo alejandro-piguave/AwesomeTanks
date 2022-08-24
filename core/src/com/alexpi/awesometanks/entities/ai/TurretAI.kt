@@ -41,6 +41,6 @@ class TurretAI(private val world: World,
     }
 
     companion object {
-        private const val VISIBILITY_RADIUS = 7f
+        private const val VISIBILITY_RADIUS = 9f
     }
 }

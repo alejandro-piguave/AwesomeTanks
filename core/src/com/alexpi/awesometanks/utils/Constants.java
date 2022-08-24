@@ -17,10 +17,33 @@ public class Constants {
     public static final char[] solidBlocks = {wall, gate, bricks};
 
     public static final int[][] prices = {
-            {200, 500, 1000, 2000, 2000, 3500, 3500},//UPGRADE PRICES
             {0, 100, 200, 300, 300, 400, 400}, //AMMO PRICES
-            {0, 2750, 8000, 10000, 10000, 280, 28000}//GUN PRICES
+            {0, 2750, 8000, 10000, 10000, 28000, 28000}//GUN PRICES
     };
+
+    public static final int[][] gunUpgradePrices = {
+            {200, 300, 400, 500, 600},//MINIGUN
+            {500, 900, 1300, 1700, 2100},//SHOTGUN
+            {2500, 3000, 3500, 4000, 4500},//RICOCHET
+            {3000, 4000, 5000, 6000, 7000},//FLAMETHROWER
+            {3000, 4000, 5000, 6000, 7000},//CANON,
+            {11000, 12000, 13000, 14000, 15000},//LASER
+            {11000, 12000, 13000, 14000, 15000}//RAILGUN
+    };
+
+    public static final int[][] upgradePrices = {
+            {2000, 4000, 8000, 16000, 32000},//ARMOR
+            {500, 600, 700, 800, 900}, //MOVEMENT SPEED
+            {500, 600, 700, 800, 900}, //ROTATION SPEED
+            {500, 600, 700, 800, 900} //VISIBILITY
+    };
+
+    public static final int LEVEL_COUNT = 30;
+
+    public static final String ARMOR = "armor";
+    public static final String MOVEMENT_SPEED = "speed";
+    public static final String ROTATION_SPEED = "rotation";
+    public static final String VISIBILITY = "visibility";
 
     public static final String[] WEAPON_NAMES = {"Minigun", "Shotgun", "Ricochet", "Flamethrower", "Canon", "Lasergun", "Railgun"};
 

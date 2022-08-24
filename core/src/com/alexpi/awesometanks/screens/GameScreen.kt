@@ -142,52 +142,11 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
 
             override fun onLandMineFound(x: Float, y: Float) {
-                val explosionRadius = 2.5f
-                val explosionSize = Constants.TILE_SIZE * explosionRadius * 2
-                val explosionX = Constants.TILE_SIZE * x
-                val explosionY = Constants.TILE_SIZE * y
-                gameStage.addActor(
-                    ParticleActor(
-                        game.manager,
-                        "particles/big-explosion.party",
-                        explosionX,
-                        explosionY,
-                        false
-                    )
-                )
-                val explosionShine =
-                    Image(game.manager.get("sprites/explosion_shine.png", Texture::class.java))
-                explosionShine.setBounds(
-                    explosionX - explosionSize * .5f,
-                    explosionY - explosionSize * .5f,
-                    explosionSize,
-                    explosionSize
-                )
-                explosionShine.setOrigin(explosionSize * .5f, explosionSize * .5f)
-                explosionShine.addAction(
-                    Actions.sequence(
-                        Actions.parallel(
-                            Actions.scaleTo(.01f, .01f, .75f),
-                            Actions.alpha(0f, .75f)
-                        ),
-                        Actions.run(Runnable { explosionShine.remove() })
-                    )
-                )
-                gameStage.addActor(explosionShine)
-                val bodies = com.badlogic.gdx.utils.Array<Body>()
-                world.getBodies(bodies)
-                for (body: Body in bodies) {
-                    val distanceFromMine = Utils.fastHypot(
-                        (body.position.x - x).toDouble(),
-                        (body.position.y - y).toDouble()
-                    ).toFloat()
-                    if (body.userData is DamageableActor && (distanceFromMine < explosionRadius)) {
-                        val damageableActor = (body.userData as DamageableActor)
-                        damageableActor.takeDamage(350 * (explosionRadius - distanceFromMine) / explosionRadius)
-                    }
-                }
-                if (Settings.soundsOn) explosionSound.play()
-                Rumble.rumble(40f, .65f)
+                createLandMineExplosion(x,y)
+            }
+
+            override fun onCanonBulletCollided(x: Float, y: Float) {
+                createCanonBallExplosion(x,y)
             }
         })
         world.setContactListener(contactManager)
@@ -556,6 +515,62 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         gameStage.dispose()
         world.dispose()
         Gdx.input.inputProcessor = null
+    }
+
+    private fun createLandMineExplosion(x: Float, y: Float){
+        createExplosion(x,y ,2.5f, 350f,1f, 40f, .65f)
+    }
+
+    private fun createCanonBallExplosion(x: Float, y: Float){
+        createExplosion(x,y ,.25f, 35f,.05f, 15f, .45f)
+    }
+
+    private fun createExplosion(x: Float, y: Float, explosionRadius: Float, maxDamage: Float, volume: Float, rumblePower: Float, rumbleLength: Float){
+        val explosionSize = Constants.TILE_SIZE * explosionRadius * 2
+        val explosionX = Constants.TILE_SIZE * x
+        val explosionY = Constants.TILE_SIZE * y
+        gameStage.addActor(
+            ParticleActor(
+                game.manager,
+                "particles/big-explosion.party",
+                explosionX,
+                explosionY,
+                false
+            )
+        )
+        val explosionShine =
+            Image(game.manager.get("sprites/explosion_shine.png", Texture::class.java))
+        explosionShine.setBounds(
+            explosionX - explosionSize * .5f,
+            explosionY - explosionSize * .5f,
+            explosionSize,
+            explosionSize
+        )
+        explosionShine.setOrigin(explosionSize * .5f, explosionSize * .5f)
+        explosionShine.addAction(
+            Actions.sequence(
+                Actions.parallel(
+                    Actions.scaleTo(.01f, .01f, .75f),
+                    Actions.alpha(0f, .75f)
+                ),
+                Actions.run { explosionShine.remove() }
+            )
+        )
+        gameStage.addActor(explosionShine)
+        val bodies = com.badlogic.gdx.utils.Array<Body>()
+        world.getBodies(bodies)
+        for (body: Body in bodies) {
+            val distanceFromMine = Utils.fastHypot(
+                (body.position.x - x).toDouble(),
+                (body.position.y - y).toDouble()
+            ).toFloat()
+            if (body.userData is DamageableActor && (distanceFromMine < explosionRadius)) {
+                val damageableActor = (body.userData as DamageableActor)
+                damageableActor.takeDamage(maxDamage * (explosionRadius - distanceFromMine) / explosionRadius)
+            }
+        }
+        if (Settings.soundsOn) explosionSound.play(volume)
+        Rumble.rumble(rumblePower, rumbleLength)
     }
 
     //EVENTS FOR DESKTOP

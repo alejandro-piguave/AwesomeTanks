@@ -21,7 +21,7 @@ public class ShotGun extends Weapon {
     public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position) {
         for(int i = 0; i < 10;i++){
             float num = Utils.getRandomFloat(SHOOTING_ANGLE*2) - SHOOTING_ANGLE;
-            group.addActor(new Bullet(assetManager,world, position,currentAngleRotation + num, Utils.getRandomInt(10,30), .12f,10f+power, isPlayer));
+            group.addActor(new Bullet(assetManager,world, position,currentAngleRotation + num, Utils.getRandomInt(10,30), .15f,10f+power, isPlayer));
         }
     }
 }

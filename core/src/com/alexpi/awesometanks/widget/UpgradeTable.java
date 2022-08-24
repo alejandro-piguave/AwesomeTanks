@@ -50,5 +50,7 @@ public class UpgradeTable extends Table {
     public void setValue(float value){bar.setValue(value);}
     public int getValue(){return (int) bar.getValue();}
 
+    public boolean isMaxValue(){return bar.getValue() == bar.getMaxValue();}
+
     public float getMaxValue() {return bar.getMaxValue();}
 }

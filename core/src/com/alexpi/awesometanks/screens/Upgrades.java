@@ -1,6 +1,8 @@
 package com.alexpi.awesometanks.screens;
 
 import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
+import static com.alexpi.awesometanks.utils.Constants.prices;
+import static com.alexpi.awesometanks.utils.Constants.upgradePrices;
 
 import com.alexpi.awesometanks.utils.Settings;
 import com.alexpi.awesometanks.widget.GameButton;
@@ -67,8 +69,10 @@ public class Upgrades extends BaseScreen {
 
         values = new int[2][WEAPON_COUNT];
         for (int i = 0; i < WEAPON_COUNT;i++){
+            //POWER
             values[0][i] = game.getGameValues().getInteger("power" + i, 0);
-            values[1][i] = game.getGameValues().getInteger("ammo" + i, 20);}
+            //AMMO
+            values[1][i] = game.getGameValues().getInteger("ammo" + i, 100);}
         availableWeapons = new boolean[7];
         for (int i = 0; i < WEAPON_COUNT;i++)
             availableWeapons[i] = game.getGameValues().getBoolean("weapon"+i,true);
@@ -76,12 +80,31 @@ public class Upgrades extends BaseScreen {
         for(int i = 0;i< UPGRADE_COUNT;i++){
             String name = "";
             switch (i){
-                case 0: name = "health";break;
-                case 1: name = "speed";break;
-                case 2: name = "rotation";break;
-                case 3: name = "visibility";break;}
-            upgradables[i] = new UpgradeTable(game.getManager(), name, game.getGameValues().getInteger(name),6f,500);
-            upgradables[i].changePrice(500+ upgradables[i].getValue()*500);
+                case 0: name = Constants.ARMOR;break;
+                case 1: name = Constants.MOVEMENT_SPEED;break;
+                case 2: name = Constants.ROTATION_SPEED;break;
+                case 3: name = Constants.VISIBILITY;break;
+            }
+            int value = game.getGameValues().getInteger(name);
+            upgradables[i] = new UpgradeTable(game.getManager(), name, value,5f,value ==5? 1000: upgradePrices[i][value]);
+            final int finalI = i;
+            upgradables[i].getBuyButton().addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (upgradables[finalI].canBuy(moneyValue)) {
+                        if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
+                        upgradables[finalI].increaseValue(1);
+                        int value = upgradables[finalI].getValue();
+                        money.setText((moneyValue-=upgradables[finalI].getPrice()) + " $");
+
+                        if(upgradables[finalI].isMaxValue())
+                            upgradables[finalI].getBuyButton().setVisible(false);
+                        else upgradables[finalI].changePrice(upgradePrices[finalI][value]);
+                    }
+                }
+            });
+            if(upgradables[i].isMaxValue())
+                upgradables[i].getBuyButton().setVisible(false);
         }
 
         GameButton playButton = new GameButton(game.getManager(), new GameButton.OnClickListener() {
@@ -124,17 +147,22 @@ public class Upgrades extends BaseScreen {
                     currentWeapon = finalI;
 
                     weaponPower.setValue(values[0][currentWeapon]);
-                    weaponPower.changePrice(Constants.prices[0][currentWeapon] + (Constants.prices[0][currentWeapon] / 2) * weaponPower.getValue());
+                    if(weaponPower.isMaxValue()){
+                        weaponPower.getBuyButton().setVisible(false);
+                    } else {
+                        weaponPower.changePrice(Constants.gunUpgradePrices[currentWeapon][values[0][currentWeapon]]);
+                        weaponPower.getBuyButton().setVisible(true);
+                    }
 
                     weaponAmmo.setValue(values[1][currentWeapon]);
-                    weaponAmmo.changePrice(Constants.prices[1][currentWeapon]);
+                    weaponAmmo.changePrice(Constants.prices[0][currentWeapon]);
 
                     currentWeaponImage.setStyle(weaponButtons[finalI].getStyle());
 
                     if(weaponButtons[finalI].isDisabled()){
                         weaponAmmo.setVisible(false);
                         weaponPower.setVisible(false);
-                        currentWeaponName.setText("$"+Constants.prices[2][currentWeapon]);
+                        currentWeaponName.setText("$"+Constants.prices[1][currentWeapon]);
                     } else{
                         weaponAmmo.setVisible(true);
                         weaponPower.setVisible(true);
@@ -146,8 +174,6 @@ public class Upgrades extends BaseScreen {
                     } else {
                         currentWeaponImage.setDisabled(availableWeapons[currentWeapon]);
                     }
-
-
                 }
             });
             buttons.add(weaponButtons[i]).size(Constants.TILE_SIZE,Constants.TILE_SIZE).pad(Constants.TILE_SIZE /5);
@@ -157,9 +183,9 @@ public class Upgrades extends BaseScreen {
         currentWeaponImage.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(weaponButtons[currentWeapon].isDisabled() && (moneyValue-Constants.prices[2][currentWeapon])> 0){
+                if(weaponButtons[currentWeapon].isDisabled() && (moneyValue-Constants.prices[1][currentWeapon])> 0){
                     if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
-                    money.setText((moneyValue -= Constants.prices[2][currentWeapon]) + " $");
+                    money.setText((moneyValue -= Constants.prices[1][currentWeapon]) + " $");
                     availableWeapons[currentWeapon] = false;
                     weaponButtons[currentWeapon].setDisabled(false);
                     currentWeaponImage.setDisabled(false);
@@ -169,7 +195,7 @@ public class Upgrades extends BaseScreen {
                 }}});
 
 
-        weaponPower = new UpgradeTable(game.getManager(), "Power",values[0][0],5,200 + 100 * values[0][0]);
+        weaponPower = new UpgradeTable(game.getManager(), "Power",values[0][0],5,Constants.gunUpgradePrices[0][values[0][0]]);
         weaponPower.getBuyButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -177,6 +203,11 @@ public class Upgrades extends BaseScreen {
                     if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
                     weaponPower.increaseValue(1);
                     values[0][currentWeapon] = weaponPower.getValue();
+                    if(weaponPower.isMaxValue()){
+                        weaponPower.getBuyButton().setVisible(false);
+                    } else {
+                        weaponPower.changePrice(Constants.gunUpgradePrices[currentWeapon][values[0][currentWeapon]]);
+                    }
                     money.setText((moneyValue -= weaponPower.getPrice()) + " $");
                 }}});
 
@@ -191,24 +222,6 @@ public class Upgrades extends BaseScreen {
                     values[1][currentWeapon] = weaponAmmo.getValue();
                     money.setText((moneyValue -= weaponAmmo.getPrice()) + " $");
                 }}});
-
-
-        for(final UpgradeTable p: upgradables){
-            p.getBuyButton().addListener(new ClickListener(){
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (p.canBuy(moneyValue)) {
-                        if(Settings.INSTANCE.getSoundsOn())purchaseSound.play();
-                        p.increaseValue(1);
-                        money.setText((moneyValue-=p.getPrice()) + " $");
-                        p.changePrice(p.getPrice()+500);
-                        if(p.getValue() == p.getMaxValue())p.getBuyButton().setVisible(false);
-                    }
-                }
-            });
-            if(p.getValue() == p.getMaxValue())p.getBuyButton().setVisible(false);
-        }
-
 
         performance.add(upgradables[0]).size(Constants.TILE_SIZE *2f, Constants.TILE_SIZE * 1.5f).pad(8);
         performance.add(upgradables[1]).size(Constants.TILE_SIZE *2f, Constants.TILE_SIZE * 1.5f).pad(8).row();

@@ -19,15 +19,20 @@ class PlayerTank (
     gameValues: Preferences,
     private val map: GameMap)
     : Tank(manager, world, Vector2(-1f,-1f), .75f,
-    .07f + gameValues.getInteger("rotation") / 40f,
-    150 + gameValues.getInteger("speed") * 10f,
+    .07f + gameValues.getInteger(Constants.ROTATION_SPEED) / 40f,
+    150 + gameValues.getInteger(Constants.MOVEMENT_SPEED) * 10f,
     Constants.CAT_PLAYER,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
-    800f + gameValues.getInteger("health") * 100f, false, null, Color.WHITE){
+    600f, false, null, Color.WHITE){
 
-    private val visibilityRadius = 3
+    private val visibilityRadius = 2 + gameValues.getInteger(Constants.VISIBILITY)
+    private val armor = gameValues.getInteger(Constants.ARMOR)
     init {
         map.visualRange = visibilityRadius
+    }
+
+    override fun takeDamage(damage: Float) {
+        super.takeDamage(damage * (1f - armor*.1f))
     }
 
     fun setPos(row: Int, col: Int){

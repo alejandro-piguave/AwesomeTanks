@@ -11,6 +11,6 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class Bricks extends Block {
     public Bricks(DamageListener listener, AssetManager manager, World world, Vector2 pos) {
-        super(manager,"sprites/bricks.png", world,new PolygonShape(), 300,pos,1f, true, listener);
+        super(manager,"sprites/bricks.png", world,new PolygonShape(), 200,pos,1f, true, listener);
     }
 }

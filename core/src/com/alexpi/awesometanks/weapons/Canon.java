@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.weapons;
 
 import com.alexpi.awesometanks.entities.projectiles.Bullet;
+import com.alexpi.awesometanks.entities.projectiles.CanonBall;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -17,6 +18,6 @@ public class Canon extends Weapon {
 
     @Override
     public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position) {
-        group.addActor( new Bullet(assetManager,world, position, currentAngleRotation, 35f, .2f, 40+power*5, isPlayer));
+        group.addActor( new CanonBall(assetManager,world, position, currentAngleRotation, power, isPlayer));
     }
 }

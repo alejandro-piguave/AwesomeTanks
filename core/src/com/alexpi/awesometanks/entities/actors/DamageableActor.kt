@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 23/02/2016.
  */
-abstract class DamageableActor(private val manager: AssetManager,
+abstract class DamageableActor(protected val manager: AssetManager,
                                val maxHealth: Float,
                                private val isFlammable: Boolean,
                                private val isFreezable: Boolean,

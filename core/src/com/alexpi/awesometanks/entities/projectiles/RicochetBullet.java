@@ -24,7 +24,7 @@ public class RicochetBullet extends Projectile {
     private final static int MAX_HITS = 3;
 
     public RicochetBullet(AssetManager manager, World world, Vector2 pos, Sound sound, float angle, float power, boolean isPlayer) {
-        super(world,pos,new CircleShape(), angle,20f,.2f,25+power*2,isPlayer);
+        super(world,pos,new CircleShape(), angle,20f,.2f,35+power*5,isPlayer);
         hitSound = sound;
         sprite = new Sprite(manager.get("sprites/ricochet_bullet.png",Texture.class));
         particleActor = new ParticleActor(manager,"particles/ricochets.party",getX()+getWidth()/2,getY()+getHeight()/2,true);

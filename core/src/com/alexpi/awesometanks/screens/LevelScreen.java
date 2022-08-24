@@ -27,7 +27,6 @@ import com.badlogic.gdx.utils.Timer;
 public class LevelScreen extends BaseScreen {
     private Stage stage;
     private Label lockedLevelLabel;
-    private static final int LEVEL_COUNT = 30;
     private static final int LEVEL_TABLE_COLUMN_COUNT = 10;
 
     public LevelScreen(MainGame game) {super(game);}
@@ -47,7 +46,7 @@ public class LevelScreen extends BaseScreen {
         lockedLevelLabel.addAction(Actions.alpha(0));
 
         Table levelTable = new Table();
-        for(int i = 0; i < LEVEL_COUNT; i++){
+        for(int i = 0; i < Constants.LEVEL_COUNT; i++){
             final int finalI = i;
             GameButton levelButton = new GameButton(game.getManager(), new GameButton.OnClickListener() {
                 @Override
