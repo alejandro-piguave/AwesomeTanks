@@ -15,11 +15,10 @@ import kotlin.experimental.or
 
 class PlayerTank (
     manager: AssetManager,
-    entityGroup: Group,
     world: World,
     gameValues: Preferences,
     private val map: GameMap)
-    : Tank(manager,entityGroup, world, Vector2(-1f,-1f), .75f,
+    : Tank(manager, world, Vector2(-1f,-1f), .75f,
     .07f + gameValues.getInteger("rotation") / 40f,
     150 + gameValues.getInteger("speed") * 10f,
     Constants.CAT_PLAYER,

@@ -22,7 +22,6 @@ import kotlin.math.min
  */
 abstract class Tank(
     protected val manager: AssetManager,
-    protected val entityGroup: Group,
     world: World,
     position: Vector2,
     private val bodySize: Float,
@@ -34,7 +33,7 @@ abstract class Tank(
     isFreezable: Boolean,
     damageListener: DamageListener? = null,
     tankColor: Color
-    ) : DamageableActor(manager, maxHealth, true, isFreezable, damageListener){
+    ) : DamageableActor(manager, maxHealth, true, isFreezable, damageListener, true){
 
     private val bodySprite: Sprite = Sprite(manager.get("sprites/tank_body.png", Texture::class.java))
     private val wheelsSprite: Sprite = Sprite(manager.get("sprites/tank_wheels.png", Texture::class.java))
@@ -89,7 +88,7 @@ abstract class Tank(
         if (isShooting && isAlive) {
             currentWeapon.shoot(
                 manager,
-                entityGroup,
+                parent,
                 body.world,
                 body.position
             )
@@ -129,6 +128,7 @@ abstract class Tank(
     }
 
     override fun detach() {
+        super.detach()
         body.destroyFixture(fixture)
         body.world.destroyBody(body)
         remove()

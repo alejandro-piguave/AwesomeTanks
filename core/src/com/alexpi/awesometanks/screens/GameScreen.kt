@@ -62,7 +62,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private val explosionSound: Sound = game.manager.get("sounds/explosion.ogg")
     private val tank: PlayerTank = PlayerTank(
         game.manager,
-        entityGroup,
         world,
         game.gameValues,
         gameMap)
@@ -82,6 +81,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             ammoBar.value = tank.currentWeapon.ammo.toFloat()
             checkLevelState()
             gameStage.camera.position.set(tank.centerX, tank.centerY, 0f)
+            if (Rumble.getRumbleTimeLeft() > 0){
+                Rumble.tick(Gdx.graphics.deltaTime);
+                gameStage.camera.translate(Rumble.getPos().x, Rumble.getPos().y,0f)
+            }
         }
         gameStage.draw()
         uiStage.act(delta)
@@ -184,6 +187,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                     }
                 }
                 if (Settings.soundsOn) explosionSound.play()
+                Rumble.rumble(40f, .65f)
             }
         })
         world.setContactListener(contactManager)
@@ -227,7 +231,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                     Box(
                         this,
                         game.manager,
-                        entityGroup,
                         world,
                         tank.body.position,
                         gameMap.toWorldPos(row,col),
@@ -237,7 +240,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                     Spawner(
                         this,
                         game.manager,
-                        entityGroup,
                         world,
                         tank.body.position,
                         gameMap.toWorldPos(row,col),
@@ -256,7 +258,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                         Turret(
                             this,
                             game.manager,
-                            entityGroup,
                             world,
                             tank.body.position,
                             gameMap.toWorldPos(row,col),
@@ -265,7 +266,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                     )
                 } else if(value in Constants.MINIGUN_BOSS..Constants.RAILGUN_BOSS){
                     val type = value.code - Constants.MINIGUN_BOSS.code
-                    entityGroup.addActor(EnemyTank(game.manager, entityGroup, world, gameMap.toWorldPos(row, col),tank.body.position,EnemyTank.Tier.BOSS,type,this ))
+                    entityGroup.addActor(EnemyTank(game.manager, world, gameMap.toWorldPos(row, col),tank.body.position,EnemyTank.Tier.BOSS,type,this ))
                 }
                 gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(row, col)))
             }

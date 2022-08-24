@@ -47,12 +47,12 @@ class LaserGun(
         world: World,
         position: Vector2
     ) {
+        laserRay.rotation = currentAngleRotation * MathUtils.radiansToDegrees
+        laserRay.setPosition(position.x * Constants.TILE_SIZE, position.y * Constants.TILE_SIZE - laserRay.height/2)
         if(canShoot()){
             val dX = MathUtils.cos(currentAngleRotation) * MAXIMUM_REACH
             val dY = MathUtils.sin(currentAngleRotation) * MAXIMUM_REACH
             val point2 = Vector2(position.x + dX, position.y + dY)
-            laserRay.rotation = currentAngleRotation * MathUtils.radiansToDegrees
-            laserRay.setPosition(position.x * Constants.TILE_SIZE, position.y * Constants.TILE_SIZE - laserRay.height/2)
 
 
             if(!playSound){

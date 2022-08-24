@@ -38,11 +38,12 @@ class GameMap(level: Int){
         val cA = ans.firstElement()!!.length
         val rA = ans.size
         map = Array(rA) { CharArray(cA) }
-        visibleArea = Array(rA) { BooleanArray(cA) { true } }
+
+        //set to true for development purposes
+        visibleArea = Array(rA) { BooleanArray(cA) }
         for (i in 0 until rA) {
 
             if(i == 0 || i == rA -1){
-                //set to true for development purposes
                 visibleArea[i] = BooleanArray(cA) { true }
             }
             visibleArea[i][0] = true

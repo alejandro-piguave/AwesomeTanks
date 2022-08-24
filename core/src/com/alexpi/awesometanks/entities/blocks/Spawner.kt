@@ -19,7 +19,6 @@ import kotlin.experimental.or
 class Spawner(
     listener: DamageListener,
     private val manager: AssetManager,
-    private val entityGroup: Group,
     world: World,
     private val targetPosition: Vector2,
     pos: Vector2,
@@ -46,10 +45,9 @@ class Spawner(
             lastSpawn = TimeUtils.millis()
             interval = Utils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
             maxSpan += 5000
-            entityGroup.addActor(
+            parent.addActor(
                 EnemyTank(
                     manager,
-                    entityGroup,
                     body.world,
                     body.position,
                     targetPosition,
@@ -73,13 +71,13 @@ class Spawner(
     }
 
     override fun detach() {
-        super.detach()
         dropLoot()
+        super.detach()
     }
 
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(5, 10)
-        for (i in 0 until num1) entityGroup.addActor(
+        for (i in 0 until num1) parent.addActor(
             GoldNugget(
                 manager,
                 body.world,

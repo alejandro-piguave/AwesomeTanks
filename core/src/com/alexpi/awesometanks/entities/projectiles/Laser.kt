@@ -17,4 +17,4 @@ class Laser(
     angle: Float,
     power: Float,
     filter: Boolean
-) : Projectile(world, pos, PolygonShape(), angle, 35f, .2f, 20 + power * 5, filter)
+) : Projectile(world, pos, PolygonShape(), angle, 40f, .2f, 20 + power * 5, filter)

@@ -1,7 +1,8 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
-import com.alexpi.awesometanks.entities.ai.EnemyAI
+import com.alexpi.awesometanks.entities.ai.EnemyAICallback
+import com.alexpi.awesometanks.entities.ai.TurretAI
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
@@ -20,16 +21,15 @@ import com.badlogic.gdx.scenes.scene2d.Group
 class Turret(
     listener: DamageListener,
     private val manager: AssetManager,
-    private val entityGroup: Group,
     world: World,
     targetPosition: Vector2,
     pos: Vector2,
     type: Int
 ) : Block(
-    manager, "sprites/turret_base.png", world, PolygonShape(), 500, pos, .8f, true, listener
-), EnemyAI.Callback {
+    manager, "sprites/turret_base.png", world, PolygonShape(), 200, pos, .8f, true, listener
+), EnemyAICallback {
     private val weapon: Weapon
-    private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
+    private val enemyAI = TurretAI(world, body.position, targetPosition, this)
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
         weapon.draw(batch,color, x, parentAlpha, originX, originY, width, height, scaleX, scaleY, y)
@@ -51,13 +51,13 @@ class Turret(
     }
 
     override fun detach() {
-        super.detach()
         dropLoot()
+        super.detach()
     }
 
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(5, 10)
-        for (i in 0 until num1) entityGroup.addActor(
+        for (i in 0 until num1) parent.addActor(
             GoldNugget(
                 manager,
                 body.world,
@@ -78,7 +78,7 @@ class Turret(
     override fun attack(angle: Float) {
         weapon.setDesiredAngleRotation(angle)
         weapon.updateAngleRotation(ROTATION_SPEED)
-        weapon.shoot(manager, entityGroup, body.world, body.position)
+        weapon.shoot(manager, parent, body.world, body.position)
     }
 
     override fun await() {

@@ -2,6 +2,7 @@ package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.EnemyAI
+import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
@@ -19,17 +20,16 @@ import kotlin.experimental.or
  */
 class EnemyTank(
     manager: AssetManager,
-    entityGroup: Group,
     world: World,
     position: Vector2,
     targetPosition: Vector2,
     tier: Tier,
-    type: Int, damageListener: DamageListener?) : Tank(manager, entityGroup, world, position, getSizeByTier(tier),
+    type: Int, damageListener: DamageListener?) : Tank(manager, world, position, getSizeByTier(tier),
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
     getHealthByTier(tier),true, damageListener, getColorByTier(tier)),
-    EnemyAI.Callback {
+    EnemyAICallback {
 
 
     private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
@@ -47,13 +47,13 @@ class EnemyTank(
     }
 
     override fun detach() {
-        super.detach()
         dropLoot()
+        super.detach()
     }
 
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(5, 10)
-        for (i in 0 until num1) entityGroup.addActor(
+        for (i in 0 until num1) parent.addActor(
             GoldNugget(
                 manager,
                 body.world,

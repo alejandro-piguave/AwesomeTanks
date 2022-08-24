@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.actors
 
 import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.utils.Rumble
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -16,7 +17,7 @@ abstract class DamageableActor(private val manager: AssetManager,
                                val maxHealth: Float,
                                private val isFlammable: Boolean,
                                private val isFreezable: Boolean,
-                               protected val damageListener: DamageListener? = null) :
+                               protected val damageListener: DamageListener? = null, private val rumble: Boolean) :
     Actor() {
     var health: Float = maxHealth
     private set
@@ -86,15 +87,14 @@ abstract class DamageableActor(private val manager: AssetManager,
     }
 
     open fun detach() {
-        stage.addActor(
-            ParticleActor(
-                manager,
-                "particles/explosion.party",
-                x + width / 2,
-                y + height / 2,
-                false
-            )
-        )
+        if(rumble)Rumble.rumble(15f, .3f)
+        parent.addActor(ParticleActor(
+            manager,
+            "particles/explosion.party",
+            x + width / 2,
+            y + height / 2,
+            false
+        ))
     }
 
     val isAlive: Boolean

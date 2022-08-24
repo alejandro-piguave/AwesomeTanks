@@ -3,6 +3,7 @@ package com.alexpi.awesometanks.entities.projectiles;
 import com.alexpi.awesometanks.utils.Settings;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -16,7 +17,7 @@ import com.badlogic.gdx.graphics.Texture;
  */
 public class RicochetBullet extends Projectile {
 
-    ParticleActor particleActor;
+    private final ParticleActor particleActor;
     int hits;
     Sound hitSound;
 
@@ -28,23 +29,20 @@ public class RicochetBullet extends Projectile {
         sprite = new Sprite(manager.get("sprites/ricochet_bullet.png",Texture.class));
         particleActor = new ParticleActor(manager,"particles/ricochets.party",getX()+getWidth()/2,getY()+getHeight()/2,true);
     }
-    @Override
-    protected void setStage(Stage stage) {
-        if(stage!=null)
-            stage.addActor(particleActor);
-        super.setStage(stage);
-    }
+
 
     @Override
     public void act(float delta) {
         super.act(delta);
         particleActor.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
+        particleActor.act(delta);
     }
 
+
     @Override
-    public void detach() {
-        particleActor.remove();
-        super.detach();
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+        particleActor.draw(batch, parentAlpha);
     }
 
     @Override

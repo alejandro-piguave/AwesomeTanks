@@ -18,12 +18,10 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 public class Box extends Block {
     private AssetManager manager;
     private Vector2 targetPosition;
-    private Group entityGroup;
     private int maxType;
-    public Box(DamageListener listener, AssetManager manager, Group entityGroup, World world, Vector2 targetPosition, Vector2 pos, int level){
+    public Box(DamageListener listener, AssetManager manager, World world, Vector2 targetPosition, Vector2 pos, int level){
         super(manager,"sprites/box.png", world,new PolygonShape(),50, pos, .8f, true, listener);
         this.manager = manager;
-        this.entityGroup = entityGroup;
         this.targetPosition = targetPosition;
         maxType = Spawner.getMaxType(level);
     }
@@ -33,16 +31,20 @@ public class Box extends Block {
             case 0:
                 int num1 = Utils.getRandomInt(5,16);
                 for(int i =0; i <num1;i++)
-                    entityGroup.addActor(new GoldNugget(manager,body.getWorld(),body.getPosition()));
+                    getParent().addActor(new GoldNugget(manager,body.getWorld(),body.getPosition()));
                 break;
             case 1:
-                entityGroup.addActor(new FreezingBall(manager, body.getWorld(), body.getPosition()));break;
+                getParent().addActor(new FreezingBall(manager, body.getWorld(), body.getPosition()));break;
             case 2:
-                entityGroup.addActor(new HealthPack(manager,body.getWorld(),body.getPosition()));break;
+                getParent().addActor(new HealthPack(manager,body.getWorld(),body.getPosition()));break;
             case 3:
-                entityGroup.addActor(new EnemyTank(manager, entityGroup, body.getWorld(), body.getPosition(),targetPosition, EnemyTank.Tier.MINI, Utils.getRandomInt(maxType +1), getDamageListener()));break;
+                getParent().addActor(new EnemyTank(manager, body.getWorld(), body.getPosition(),targetPosition, EnemyTank.Tier.MINI, Utils.getRandomInt(maxType +1), getDamageListener()));break;
         }
     }
 
-    @Override public void detach() {drop();super.detach();}
+    @Override public void detach() {
+        drop();
+        super.detach();
+
+    }
 }
