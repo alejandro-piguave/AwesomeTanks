@@ -36,6 +36,10 @@ class GameRenderer(private val game: MainGame,
     private val explosionSound: Sound = game.manager.get("sounds/explosion.ogg")
     private val world = World(Vector2(0f, 0f), true)
 
+    //Used for keys
+    private var horizontalMovement: MutableList<Movement> = mutableListOf()
+    private var verticalMovement: MutableList<Movement> = mutableListOf()
+
     var isPaused = false
     private var alreadyExecuted = false
     private var isLevelCompleted = false
@@ -202,6 +206,72 @@ class GameRenderer(private val game: MainGame,
         }
     }
 
+    fun moveUp(){
+        verticalMovement.add(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    fun moveDown(){
+        verticalMovement.add(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    fun moveLeft(){
+        horizontalMovement.add(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    fun moveRight(){
+        horizontalMovement.add(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    fun stopUp(){
+        verticalMovement.remove(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    fun stopDown(){
+        verticalMovement.remove(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    fun stopLeft(){
+        horizontalMovement.remove(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    fun stopRight(){
+        horizontalMovement.remove(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    private fun updateMovement(){
+        tank.isMoving = true
+        if(horizontalMovement.isEmpty() && verticalMovement.isEmpty()){
+            tank.isMoving = false
+        } else if(horizontalMovement.isEmpty() && verticalMovement.isNotEmpty()){
+            when(verticalMovement.last()){
+                Movement.POSITIVE -> tank.setOrientation(0f, 1f) //MOVING UP
+                Movement.NEGATIVE -> tank.setOrientation(0f, -1f) // MOVING DOWN
+            }
+        } else if(horizontalMovement.isNotEmpty() && verticalMovement.isEmpty()){
+            when(horizontalMovement.last()){
+                Movement.POSITIVE -> tank.setOrientation(1f, 0f) //MOVING RIGHT
+                Movement.NEGATIVE -> tank.setOrientation(-1f, 0f) // MOVING LEFT
+            }
+        } else {
+            if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.POSITIVE)
+                tank.setOrientation(Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH EAST
+            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.POSITIVE)
+                tank.setOrientation(-Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH WEST
+            else if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.NEGATIVE)
+                tank.setOrientation(Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH EAST
+            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.NEGATIVE)
+                tank.setOrientation(-Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH WEST
+        }
+    }
+
     private fun isLevelCompleted(): Boolean {
         for (actor: Actor in blockGroup.children) if (actor is Turret) return false
         for (actor: Actor in entityGroup.children) if (actor is EnemyTank || actor is Spawner) return false
@@ -289,6 +359,8 @@ class GameRenderer(private val game: MainGame,
         Rumble.rumble(rumblePower, rumbleLength)
     }
 }
+
+enum class Movement{ POSITIVE, NEGATIVE}
 
 interface GameListener{
     fun onLevelFailed()

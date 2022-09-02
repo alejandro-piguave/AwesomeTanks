@@ -1,7 +1,5 @@
 package com.alexpi.awesometanks.utils;
 
-import com.badlogic.gdx.graphics.Color;
-
 /**
  * Created by Alex on 14/01/2016.
  */
@@ -15,6 +13,8 @@ public class Constants {
             LASERGUN_BOSS = 'F', RAILGUN_BOSS = 'G';
 
     public static final char[] solidBlocks = {wall, gate, bricks};
+
+    public static final float SQRT2_2 = 0.70710678118f;
 
     public static final int[][] prices = {
             {0, 100, 200, 300, 300, 400, 400}, //AMMO PRICES

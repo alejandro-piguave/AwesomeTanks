@@ -30,13 +30,7 @@ import kotlin.math.abs
  * Created by Alex on 30/12/2015.
  */
 class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor {
-    private lateinit var buttons: List<ImageButton>
     private val uiStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
-    private lateinit var movementTouchpad: Touchpad
-    private lateinit var aimTouchpad: Touchpad
-    private lateinit var gunName: Label
-    private lateinit var money: Label
-    private lateinit var ammoBar: GameProgressBar
     private val weaponMenuTable: Table = Table()
     private var screenPointer = 0
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
@@ -51,6 +45,17 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     }, level)
 
+    private val ammoBar = AmmoBar(game.manager,gameRenderer.tank)
+    private val gunName = Label(Constants.WEAPON_NAMES[0], Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
+    private val buttons: List<ImageButton> = (0 until BUTTON_COUNT).map {
+        val texture = game.manager.get<Texture>("icons/icon_$it.png")
+        val disabled = game.manager.get<Texture>("icons/icon_disabled_$it.png")
+        val style = ImageButtonStyle(game.manager.get<Skin>("uiskin/uiskin.json").get(ButtonStyle::class.java))
+        style.imageUp = TextureRegionDrawable(TextureRegion(texture))
+        style.imageDisabled = TextureRegionDrawable(TextureRegion(disabled))
+        ImageButton(style)
+    }
+
     override fun show() {
         createUIScene()
     }
@@ -64,28 +69,16 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun createUIScene() {
-        val uiSkin = game.manager.get<Skin>("uiskin/uiskin.json")
         val uiTable = Table()
         uiTable.setFillParent(true)
-        gunName = Label("Minigun", Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
         gunName.setAlignment(Align.center)
-        ammoBar = AmmoBar(game.manager,gameRenderer.tank)
         ammoBar.setSize(300f, 30f)
         ammoBar.isVisible = false
 
-        money = MoneyLabel(game.manager, gameRenderer.tank)
-
-        buttons = (0 until BUTTON_COUNT).map {
-            val texture = game.manager.get<Texture>("icons/icon_$it.png")
-            val disabled = game.manager.get<Texture>("icons/icon_disabled_$it.png")
-            val style = ImageButtonStyle(uiSkin.get(ButtonStyle::class.java))
-            style.imageUp = TextureRegionDrawable(TextureRegion(texture))
-            style.imageDisabled = TextureRegionDrawable(TextureRegion(disabled))
-            ImageButton(style)
-        }
+        val money = MoneyLabel(game.manager, gameRenderer.tank)
 
         val joystickSize = Constants.SCREEN_HEIGHT / 2.25f
-        movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
+        val movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
             setColor(color.r, color.g, color.b, 0.5f)
             addListener {
                 val x = knobPercentX
@@ -97,7 +90,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 true
             }
         }
-        aimTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
+        val aimTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
             setColor(color.r, color.g, color.b, 0.5f)
             addListener {
                 val x = knobPercentX
@@ -134,46 +127,30 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
             if(!button.isDisabled) {
                 button.onClick {
-                    if (Settings.soundsOn) gunChangeSound.play()
-                    gameRenderer.tank.currentWeaponIndex = index
-                    buttons.forEach { ib ->
-                        ib.setColor(ib.color.r, ib.color.g, ib.color.b,
-                            if(gameRenderer.tank.currentWeaponIndex == buttons.indexOf(ib)) 1f else .5f)
-                    }
-
-                    button.setColor(
-                        button.color.r,
-                        button.color.g,
-                        button.color.b,
-                        1f
-                    );
-
-                    ammoBar.isVisible = index != 0
-
-                    gunName.setText(gameRenderer.tank.currentWeapon.name)
-                    gunName.addAction(Actions.alpha(1f))
-                    Timer.schedule(object : Timer.Task() {
-                        override fun run() {
-                            gunName.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                        }
-
-                    }, 2f)
+                   changeGun(index)
                 }
             }
             weaponMenuTable.add(button).width(96f).height(96f)
         }
 
-        weaponMenuTable.setFillParent(true)
+
         val uiTopTable = Table()
+        val uiBottomTable = Table()
         uiTopTable.add(ammoBar).expandX().uniformX().pad(10f)
         uiTopTable.add(money).expandX().uniform().pad(10f)
         uiTopTable.add().expandX().uniformX()
-        uiTable.add(uiTopTable).colspan(3).growX().row()
-        uiTable.add().colspan(3).expand().row()
-        uiTable.add(movementTouchpad).size(joystickSize).left().pad(10f)
-        uiTable.add(weaponMenuButton).expandX().right()
-        uiTable.add(aimTouchpad).size(joystickSize).right().pad(10f).row()
+        uiTable.add(uiTopTable).growX().row()
+        uiTable.add().expand().row()
+        if(Gdx.app.type != Application.ApplicationType.Desktop){
+            uiBottomTable.add(movementTouchpad).size(joystickSize).left().pad(10f)
+            uiBottomTable.add(weaponMenuButton).expandX().right()
+            uiBottomTable.add(aimTouchpad).size(joystickSize).right().pad(10f).row()
 
+            weaponMenuTable.setFillParent(true)
+        } else {
+            uiBottomTable.add(weaponMenuTable).expandX().center().row()
+        }
+        uiTable.add(uiBottomTable).growX().row()
         uiStage.addActor(uiTable)
 
         Gdx.input.inputProcessor = inputProcessor
@@ -183,6 +160,28 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             override fun run() {
                 gunName.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
             }
+        }, 2f)
+    }
+
+    private fun changeGun(index: Int){
+        if(index == gameRenderer.tank.currentWeaponIndex) return
+
+        if (Settings.soundsOn) gunChangeSound.play()
+        gameRenderer.tank.currentWeaponIndex = index
+        buttons.forEach { ib ->
+            ib.setColor(ib.color.r, ib.color.g, ib.color.b,
+                if(gameRenderer.tank.currentWeaponIndex == buttons.indexOf(ib)) 1f else .5f)
+        }
+
+        ammoBar.isVisible = index != 0
+
+        gunName.setText(gameRenderer.tank.currentWeapon.name)
+        gunName.addAction(Actions.alpha(1f))
+        Timer.schedule(object : Timer.Task() {
+            override fun run() {
+                gunName.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+            }
+
         }, 2f)
     }
 
@@ -245,41 +244,88 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun keyDown(keycode: Int): Boolean {
-        if (keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE) {
-            if(Gdx.app.type != Application.ApplicationType.Desktop && weaponMenuTable.parent != null){
-                weaponMenuTable.remove()
-                gameRenderer.isPaused = false
-            } else{
-                gameRenderer.isPaused = true
-                val pauseMenu = Dialog(
-                    "Pause Menu",
-                    Styles.getWindowStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
-                )
-                val back = TextButton(
-                    "Back",
-                    Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
-                )
-                back.addListener(object : ClickListener() {
-                    override fun clicked(event: InputEvent, x: Float, y: Float) {
-                        gameRenderer.isPaused = false
-                        uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                        gameRenderer.fadeOut{ game.screen = game.levelScreen}
-                    }
-                })
-                val resume = TextButton(
-                    "Resume",
-                    Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
-                )
-                resume.addListener(object : ClickListener() {
-                    override fun clicked(event: InputEvent, x: Float, y: Float) {
-                        gameRenderer.isPaused = false
-                    }
-                })
-                pauseMenu.button(back)
-                pauseMenu.button(resume)
-                pauseMenu.show(uiStage)
+        when (keycode) {
+            Input.Keys.BACK, Input.Keys.ESCAPE -> {
+                if(Gdx.app.type != Application.ApplicationType.Desktop && weaponMenuTable.parent != null){
+                    weaponMenuTable.remove()
+                    gameRenderer.isPaused = false
+                } else{
+                    gameRenderer.isPaused = true
+                    val pauseMenu = Dialog(
+                        "Pause Menu",
+                        Styles.getWindowStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
+                    )
+                    val back = TextButton(
+                        "Back",
+                        Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
+                    )
+                    back.addListener(object : ClickListener() {
+                        override fun clicked(event: InputEvent, x: Float, y: Float) {
+                            gameRenderer.isPaused = false
+                            uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                            gameRenderer.fadeOut{ game.screen = game.levelScreen}
+                        }
+                    })
+                    val resume = TextButton(
+                        "Resume",
+                        Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
+                    )
+                    resume.addListener(object : ClickListener() {
+                        override fun clicked(event: InputEvent, x: Float, y: Float) {
+                            gameRenderer.isPaused = false
+                        }
+                    })
+                    pauseMenu.button(back)
+                    pauseMenu.button(resume)
+                    pauseMenu.show(uiStage)
+                }
+                return true
             }
-            return true
+            //EVENTS FOR DESKTOP
+            Input.Keys.W -> {
+                gameRenderer.moveUp()
+                return true
+            }
+            Input.Keys.A -> {
+                gameRenderer.moveLeft()
+                return true
+            }
+            Input.Keys.S -> {
+                gameRenderer.moveDown()
+                return true
+            }
+            Input.Keys.D -> {
+                gameRenderer.moveRight()
+                return true
+            }
+            Input.Keys.NUM_1 -> {
+                changeGun(0)
+                return true
+            }
+            Input.Keys.NUM_2 -> {
+                changeGun(1)
+                return true
+            }
+            Input.Keys.NUM_3 -> {
+                changeGun(2)
+                return true
+            }
+            Input.Keys.NUM_4 -> {
+                changeGun(3)
+                return true
+            }
+            Input.Keys.NUM_5 -> {
+                changeGun(4)
+                return true
+            }
+            Input.Keys.NUM_6 -> {
+                changeGun(5)
+                return true
+            }
+            Input.Keys.NUM_7 -> {
+                changeGun(6)
+                return true
+            }
         }
         return false
     }
@@ -293,10 +339,12 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     //EVENTS FOR DESKTOP
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            Gdx.app.log("touchDown", "screenX: $screenX screenY: $screenY")
             gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
-                screenX - Constants.CENTER_X,
-                (Constants.SCREEN_HEIGHT - screenY) - Constants.CENTER_Y
+                screenX - Gdx.graphics.width*.5f,
+                (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
             )
+            gameRenderer.tank.isShooting = true
             screenPointer = pointer
             return true
         }
@@ -307,8 +355,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             if (pointer == screenPointer) {
                 gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
-                    screenX - Constants.CENTER_X,
-                    (Constants.SCREEN_HEIGHT - screenY) - Constants.CENTER_Y
+                    screenX - Gdx.graphics.width*.5f,
+                    (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
                 )
                 return true
             }
@@ -320,10 +368,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             if (pointer == screenPointer) {
                 gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
-                    screenX - Constants.CENTER_X,
-                    (Constants.SCREEN_HEIGHT - screenY) - Constants.CENTER_Y
+                    screenX - Gdx.graphics.width*.5f,
+                    (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
                 )
-                gameRenderer.tank.isShooting = true
+                gameRenderer.tank.isShooting = false
                 return true
             }
         }
@@ -331,6 +379,24 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun keyUp(keycode: Int): Boolean {
+        when (keycode) {
+            Input.Keys.W ->{
+                gameRenderer.stopUp()
+                return true
+            }
+            Input.Keys.A ->{
+                gameRenderer.stopLeft()
+                return true
+            }
+            Input.Keys.S ->{
+                gameRenderer.stopDown()
+                return true
+            }
+            Input.Keys.D ->{
+                gameRenderer.stopRight()
+                return true
+            }
+        }
         return false
     }
 
