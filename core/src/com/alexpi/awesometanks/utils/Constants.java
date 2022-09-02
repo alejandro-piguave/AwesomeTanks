@@ -14,7 +14,7 @@ public class Constants {
 
     public static final char[] solidBlocks = {wall, gate, bricks};
 
-    public static final float SQRT2_2 = 0.70710678118f;
+    public static final float SQRT2_2 = 0.70710678118f; // sqrt(2)/2
 
     public static final int[][] prices = {
             {0, 100, 200, 300, 300, 400, 400}, //AMMO PRICES

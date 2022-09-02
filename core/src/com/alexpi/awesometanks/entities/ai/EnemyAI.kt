@@ -13,10 +13,6 @@ class EnemyAI(private val world: World,
     private val visibilityRadius2 = visibilityRadius * visibilityRadius
     private var isTargetVisible = false
 
-    init {
-        aiNum++
-    }
-
     fun update(delta: Float){
         val dX = targetPosition.x - position.x
         val dY = targetPosition.y - position.y
@@ -28,7 +24,7 @@ class EnemyAI(private val world: World,
                 callback.attack(angle)
             } else{
                 isTargetVisible = true
-                world.rayCast({ fixture, point, normal, fraction ->
+                world.rayCast({ fixture, _, _, _ ->
                     if(fixture.userData is Block){
                         isTargetVisible = false
                         0f
@@ -46,7 +42,6 @@ class EnemyAI(private val world: World,
 
     companion object {
         private const val VISIBILITY_RADIUS = 7f
-        private var aiNum = 0
     }
 }
 

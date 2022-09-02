@@ -63,23 +63,6 @@ public class Styles {
         return  style;
     }
 
-    public static TextButton.TextButtonStyle getTextButtonStyle(AssetManager assetManager, int fontSize){
-        Skin skin = assetManager.get("uiskin/uiskin.json", Skin.class);
-
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
-
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = fontSize;
-        BitmapFont font = fontGenerator.generateFont(parameter);
-
-        TextButton.TextButtonStyle style = skin.get("default", TextButton.TextButtonStyle.class);
-        style.font = font;
-
-        fontGenerator.dispose();
-
-        return  style;
-    }
-
     public static TextButton.TextButtonStyle getTextButtonStyleSmall(AssetManager assetManager){
         NinePatchDrawable patch = new NinePatchDrawable(new NinePatch(assetManager.get("sprites/button_background.9.png", Texture.class),20,20,20,20));
         NinePatchDrawable patchDown = new NinePatchDrawable(new NinePatch(assetManager.get("sprites/button_background_down.9.png", Texture.class),20,20,20,20));
@@ -90,23 +73,6 @@ public class Styles {
         NinePatchDrawable patch = new NinePatchDrawable(new NinePatch(assetManager.get("sprites/button_background.9.png", Texture.class),20,20,20,20));
         NinePatchDrawable patchDown = new NinePatchDrawable(new NinePatch(assetManager.get("sprites/button_background_down.9.png", Texture.class),20,20,20,20));
         return new TextButton.TextButtonStyle(patch, patchDown, patch, assetManager.get("button_font1.ttf", BitmapFont.class));
-    }
-
-    public static Window.WindowStyle getWindowStyle(AssetManager assetManager, int fontSize){
-        Skin skin = assetManager.get("uiskin/uiskin.json", Skin.class);
-
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
-
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = fontSize;
-        BitmapFont font = fontGenerator.generateFont(parameter);
-
-        Window.WindowStyle style = skin.get("default", Window.WindowStyle.class);
-        style.titleFont = font;
-
-        fontGenerator.dispose();
-
-        return  style;
     }
 
     public static Touchpad.TouchpadStyle getTouchPadStyle(AssetManager assetManager){

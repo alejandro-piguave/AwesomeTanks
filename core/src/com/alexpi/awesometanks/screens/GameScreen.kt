@@ -4,7 +4,6 @@ package com.alexpi.awesometanks.screens
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.utils.*
 import com.alexpi.awesometanks.widget.AmmoBar
-import com.alexpi.awesometanks.widget.GameProgressBar
 import com.alexpi.awesometanks.widget.MoneyLabel
 import com.alexpi.awesometanks.world.GameListener
 import com.alexpi.awesometanks.world.GameRenderer
@@ -23,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import ktx.actors.alpha
 import ktx.actors.onClick
 import kotlin.math.abs
 
@@ -40,7 +40,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         }
 
         override fun onLevelCompleted() {
-            showLevelCompletedDialog()
+            showLevelCompletedButton()
         }
 
     }, level)
@@ -79,7 +79,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
         val joystickSize = Constants.SCREEN_HEIGHT / 2.25f
         val movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
-            setColor(color.r, color.g, color.b, 0.5f)
+            alpha = .5f
             addListener {
                 val x = knobPercentX
                 val y = knobPercentY
@@ -91,14 +91,14 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
         }
         val aimTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
-            setColor(color.r, color.g, color.b, 0.5f)
+            alpha = .5f
             addListener {
                 val x = knobPercentX
                 val y = knobPercentY
                 if (isTouched && (abs(x) > .2f || abs(y) > .2f)) {
                     gameRenderer.tank.currentWeapon.setDesiredAngleRotation(x, y)
                     val distanceFromCenter = Utils.fastHypot(x.toDouble(), y.toDouble()).toFloat()
-                    gameRenderer.tank.isShooting = distanceFromCenter > 0.95f
+                    gameRenderer.tank.isShooting = distanceFromCenter > 0.95f && !gameRenderer.isLevelCompleted
                 } else gameRenderer.tank.isShooting = false
                 true
             }
@@ -202,44 +202,39 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun showLevelFailedDialog() {
-        val levelFailed = Dialog(
-            "Level failed",
-            Styles.getWindowStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
+        val table = Table()
+        table.setFillParent(true)
+        val continueButton = TextButton(
+            "Menu",
+            Styles.getTextButtonStyle1(game.manager)
         )
-        val back = TextButton(
-            "Back",
-            Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
-        )
-        back.addListener(object : ClickListener() {
+        continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
-                gameRenderer.isPaused = false
                 saveProgress()
                 uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
                 gameRenderer.fadeOut{ game.screen = game.upgrades}
             }
         })
-        levelFailed.button(back)
-        levelFailed.show(uiStage)
+        table.add(continueButton).expand().top().right().pad(24f)
+        uiStage.addActor(table)
+
     }
 
-    private fun showLevelCompletedDialog() {
-        val levelCompleted = Dialog(
-            "Level completed",
-            Styles.getWindowStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
-        )
+    private fun showLevelCompletedButton() {
+        val table = Table()
+        table.setFillParent(true)
         val continueButton = TextButton(
             "Continue",
-            Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
+            Styles.getTextButtonStyle1(game.manager)
         )
         continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
-                gameRenderer.isPaused = false
                 uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
                 gameRenderer.fadeOut{ game.screen = game.upgrades}
             }
         })
-        levelCompleted.button(continueButton)
-        levelCompleted.show(uiStage)
+        table.add(continueButton).expand().top().right().pad(24f)
+        uiStage.addActor(table)
         saveProgress(true)
     }
 
@@ -249,35 +244,26 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 if(Gdx.app.type != Application.ApplicationType.Desktop && weaponMenuTable.parent != null){
                     weaponMenuTable.remove()
                     gameRenderer.isPaused = false
-                } else{
+                } else if(!gameRenderer.isLevelCompleted){
                     gameRenderer.isPaused = true
-                    val pauseMenu = Dialog(
-                        "Pause Menu",
-                        Styles.getWindowStyle(game.manager, (Constants.TILE_SIZE / 3).toInt())
-                    )
-                    val back = TextButton(
-                        "Back",
-                        Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
-                    )
-                    back.addListener(object : ClickListener() {
-                        override fun clicked(event: InputEvent, x: Float, y: Float) {
-                            gameRenderer.isPaused = false
-                            uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                            gameRenderer.fadeOut{ game.screen = game.levelScreen}
-                        }
-                    })
-                    val resume = TextButton(
-                        "Resume",
-                        Styles.getTextButtonStyle(game.manager, (Constants.TILE_SIZE / 4).toInt())
-                    )
-                    resume.addListener(object : ClickListener() {
-                        override fun clicked(event: InputEvent, x: Float, y: Float) {
-                            gameRenderer.isPaused = false
-                        }
-                    })
-                    pauseMenu.button(back)
-                    pauseMenu.button(resume)
-                    pauseMenu.show(uiStage)
+
+                    val table = Table()
+                    table.setFillParent(true)
+                    val back = TextButton("Back", Styles.getTextButtonStyle1(game.manager))
+                    back.onClick {
+                        gameRenderer.isPaused = false
+                        uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                        gameRenderer.fadeOut{ game.screen = game.levelScreen}
+                    }
+                    val resume = TextButton("Resume", Styles.getTextButtonStyle1(game.manager))
+                    resume.onClick {
+                        gameRenderer.isPaused = false
+                        table.remove()
+                    }
+                    table.add(back).top().right().pad(24f)
+                    table.add(resume).top().right().pad(24f)
+
+                    uiStage.addActor(table)
                 }
                 return true
             }
@@ -344,7 +330,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 screenX - Gdx.graphics.width*.5f,
                 (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
             )
-            gameRenderer.tank.isShooting = true
+            gameRenderer.tank.isShooting = !gameRenderer.isLevelCompleted
             screenPointer = pointer
             return true
         }

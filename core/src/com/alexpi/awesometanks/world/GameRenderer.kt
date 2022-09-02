@@ -42,7 +42,8 @@ class GameRenderer(private val game: MainGame,
 
     var isPaused = false
     private var alreadyExecuted = false
-    private var isLevelCompleted = false
+    var isLevelCompleted = false
+        private set
     val tank: PlayerTank = PlayerTank(
         game.manager,
         world,
@@ -182,11 +183,10 @@ class GameRenderer(private val game: MainGame,
         if (!isPaused) {
             world.step(1 / 60f, 6, 2)
             gameStage.act(delta)
-            //ammoBar.value = tank.currentWeapon.ammo
             checkLevelState()
             gameStage.camera.position.set(tank.centerX, tank.centerY, 0f)
             if (Rumble.rumbleTimeLeft > 0){
-                Rumble.tick(Gdx.graphics.deltaTime);
+                Rumble.tick(delta)
                 gameStage.camera.translate(Rumble.pos.x, Rumble.pos.y,0f)
             }
         }
@@ -194,13 +194,11 @@ class GameRenderer(private val game: MainGame,
     }
 
     private fun checkLevelState() {
-        isLevelCompleted = isLevelCompleted()
+        isLevelCompleted = isLevelCleared()
         if (!tank.isAlive && !alreadyExecuted) {
-            isPaused = true
             alreadyExecuted = true
             gameListener.onLevelFailed()
         } else if (isLevelCompleted && !alreadyExecuted) {
-            isPaused = true
             alreadyExecuted = true
             gameListener.onLevelCompleted()
         }
@@ -272,7 +270,7 @@ class GameRenderer(private val game: MainGame,
         }
     }
 
-    private fun isLevelCompleted(): Boolean {
+    private fun isLevelCleared(): Boolean {
         for (actor: Actor in blockGroup.children) if (actor is Turret) return false
         for (actor: Actor in entityGroup.children) if (actor is EnemyTank || actor is Spawner) return false
         return true
