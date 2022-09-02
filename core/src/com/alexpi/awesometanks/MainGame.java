@@ -90,7 +90,8 @@ public class MainGame extends Game {
 		manager.load("sprites/laser_ray.png",Texture.class);
 		manager.load("sprites/railgun_ray.png",Texture.class);
 		manager.load("sprites/railgun_laser.png",Texture.class);
-
+		manager.load("sprites/rocket.png",Texture.class);
+		manager.load("sprites/rocket_flame.png",Texture.class);
 
 		manager.load("sprites/health_bar.png",Texture.class);
         manager.load("sprites/ricochet_bullet.png",Texture.class);
@@ -109,6 +110,8 @@ public class MainGame extends Game {
 		manager.load("weapons/canon.png",Texture.class);
 		manager.load("weapons/laser.png", Texture.class);
 		manager.load("weapons/railgun.png", Texture.class);
+		manager.load("weapons/rocket.png", Texture.class);
+
 
 
 		for(int i=0;i<7;i++) manager.load("icons/icon_"+i+".png",Texture.class);
