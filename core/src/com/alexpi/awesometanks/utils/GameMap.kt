@@ -80,7 +80,7 @@ class GameMap(level: Int){
     }
 
     fun toCell(pos: Vector2): Cell {
-        return Cell(map.size - pos.y.toInt() -1, pos.x.toInt())
+        return Cell(map.size - pos.y.toInt(), pos.x.toInt())
     }
 
     fun isVisible(row: Int, col: Int) = visibleArea[row][col]
