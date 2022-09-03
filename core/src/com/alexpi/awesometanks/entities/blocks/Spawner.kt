@@ -75,7 +75,7 @@ class Spawner(
         @JvmStatic
         fun getMaxType(level: Int): Int {
             return if (level <= 7) Constants.RICOCHET
-            else if(level <= 15) Constants.CANON
+            else if(level <= 15) Constants.ROCKET
             else if(level <= 22) Constants.LASERGUN
             else Constants.RAILGUN
         }

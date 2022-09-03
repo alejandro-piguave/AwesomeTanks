@@ -47,7 +47,6 @@ public class Upgrades extends BaseScreen {
     private boolean[] availableWeapons;
 
     private static final int UPGRADE_COUNT = 4;
-    private static final int WEAPON_COUNT = 7;
 
     public Upgrades(MainGame game) {
         super(game);
@@ -56,7 +55,7 @@ public class Upgrades extends BaseScreen {
     @Override
     public void show() {
         final Sound purchaseSound = game.getManager().get("sounds/purchase.ogg",Sound.class);
-        weaponButtons = new ImageButton[WEAPON_COUNT];
+        weaponButtons = new ImageButton[Constants.WEAPON_COUNT];
         upgradables = new UpgradeTable[UPGRADE_COUNT];
         Skin uiSkin = game.getManager().get("uiskin/uiskin.json");
         stage = new Stage(new ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT));
@@ -68,15 +67,15 @@ public class Upgrades extends BaseScreen {
         Table buttons = new Table();
         Table currentWeaponTable = new Table();
 
-        weaponPowerValues = new int[WEAPON_COUNT];
-        weaponAmmoValues = new float[WEAPON_COUNT];
-        for (int i = 0; i < WEAPON_COUNT;i++){
+        weaponPowerValues = new int[Constants.WEAPON_COUNT];
+        weaponAmmoValues = new float[Constants.WEAPON_COUNT];
+        for (int i = 0; i < Constants.WEAPON_COUNT;i++){
             //POWER
             weaponPowerValues[i] = game.getGameValues().getInteger("power" + i, 0);
             //AMMO
             weaponAmmoValues[i] = game.getGameValues().getFloat("ammo" + i, 100f);}
-        availableWeapons = new boolean[7];
-        for (int i = 0; i < WEAPON_COUNT;i++)
+        availableWeapons = new boolean[Constants.WEAPON_COUNT];
+        for (int i = 0; i <Constants. WEAPON_COUNT;i++)
             availableWeapons[i] = game.getGameValues().getBoolean("weapon"+i,true);
 
         for(int i = 0;i< UPGRADE_COUNT;i++){
@@ -115,7 +114,7 @@ public class Upgrades extends BaseScreen {
                 for(UpgradeTable p: upgradables)
                     game.getGameValues().putInteger(p.getName(),p.getValue());
 
-                for(int i = 0; i< WEAPON_COUNT;i++){
+                for(int i = 0; i< Constants.WEAPON_COUNT;i++){
                     game.getGameValues().putInteger("power"+i, weaponPowerValues[i]);
                     game.getGameValues().putFloat("ammo"+i, weaponAmmoValues[i]);
                     game.getGameValues().putBoolean("weapon"+i,availableWeapons[i]);
@@ -129,7 +128,7 @@ public class Upgrades extends BaseScreen {
         moneyValue = game.getGameValues().getInteger("money",0);
         money = new Label(moneyValue + " $", Styles.getLabelStyleBackground(game.getManager()));
 
-        for(int i = 0; i < WEAPON_COUNT;i++){
+        for(int i = 0; i < Constants.WEAPON_COUNT;i++){
             Texture up = game.getManager().get("icons/icon_" + i + ".png"),
                     disabled= game.getManager().get("icons/icon_disabled_"+i+".png");
             ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle(uiSkin.get(Button.ButtonStyle.class));
@@ -140,7 +139,7 @@ public class Upgrades extends BaseScreen {
         final ImageButton currentWeaponImage = new ImageButton(weaponButtons[0].getStyle());
         final Label currentWeaponName = new Label(Constants.WEAPON_NAMES[0], Styles.getLabelStyleSmall(game.getManager()));
 
-        for(int i = 0; i < WEAPON_COUNT; i++){
+        for(int i = 0; i < Constants.WEAPON_COUNT; i++){
             if( i > 0) weaponButtons[i].setDisabled(availableWeapons[i]);
             final int finalI = i;
             weaponButtons[i].addListener(new ClickListener(){

@@ -121,6 +121,7 @@ public abstract class Weapon {
             case Constants.RICOCHET: weapon = new Ricochet(assetManager, ammo, power, isPlayer);break;
             case Constants.FLAMETHROWER: weapon = new Flamethrower(assetManager, ammo, power, isPlayer);break;
             case Constants.CANON: weapon = new Canon(assetManager, ammo, power, isPlayer);break;
+            case Constants.ROCKET: weapon = new RocketLauncher(assetManager, ammo, power, isPlayer); break;
             case Constants.LASERGUN: weapon = new LaserGun(assetManager, ammo, power, isPlayer);break;
             case Constants. RAILGUN: weapon = new RailGun(assetManager, ammo, power, isPlayer);break;
         }

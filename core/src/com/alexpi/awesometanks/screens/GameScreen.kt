@@ -47,7 +47,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private val ammoBar = AmmoBar(game.manager,gameRenderer.tank)
     private val gunName = Label(Constants.WEAPON_NAMES[0], Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
-    private val buttons: List<ImageButton> = (0 until BUTTON_COUNT).map {
+    private val buttons: List<ImageButton> = (0 until Constants.WEAPON_COUNT).map {
         val texture = game.manager.get<Texture>("icons/icon_$it.png")
         val disabled = game.manager.get<Texture>("icons/icon_disabled_$it.png")
         val style = ImageButtonStyle(game.manager.get<Skin>("uiskin/uiskin.json").get(ButtonStyle::class.java))
@@ -399,7 +399,4 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         return false
     }
 
-    companion object {
-        private const val BUTTON_COUNT = 7
-    }
 }

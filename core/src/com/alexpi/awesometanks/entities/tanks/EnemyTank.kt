@@ -81,6 +81,7 @@ class EnemyTank(
                 Constants.RICOCHET -> .3f
                 Constants.FLAMETHROWER -> .6f
                 Constants.CANON -> .6f
+                Constants.ROCKET -> .6f
                 Constants.LASERGUN -> 1f
                 else -> 1f
 

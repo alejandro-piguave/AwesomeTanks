@@ -11,7 +11,7 @@ class RocketLauncher(assetManager: AssetManager, ammo: Float, power: Int, isPlay
         "Rockets",
         assetManager,
         "weapons/rocket.png",
-        "sounds/railgun.ogg",
+        "sounds/rocket_launch.ogg",
         ammo,
         power,
         isPlayer,
@@ -26,5 +26,7 @@ class RocketLauncher(assetManager: AssetManager, ammo: Float, power: Int, isPlay
     ) {
         group.addActor(Rocket(assetManager, world, position,currentAngleRotation, power, isPlayer))
     }
+
+
 
 }

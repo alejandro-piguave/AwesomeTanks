@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks;
 
+import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.utils.Settings;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -48,6 +49,7 @@ public class MainGame extends Game {
 		manager.load("sounds/shotgun.ogg", Sound.class);
 		manager.load("sounds/ricochet.ogg", Sound.class);
 		manager.load("sounds/flamethrower.ogg",Sound.class);
+		manager.load("sounds/rocket_launch.ogg",Sound.class);
 		manager.load("sounds/canon.ogg",Sound.class);
 		manager.load("sounds/laser.ogg",Sound.class);
 		manager.load("sounds/railgun.ogg",Sound.class);
@@ -108,15 +110,13 @@ public class MainGame extends Game {
 		manager.load("weapons/ricochet.png",Texture.class);
 		manager.load("weapons/flamethrower.png",Texture.class);
 		manager.load("weapons/canon.png",Texture.class);
+		manager.load("weapons/rocket.png", Texture.class);
 		manager.load("weapons/laser.png", Texture.class);
 		manager.load("weapons/railgun.png", Texture.class);
-		manager.load("weapons/rocket.png", Texture.class);
 
+		for(int i = 0; i < Constants.WEAPON_COUNT; i++) manager.load("icons/icon_"+i+".png",Texture.class);
 
-
-		for(int i=0;i<7;i++) manager.load("icons/icon_"+i+".png",Texture.class);
-
-		for(int i = 0; i <7; i++) manager.load("icons/icon_disabled_"+i+".png", Texture.class);
+		for(int i = 0; i <Constants.WEAPON_COUNT; i++) manager.load("icons/icon_disabled_"+i+".png", Texture.class);
 
 		manager.finishLoading();//TERMINA DE CARGAR
 

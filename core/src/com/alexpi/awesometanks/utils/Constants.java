@@ -5,20 +5,21 @@ package com.alexpi.awesometanks.utils;
  */
 public class Constants {
     public static final float SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 720,
-            CENTER_Y = SCREEN_HEIGHT /2, CENTER_X = SCREEN_WIDTH /2,
             TILE_SIZE =80;
     public static final char wall = 'X', space = ' ',start = 'S', gate = '@', bricks = '#', box = '*'
             , bomb = 'O', spawner = '+',
             MINIGUN_BOSS = 'A', SHOTGUN_BOSS = 'B', RICOCHET_BOSS = 'C', FLAMETHROWER_BOSS = 'D', CANON_BOSS = 'E',
-            LASERGUN_BOSS = 'F', RAILGUN_BOSS = 'G';
+            ROCKET_BOSS = 'F', LASERGUN_BOSS = 'G', RAILGUN_BOSS = 'H';
+
+    public static final int WEAPON_COUNT = 8;
 
     public static final char[] solidBlocks = {wall, gate, bricks};
 
     public static final float SQRT2_2 = 0.70710678118f; // sqrt(2)/2
 
     public static final int[][] prices = {
-            {0, 100, 200, 300, 300, 400, 400}, //AMMO PRICES
-            {0, 2750, 8000, 10000, 10000, 28000, 28000}//GUN PRICES
+            {0, 100, 200, 300, 300, 300, 400, 400}, //AMMO PRICES
+            {0, 2750, 8000, 10000, 10000, 10000, 28000, 28000}//GUN PRICES
     };
 
     public static final int[][] gunUpgradePrices = {
@@ -26,7 +27,8 @@ public class Constants {
             {500, 900, 1300, 1700, 2100},//SHOTGUN
             {2500, 3000, 3500, 4000, 4500},//RICOCHET
             {3000, 4000, 5000, 6000, 7000},//FLAMETHROWER
-            {3000, 4000, 5000, 6000, 7000},//CANON,
+            {3000, 4000, 5000, 6000, 7000},//CANON
+            {3000, 4000, 5000, 6000, 7000},//ROCKET
             {11000, 12000, 13000, 14000, 15000},//LASER
             {11000, 12000, 13000, 14000, 15000}//RAILGUN
     };
@@ -45,7 +47,7 @@ public class Constants {
     public static final String ROTATION_SPEED = "rotation";
     public static final String VISIBILITY = "visibility";
 
-    public static final String[] WEAPON_NAMES = {"Minigun", "Shotgun", "Ricochet", "Flamethrower", "Canon", "Lasergun", "Railgun"};
+    public static final String[] WEAPON_NAMES = {"Minigun", "Shotgun", "Ricochet", "Flamethrower", "Canon", "Rocketgun", "Lasergun", "Railgun"};
 
     public static final float TRANSITION_DURATION = .3f;
 
@@ -54,8 +56,9 @@ public class Constants {
     public static final int RICOCHET = 2;
     public static final int FLAMETHROWER = 3;
     public static final int CANON = 4;
-    public static final int LASERGUN = 5;
-    public static final int RAILGUN = 6;
+    public static final int ROCKET = 5;
+    public static final int LASERGUN = 6;
+    public static final int RAILGUN = 7;
 
 
     public static final short CAT_PLAYER_BULLET = 1;

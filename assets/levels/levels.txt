@@ -85,7 +85,7 @@ X               X
 X       S       X
 X               X
 XXXXXXXXXXXXXXXXX
-6.
+7.
 XXXXXXXXXXXXXX
 X   #        X
 X S # # O +  X
@@ -254,16 +254,16 @@ X    @   #   @    X
 X @@ @  *#   @ ## X
 X    X    @@ X    X
 X ## X  @@@@ X ## X
-X    @  5@   @    X
+X    @  6@   @    X
 X *  @  @@ O @  + X
 X    X       X    X
 XXXXXX@@XXX@@XXXXXX
-XXXX F         XXXX
+XXXX G         XXXX
 XXXX @   @   @ XXXX
 XXXX   O   O   XXXX
 XXXX   @ O #  *XXXX
 XXXXXXXXXXXXXXXXXXX
-16.
+17.
 XXXXXXXXXXXXXXX
 XXXXXX   XXXXXX
 XXXXXX S XXXXXX
@@ -307,7 +307,7 @@ X   *XXXX@@@XXXX    X
 X  XXXXXX   XXXXXX #X
 X# XXXXXX   XXXXXX #X
 X# XXXX       XXXX  X
-X  XXXX # 6 # XXXX  X
+X  XXXX # 7 # XXXX  X
 X   O@         @@   X
 X         +        *X
 XXXXXXXXXXXXXXXXXXXXX
@@ -316,7 +316,7 @@ XXXXXXXXXXXXXXXXXX
 X#*##############X
 X##4#############X
 X##############*#X
-X#   #######5####X
+X#   #######6####X
 X# + #S##########X
 X#   ############X
 X############   #X
@@ -346,7 +346,7 @@ X                 X
 X + @@   @ #    + X
 X        ###      X
 X O ##        ##  X
-X @ *6    ##   3  X
+X @ *7    ##   3  X
 X     @@@ #*   @XXX
 X     @@@       X*X
 X  #        #   @ X
@@ -367,7 +367,7 @@ X  XX     XX  X
 X  X  ###  X  X
 X  XX     XX  X
 X   X # # X   X
-X 5 @ # # @ + X
+X 6 @ # # @ + X
 X   @ # # @   X
 X  OX # # XO  X
 X  XX     XX  X
@@ -377,7 +377,7 @@ X  *X     X*  X
 X   X     X   X
 X   XX@@@XX   X
 X 4         + X
-X   *  5  *   X
+X   *  6  *   X
 XXXXXXXXXXXXXXX
 21.
 XXXXXXXXXXXXXXXXXXX
@@ -391,7 +391,7 @@ X**  3 #O + X##  X
 XXXXXX       XO   X
 XXXXXXXX  XXXX    X
 XXXXXX            X
-XXXXXX ###   6  @@X
+XXXXXX ###   7  @@X
 XXXXXX #3# O    * X
 XXXXXX            X
 XXXXXX          # X
@@ -404,11 +404,11 @@ XXXXXXXXXXXXXXXXXXX
 X     X     X     X
 X  +  @     @   * X
 X     @  O  @     X
-X  5  @     @  O  X
+X  6  @     @  O  X
 X     X+ *  X+    X
 X  O  XXXXXXXX@@@XX
 X     X    0X     X
-X  5  X     X     X
+X  6  X     X     X
 X     X  S  X O O X
 X  O  X     X     X
 X     X  0  X#####X
@@ -416,7 +416,7 @@ XX@@@XXX@@@XX     X
 X     X     X O O X
 X     @     X     X
 X +   @     X  +  X
-X     @  5  X   5 X
+X     @  6  X   6 X
 X     X     X+    X
 XXXXXXXXXXXXXXXXXXX
 23.
@@ -448,11 +448,11 @@ XXXXXXXXXXXXXXXXXXXXXXX
 24.
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 X   #  X       X                 X          X
-X S #  X 5   + X +  O          6 X # O #+#  X
+X S #  X 6   + X +  O          7 X # O #+#  X
 X   #  X       X        X        X          X
 XXXXX  X   X   XXXXXX   X   XXXXXX # # # #  X
 X      X   X            X                   X
-X *        X *          X *        6 # O+#  X
+X *        X *          X *        7 # O+#  X
 X          X            X                   X
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 25.
@@ -462,7 +462,7 @@ XXXXXXXXX     +   @   XXX
 XXXXXXX*  ####   @O@   XX
 XXXX      O  O    @     X
 XXX       ####      +   X
-XXX  3         6   @@@  X
+XXX  3         7   @@@  X
 XXX O# XXXXXXXX         X
 XX     X*     X    ###  X
 XX     X      X      # *X
@@ -483,15 +483,15 @@ XXXXXXXXXXXXXXXXXXXXXXXXX
 26.
 XXXXXXXXXXXXXXXXXXX
 X             X   X
-X 6 O O O O * X S X
+X 7 O O O O * X S X
 X             X   X
 X O XXX@@@@@XXX   X
 X   X         X   X
-X O X *##6 ## X   X
+X O X *##7 ## X   X
 X   X #    #  X   X
 X O X   ####  X   X
 X   X #####   X   X
-X + X 5 # # * X   X
+X + X 6 # # * X   X
 X   X #   # # X   X
 X   X + # # 4 X   X
 X   X     +   X   X
@@ -505,13 +505,13 @@ XXXXXXXXXXXXXXXXXXXXXXXXX
 X                #*X    X
 X +     O   @@@  ##X S  X
 X       #          X    X
-X ##XXXXXXXXXXXX  6X@@@@X
+X ##XXXXXXXXXXXX  7X@@@@X
 X   X  #3     OX   X*   X
 X   X  #       X   X    X
 X   X          XO  X O# X
 X #*X # XXXX @*XO  X    X
 X ##X ##X  X @@X#  X    X
-X   X  *X+ X  6X   X @@ X
+X   X  *X+ X  7X   X @@ X
 X#  X   X  X   X   X    X
 XO  X   X+ X   X## X #+ X
 X#  X   X@@X   X*# X #  X
@@ -529,20 +529,20 @@ XXXXXXXXXXXXXXXXXXXXXXXXX
 28.
 XXXXXXXXXXXXXXXXXXX
 X          X*X    X
-X    +     X X +6 X
+X    +     X X +7 X
 X   XXXX   X @    X
 X   @  X@@@X @    X
 XX@@@        @@X  X
 X*             X  X
 XXXXX         XX  X
 X   @    S    @   X
-X 6 @         @ + X
+X 7 @         @ + X
 X   @         @   X
 X  XX         XXXXX
 X  X             *X
 X  X@@       @@@XXX
 X    @ X@@@X @    X
-X  + @ X 6 XXX    X
+X  + @ X 7 XXX    X
 XX   X X +      + X
 X    X*X          X
 XXXXXXXXXXXXXXXXXXX
@@ -564,7 +564,7 @@ X         @@@@@ @X      X
 X#  +            X      X
 X#     OXXX      X      X
 X#        X      XXXO   X
-X           XXXX  6 *  #X
+X           XXXX  7 *  #X
 X  OXXX                #X
 X    *X    +        #   X
 X                   #   X
