@@ -12,8 +12,8 @@ import com.badlogic.gdx.physics.box2d.World;
  */
 public class Bullet extends Projectile{
 
-    public Bullet(AssetManager manager, World world, Vector2 pos, float angle, float speed, float size, float damage, boolean isPlayer){
-        super(world,pos,new CircleShape(), angle,speed,size,damage,isPlayer);
+    public Bullet(AssetManager manager, World world, Vector2 pos, float angle, float speed, float radius, float damage, boolean isPlayer){
+        super(world,pos, angle,speed,radius,damage,isPlayer);
         sprite = new Sprite(manager.get("sprites/bullet.png",Texture.class));
     }
 

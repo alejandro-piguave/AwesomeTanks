@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
 import com.alexpi.awesometanks.utils.Settings
 import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Preferences
@@ -28,46 +29,54 @@ class PlayerTank (
 
     private val visibilityRadius = 2 + gameValues.getInteger(Constants.VISIBILITY)
     private val armor = gameValues.getInteger(Constants.ARMOR)
-    init {
-        map.visualRange = visibilityRadius
-    }
-
     val position: Vector2
         get() = body.position
 
-    override fun takeDamage(damage: Float) {
-        super.takeDamage(damage * (1f - armor*.1f))
-    }
-
-    fun setPos(row: Int, col: Int){
-        body.setTransform(map.toWorldPos(row, col).add(.5f,.5f), body.angle)
-    }
-
     var money: Int = 0
     var currentWeaponIndex = 0
-    private val weapons: List<Weapon> = (0..6).map {
+    private val weapons: List<Weapon> = (0 until Constants.WEAPON_COUNT).map {
         Weapon.getWeaponAt(
             it, manager,
             gameValues.getFloat("ammo$it"), gameValues.getInteger("power$it"), true, this)
     }
 
-    fun saveProgress(gameValues: Preferences) {
-        for (i in weapons.indices) gameValues.putFloat("ammo$i", weapons[i].ammo)
-    }
     val centerX: Float
-    get() = if(isRocketActive) rocketPosition.x * Constants.TILE_SIZE else x + width*.5f
+        get() = if(isRocketActive) rocketPosition.x * Constants.TILE_SIZE else x + width*.5f
 
     val centerY: Float
-    get() = if(isRocketActive) rocketPosition.y * Constants.TILE_SIZE else y + height*.5f
+        get() = if(isRocketActive) rocketPosition.y * Constants.TILE_SIZE else y + height*.5f
 
     private var isRocketActive = false
     private var rocketPosition = Vector2()
     override val currentWeapon: Weapon
         get() = weapons[currentWeaponIndex]
 
+    init {
+        map.visualRange = visibilityRadius
+    }
+
     override fun act(delta: Float) {
         super.act(delta)
         if(isMoving || isRocketActive) updateVisibleArea()
+    }
+
+    override fun takeDamage(damage: Float) {
+        super.takeDamage(damage * (1f - armor*.1f))
+    }
+
+    fun setRotationInput(x: Float, y: Float){
+        if(isRocketActive){
+            val rocketLauncher = weapons[Constants.ROCKET] as RocketLauncher
+            rocketLauncher.rocket?.updateOrientation(x,y)
+        } else currentWeapon.setDesiredAngleRotation(x,y)
+    }
+
+    fun setPos(row: Int, col: Int){
+        body.setTransform(map.toWorldPos(row, col).add(.5f,.5f), body.angle)
+    }
+
+    fun saveProgress(gameValues: Preferences) {
+        for (i in weapons.indices) gameValues.putFloat("ammo$i", weapons[i].ammo)
     }
 
     private fun updateVisibleArea(){

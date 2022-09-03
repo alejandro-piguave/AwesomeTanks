@@ -85,7 +85,7 @@ X               X
 X       S       X
 X               X
 XXXXXXXXXXXXXXXXX
-7.
+6.
 XXXXXXXXXXXXXX
 X   #        X
 X S # # O +  X

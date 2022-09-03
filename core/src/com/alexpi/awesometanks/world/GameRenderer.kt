@@ -204,6 +204,10 @@ class GameRenderer(private val game: MainGame,
         }
     }
 
+    fun setRotationInput(x: Float, y: Float){
+        tank.setRotationInput(x,y)
+    }
+
     fun moveUp(){
         verticalMovement.add(Movement.POSITIVE)
         updateMovement()

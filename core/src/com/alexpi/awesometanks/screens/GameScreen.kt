@@ -36,7 +36,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
     private val gameRenderer = GameRenderer(game, object: GameListener{
         override fun onLevelFailed() {
-            showLevelFailedDialog()
+            showLevelFailedButton()
         }
 
         override fun onLevelCompleted() {
@@ -99,7 +99,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 val x = knobPercentX
                 val y = knobPercentY
                 if (isTouched && (abs(x) > .2f || abs(y) > .2f)) {
-                    gameRenderer.tank.currentWeapon.setDesiredAngleRotation(x, y)
+                    gameRenderer.setRotationInput(x,y)
                     val distanceFromCenter = Utils.fastHypot(x.toDouble(), y.toDouble()).toFloat()
                     gameRenderer.tank.isShooting = distanceFromCenter > 0.95f && !gameRenderer.isLevelCompleted
                 } else gameRenderer.tank.isShooting = false
@@ -204,7 +204,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         game.gameValues.flush()
     }
 
-    private fun showLevelFailedDialog() {
+    private fun showLevelFailedButton() {
         val table = Table()
         table.setFillParent(true)
         val continueButton = TextButton(
@@ -315,6 +315,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 changeGun(6)
                 return true
             }
+            Input.Keys.NUM_8 -> {
+                changeGun(7)
+                return true
+            }
         }
         return false
     }
@@ -338,7 +342,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             if (pointer == screenPointer) {
-                gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
+                gameRenderer.setRotationInput(
                     screenX - Gdx.graphics.width*.5f,
                     (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
                 )
@@ -385,14 +389,11 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
-                screenX - Gdx.graphics.width*.5f,
-                (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
-            )
-            return true
-        }
-        return false
+        gameRenderer.setRotationInput(
+            screenX - Gdx.graphics.width*.5f,
+            (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
+        )
+        return true
     }
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean {

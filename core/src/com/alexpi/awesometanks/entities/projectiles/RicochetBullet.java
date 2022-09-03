@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.alexpi.awesometanks.entities.actors.ParticleActor;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -24,17 +23,17 @@ public class RicochetBullet extends Projectile {
     private final static int MAX_HITS = 3;
 
     public RicochetBullet(AssetManager manager, World world, Vector2 pos, Sound sound, float angle, float power, boolean isPlayer) {
-        super(world,pos,new CircleShape(), angle,20f,.2f,35+power*5,isPlayer);
+        super(world, pos, angle,20f,.2f,35+power*5,isPlayer);
         hitSound = sound;
         sprite = new Sprite(manager.get("sprites/ricochet_bullet.png",Texture.class));
-        particleActor = new ParticleActor(manager,"particles/ricochets.party",getX()+getWidth()/2,getY()+getHeight()/2,true);
+        particleActor = new ParticleActor(manager,"particles/ricochets.party",getX()+ getBodyWidth()/2,getY()+ getBodyHeight()/2,true);
     }
 
 
     @Override
     public void act(float delta) {
         super.act(delta);
-        particleActor.setPosition(getX() + getWidth() / 2, getY() + getHeight() / 2);
+        particleActor.setPosition(getX() + getBodyWidth() / 2, getY() + getBodyHeight() / 2);
         particleActor.act(delta);
     }
 

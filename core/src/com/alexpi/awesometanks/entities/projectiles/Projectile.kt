@@ -1,93 +1,127 @@
-package com.alexpi.awesometanks.entities.projectiles;
+package com.alexpi.awesometanks.entities.projectiles
 
-import com.alexpi.awesometanks.utils.Constants;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.alexpi.awesometanks.utils.Constants
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.physics.box2d.*
+import java.lang.IllegalArgumentException
 
 /**
  * Created by Alex on 16/01/2016.
  */
-public abstract class Projectile extends Actor{
-    public Body body;
-    private Fixture fixture;
-    protected Sprite sprite;
-    private boolean destroyed = false;
-    public float damage,height, width, speed;
+abstract class Projectile private constructor(
+    world: World,
+    position: Vector2,
+    shapeType: Shape.Type,
+    angle: Float,
+    val speed: Float,
+    val bodyWidth: Float,
+    val bodyHeight: Float,
+    val damage: Float,
+    isPlayer: Boolean
+) : Actor() {
+    val body: Body
+    private val fixture: Fixture
+    @JvmField
+    protected var sprite: Sprite? = null
+    var isDestroyed = false
+        private set
+    val isEnemy: Boolean
+        get() = fixture.filterData.maskBits == Constants.ENEMY_BULLET_MASK
 
-    public Projectile(World world, Vector2 position, Shape shape, float angle, float speed, float measure, float damage, boolean isPlayer){
-        this.damage = damage;
-        this.speed = speed;
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(position);
-        bodyDef.bullet=true;
-        if(shape.getType() == Shape.Type.Polygon){
-            height = measure;width = measure*2;
-            ((PolygonShape)shape).setAsBox(measure, measure/2);}
-        else if(shape.getType() == Shape.Type.Circle){
-            height = width = measure;
-            shape.setRadius(measure/2);}
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.density = 0.1f;
-        fixtureDef.shape = shape;
-        fixtureDef.restitution = .9f;
-        fixtureDef.filter.categoryBits = isPlayer? Constants.CAT_PLAYER_BULLET : Constants.CAT_ENEMY_BULLET;
-        fixtureDef.filter.maskBits = isPlayer? Constants.PLAYER_BULLET_MASK : Constants.ENEMY_BULLET_MASK;
-
-        body = world.createBody(bodyDef);
-        fixture = body.createFixture(fixtureDef);
-        fixture.setUserData(this);
-
-        shape.dispose();
-        body.setLinearVelocity(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed);
-        body.setFixedRotation(true);
-
-        setSize(Constants.TILE_SIZE * width, Constants.TILE_SIZE * height);
-        setOrigin(getOriginX() + getWidth() / 2, getOriginY() + getHeight() / 2);
-        setPosition((body.getPosition().x - width/2) * Constants.TILE_SIZE, (body.getPosition().y - height/2) * Constants.TILE_SIZE);
-        setRotation(angle * MathUtils.radiansToDegrees);
-
+    fun detach() {
+        body.destroyFixture(fixture)
+        body.world.destroyBody(body)
+        remove()
     }
 
-    public boolean isEnemy(){return fixture.getFilterData().maskBits == Constants.ENEMY_BULLET_MASK;}
-
-    public void detach(){
-        body.destroyFixture(fixture);
-        body.getWorld().destroyBody(body);
-        remove();
+    open fun destroy() {
+        isDestroyed = true
     }
 
-    public void destroy(){
-        destroyed = true;
-    }
-
-    @Override
-    public void act(float delta) {
-        if(destroyed){
-            detach();
-            return;
+    override fun act(delta: Float) {
+        if (isDestroyed) {
+            detach()
+            return
         }
-        setPosition((body.getPosition().x - width/2) * Constants.TILE_SIZE, (body.getPosition().y - height/2) * Constants.TILE_SIZE);
+        setPosition(
+            (body.position.x - bodyWidth / 2) * Constants.TILE_SIZE,
+            (body.position.y - bodyHeight / 2) * Constants.TILE_SIZE
+        )
+
+        rotation = body.angle * MathUtils.radiansToDegrees
     }
 
-    public boolean isDestroyed(){ return destroyed;}
-
-
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        if(sprite!=null)
-            batch.draw(sprite,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        if (sprite != null) batch.draw(
+            sprite,
+            x,
+            y,
+            originX,
+            originY,
+            width,
+            height,
+            scaleX,
+            scaleY,
+            rotation
+        )
     }
 
+    constructor(
+        world: World,
+        position: Vector2,
+        angle: Float,
+        speed: Float,
+        radius: Float,
+        damage: Float,
+        isPlayer: Boolean
+    ): this(world, position, Shape.Type.Circle, angle, speed, radius, radius, damage, isPlayer)
+
+    constructor(
+        world: World,
+        position: Vector2,
+        angle: Float,
+        speed: Float,
+        bodyWidth: Float,
+        bodyHeight: Float,
+        damage: Float,
+        isPlayer: Boolean
+    ): this(world, position, Shape.Type.Polygon, angle, speed, bodyWidth, bodyHeight, damage, isPlayer)
+
+    init {
+        val bodyDef = BodyDef()
+        bodyDef.type = BodyDef.BodyType.DynamicBody
+        bodyDef.position.set(position)
+        bodyDef.bullet = true
+        val fixtureDef = FixtureDef()
+        fixtureDef.density = 0.1f
+        val shape = when (shapeType) {
+            Shape.Type.Circle -> CircleShape().apply { radius = bodyWidth }
+            Shape.Type.Polygon -> PolygonShape().apply { setAsBox(bodyWidth, bodyHeight) }
+            else -> throw IllegalArgumentException("Illegal shape")
+        }
+        fixtureDef.shape = shape
+        fixtureDef.restitution = .9f
+        fixtureDef.filter.categoryBits =
+            if (isPlayer) Constants.CAT_PLAYER_BULLET else Constants.CAT_ENEMY_BULLET
+        fixtureDef.filter.maskBits =
+            if (isPlayer) Constants.PLAYER_BULLET_MASK else Constants.ENEMY_BULLET_MASK
+        body = world.createBody(bodyDef)
+        fixture = body.createFixture(fixtureDef)
+        fixture.userData = this
+        shape.dispose()
+        body.setLinearVelocity(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed)
+        body.setTransform(body.position, angle)
+        setSize(Constants.TILE_SIZE * bodyWidth, Constants.TILE_SIZE * bodyHeight)
+        setOrigin(originX + width / 2, originY + height / 2)
+        setPosition(
+            (body.position.x - bodyWidth / 2) * Constants.TILE_SIZE,
+            (body.position.y - bodyHeight / 2) * Constants.TILE_SIZE
+        )
+        rotation = body.angle * MathUtils.radiansToDegrees
+    }
 }

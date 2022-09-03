@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.alexpi.awesometanks.entities.actors.ParticleActor;
 
 /**
@@ -17,8 +16,8 @@ public class Rail extends Projectile {
     ParticleActor particleActor;
 
     public Rail(AssetManager manager, World world, Vector2 pos, float angle, float power, boolean filter) {
-        super( world, pos, new CircleShape(), angle, 50f, .25f, 180+power*40,filter);
-        particleActor = new ParticleActor(manager,"particles/railgun.party",getX()+getWidth()/2,getY()+getHeight()/2,true);
+        super( world, pos, angle, 50f, .25f, 180+power*40,filter);
+        particleActor = new ParticleActor(manager,"particles/railgun.party",getX()+ getBodyWidth()/2,getY()+ getBodyHeight()/2,true);
     }
 
     @Override
@@ -30,7 +29,7 @@ public class Rail extends Projectile {
     @Override
     public void act(float delta) {
         super.act(delta);
-        particleActor.setPosition(getX() + getWidth() / 2, getY()+getHeight()/2);
+        particleActor.setPosition(getX() + getBodyWidth() / 2, getY()+ getBodyHeight()/2);
         particleActor.act(delta);
     }
 

@@ -52,14 +52,14 @@ public class ContactManager implements ContactListener {
                 damageableActor.burn(((Flame) projectile).burnDuration);
 
             if(!(projectile.isEnemy() && damageableActor instanceof Spawner)){
-                damageableActor.takeDamage(projectile.damage);
+                damageableActor.takeDamage(projectile.getDamage());
             }
             if(projectile instanceof CanonBall || projectile instanceof Rocket){
-                contactListener.onExplosiveProjectileCollided(projectile.getX()+projectile.getWidth()*.5f, projectile.getY()+projectile.getHeight()*.5f);
+                contactListener.onExplosiveProjectileCollided(projectile.getX()+projectile.getBodyWidth()*.5f, projectile.getY()+projectile.getBodyHeight()*.5f);
             }
             projectile.destroy();
 
-            contactListener.onBulletCollision(projectile.getX()+projectile.getWidth()*.5f, projectile.getY()+projectile.getHeight()*.5f);
+            contactListener.onBulletCollision(projectile.getX()+projectile.getBodyWidth()*.5f, projectile.getY()+projectile.getBodyHeight()*.5f);
 
             if(!damageableActor.isAlive() && (damageableActor instanceof Mine)){
                 Fixture mineFixture = fixtureA.getUserData() instanceof Mine? fixtureA:fixtureB;

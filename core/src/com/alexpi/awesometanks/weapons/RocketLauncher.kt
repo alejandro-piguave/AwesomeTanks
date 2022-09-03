@@ -19,7 +19,8 @@ class RocketLauncher(assetManager: AssetManager, ammo: Float, power: Int, isPlay
         1.5f,
         1f
     ) {
-    private var rocket: Rocket? = null
+    var rocket: Rocket? = null
+        private set
 
     override fun canShoot(): Boolean = super.canShoot() && rocket?.isDestroyed ?: true
 
