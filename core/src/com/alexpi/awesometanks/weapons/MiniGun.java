@@ -12,11 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 public class MiniGun extends Weapon {
     public MiniGun(AssetManager assetManager, float ammo, int power, boolean isPlayer) {
         super("Minigun",assetManager,"weapons/minigun.png","sounds/minigun.ogg", ammo, power, isPlayer, .06f, 1f);
-        setUnlimitedAmmo(true);
+        unlimitedAmmo = true;
     }
 
     @Override
     public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position) {
-        group.addActor(new Bullet(assetManager,world, position, currentAngleRotation, 30f,.1f,3.5f+power, isPlayer));
+        group.addActor(new Bullet(assetManager,world, position, getCurrentAngleRotation(), 30f,.1f,3.5f+power, isPlayer));
     }
 }

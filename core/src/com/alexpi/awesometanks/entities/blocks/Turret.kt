@@ -105,12 +105,12 @@ class Turret(
         fixture.filterData = filter
         nuggetValue = getNuggetValue(type)
         weapon = Weapon.getWeaponAt(type, manager, 1f, 2, false)
-        weapon.setUnlimitedAmmo(true)
+        weapon.unlimitedAmmo = true
         setOrigin(width / 2, height / 2)
     }
 
     override fun attack(angle: Float) {
-        weapon.setDesiredAngleRotation(angle)
+        weapon.desiredAngleRotation = angle
         weapon.updateAngleRotation(ROTATION_SPEED)
         weapon.shoot(manager, parent, body.world, body.position)
     }

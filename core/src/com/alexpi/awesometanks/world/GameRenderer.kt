@@ -83,7 +83,7 @@ class GameRenderer(private val game: MainGame,
                 createLandMineExplosion(x,y)
             }
 
-            override fun onCanonBulletCollided(x: Float, y: Float) {
+            override fun onExplosiveProjectileCollided(x: Float, y: Float) {
                 createCanonBallExplosion(x,y)
             }
         }))

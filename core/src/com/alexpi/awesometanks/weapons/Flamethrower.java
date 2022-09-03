@@ -17,6 +17,6 @@ public class Flamethrower extends Weapon {
 
     @Override
     public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position) {
-        group.addActor(new Flame(assetManager, world, position, currentAngleRotation,2f+power, isPlayer));
+        group.addActor(new Flame(assetManager, world, position, getCurrentAngleRotation(),2f+power, isPlayer));
     }
 }

@@ -7,10 +7,10 @@ import com.alexpi.awesometanks.entities.items.FreezingBall;
 import com.alexpi.awesometanks.entities.items.GoldNugget;
 import com.alexpi.awesometanks.entities.items.HealthPack;
 import com.alexpi.awesometanks.entities.items.Item;
-import com.alexpi.awesometanks.entities.projectiles.Bullet;
 import com.alexpi.awesometanks.entities.projectiles.CanonBall;
 import com.alexpi.awesometanks.entities.projectiles.Flame;
 import com.alexpi.awesometanks.entities.projectiles.Projectile;
+import com.alexpi.awesometanks.entities.projectiles.Rocket;
 import com.alexpi.awesometanks.entities.tanks.PlayerTank;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -26,7 +26,7 @@ public class ContactManager implements ContactListener {
         void onFreezingBallFound(FreezingBall freezingBall);
         void onBulletCollision(float x, float y);
         void onLandMineFound(float x, float y);
-        void onCanonBulletCollided(float x, float y);
+        void onExplosiveProjectileCollided(float x, float y);
     }
 
     private final ContactListener contactListener;
@@ -54,8 +54,8 @@ public class ContactManager implements ContactListener {
             if(!(projectile.isEnemy() && damageableActor instanceof Spawner)){
                 damageableActor.takeDamage(projectile.damage);
             }
-            if(projectile instanceof CanonBall){
-                contactListener.onCanonBulletCollided(projectile.getX()+projectile.getWidth()*.5f, projectile.getY()+projectile.getHeight()*.5f);
+            if(projectile instanceof CanonBall || projectile instanceof Rocket){
+                contactListener.onExplosiveProjectileCollided(projectile.getX()+projectile.getWidth()*.5f, projectile.getY()+projectile.getHeight()*.5f);
             }
             projectile.destroy();
 

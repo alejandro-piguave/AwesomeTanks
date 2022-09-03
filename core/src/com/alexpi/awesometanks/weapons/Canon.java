@@ -17,6 +17,6 @@ public class Canon extends Weapon {
 
     @Override
     public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position) {
-        group.addActor( new CanonBall(assetManager,world, position, currentAngleRotation, power, isPlayer));
+        group.addActor( new CanonBall(assetManager,world, position, getCurrentAngleRotation(), power, isPlayer));
     }
 }

@@ -16,6 +16,6 @@ public class Ricochet extends Weapon {
     }
     @Override
     public void createProjectile(Group group, AssetManager assetManager, World world, Vector2 position) {
-        group.addActor(new RicochetBullet(assetManager,world, position, shotSound,currentAngleRotation, power, isPlayer));
+        group.addActor(new RicochetBullet(assetManager,world, position, shotSound,getCurrentAngleRotation(), power, isPlayer));
     }
 }

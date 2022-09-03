@@ -123,13 +123,13 @@ class EnemyTank(
 
     init {
         weapon = Weapon.getWeaponAt(type, manager, 1f, powerByTier(tier), false)
-        weapon.setUnlimitedAmmo(true)
+        weapon.unlimitedAmmo = true
         nuggetValue = getNuggetValue(tier, type)
     }
 
     override fun attack(angle: Float) {
         setOrientation(angle)
-        weapon.setDesiredAngleRotation(angle)
+        weapon.desiredAngleRotation = angle
         isMoving = true
         isShooting = true
     }

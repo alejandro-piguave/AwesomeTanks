@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
 import com.alexpi.awesometanks.utils.Settings
 import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
@@ -23,7 +24,7 @@ class PlayerTank (
     150 + gameValues.getInteger(Constants.MOVEMENT_SPEED) * 10f,
     Constants.CAT_PLAYER,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
-    500f, false, null, Color.WHITE){
+    500f, false, null, Color.WHITE), RocketListener {
 
     private val visibilityRadius = 2 + gameValues.getInteger(Constants.VISIBILITY)
     private val armor = gameValues.getInteger(Constants.ARMOR)
@@ -47,28 +48,41 @@ class PlayerTank (
     private val weapons: List<Weapon> = (0..6).map {
         Weapon.getWeaponAt(
             it, manager,
-            gameValues.getFloat("ammo$it"), gameValues.getInteger("power$it"), true)
+            gameValues.getFloat("ammo$it"), gameValues.getInteger("power$it"), true, this)
     }
 
     fun saveProgress(gameValues: Preferences) {
         for (i in weapons.indices) gameValues.putFloat("ammo$i", weapons[i].ammo)
     }
     val centerX: Float
-    get() = x + width*.5f
+    get() = if(isRocketActive) rocketPosition.x * Constants.TILE_SIZE else x + width*.5f
 
     val centerY: Float
-    get() = y + height*.5f
+    get() = if(isRocketActive) rocketPosition.y * Constants.TILE_SIZE else y + height*.5f
+
+    private var isRocketActive = false
+    private var rocketPosition = Vector2()
     override val currentWeapon: Weapon
         get() = weapons[currentWeaponIndex]
 
     override fun act(delta: Float) {
         super.act(delta)
-        if(isMoving) updateVisibleArea()
+        if(isMoving || isRocketActive) updateVisibleArea()
     }
 
     private fun updateVisibleArea(){
-        val cell = map.toCell(body.position)
+        val cell = map.toCell(if(isRocketActive) rocketPosition else body.position)
         map.setPlayerCell(cell)
         map.scanCircle()
+    }
+
+    override fun onRocketMoved(x: Float, y: Float) {
+        isRocketActive = true
+        rocketPosition.x = x
+        rocketPosition.y = y
+    }
+
+    override fun onRocketCollided() {
+        isRocketActive = false
     }
 }

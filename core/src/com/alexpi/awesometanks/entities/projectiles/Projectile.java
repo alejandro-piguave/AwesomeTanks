@@ -22,13 +22,10 @@ public abstract class Projectile extends Actor{
     private Fixture fixture;
     protected Sprite sprite;
     private boolean destroyed = false;
-
-    protected boolean used;
     public float damage,height, width, speed;
 
     public Projectile(World world, Vector2 position, Shape shape, float angle, float speed, float measure, float damage, boolean isPlayer){
         this.damage = damage;
-        used = true;
         this.speed = speed;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -66,7 +63,6 @@ public abstract class Projectile extends Actor{
     public boolean isEnemy(){return fixture.getFilterData().maskBits == Constants.ENEMY_BULLET_MASK;}
 
     public void detach(){
-
         body.destroyFixture(fixture);
         body.getWorld().destroyBody(body);
         remove();
@@ -84,6 +80,9 @@ public abstract class Projectile extends Actor{
         }
         setPosition((body.getPosition().x - width/2) * Constants.TILE_SIZE, (body.getPosition().y - height/2) * Constants.TILE_SIZE);
     }
+
+    public boolean isDestroyed(){ return destroyed;}
+
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
