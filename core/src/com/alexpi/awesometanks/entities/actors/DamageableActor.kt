@@ -2,6 +2,7 @@ package com.alexpi.awesometanks.entities.actors
 
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.utils.Rumble
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -30,15 +31,20 @@ abstract class DamageableActor(protected val manager: AssetManager,
     open fun takeDamage(damage: Float) {
         if (health - damage > 0) {
             health -= damage
-            if(lastHit + HEALTH_BAR_DURATION < System.currentTimeMillis()){
+            if(lastHit + HEALTH_BAR_DURATION < TimeUtils.millis()){
                 damageListener?.onDamage(this)
-                lastHit = System.currentTimeMillis()
+                lastHit = TimeUtils.millis()
             }
         }
         else {
             health = 0f
             damageListener?.onDeath(this)
         }
+    }
+
+    open fun killInstantly(){
+        health = 0f
+        damageListener?.onDeath(this)
     }
 
     fun freeze(freezingTime: Float) {
@@ -53,6 +59,7 @@ abstract class DamageableActor(protected val manager: AssetManager,
     override fun act(delta: Float) {
         super.act(delta)
         if (!isAlive) {
+            Gdx.app.log("DamageableActor","Detaching...")
             detach()
             return
         }
@@ -60,7 +67,6 @@ abstract class DamageableActor(protected val manager: AssetManager,
             flameSprite.setPosition(x + width / 2, y + height / 2)
             flameSprite.act(delta)
             takeDamage(.35f)
-            TimeUtils.millis()
         }
     }
 

@@ -44,6 +44,7 @@ abstract class Block(
     size: Float,
     isFlammable: Boolean, damageListener: DamageListener? = null): this( manager, texturePath, world, shape, health, pos, size, isFlammable, damageListener, true)
 
+
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
         super.draw(batch, parentAlpha)
