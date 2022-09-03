@@ -3,6 +3,7 @@ package com.alexpi.awesometanks.entities.blocks
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
+import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.badlogic.gdx.assets.AssetManager
@@ -20,7 +21,7 @@ class Spawner(
     listener: DamageListener,
     manager: AssetManager,
     world: World,
-    private val targetPosition: Vector2,
+    private val target: PlayerTank,
     pos: Vector2,
     level: Int
 ) : Block(
@@ -53,7 +54,7 @@ class Spawner(
                     manager,
                     body.world,
                     body.position,
-                    targetPosition,
+                    target,
                     EnemyTank.Tier.NORMAL,
                     Utils.getRandomInt(minType, maxType + 1),
                     damageListener

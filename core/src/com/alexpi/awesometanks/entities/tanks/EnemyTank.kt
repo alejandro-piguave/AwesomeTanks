@@ -22,7 +22,7 @@ class EnemyTank(
     manager: AssetManager,
     world: World,
     position: Vector2,
-    targetPosition: Vector2,
+    target: PlayerTank,
     tier: Tier,
     type: Int, damageListener: DamageListener?) : Tank(manager, world, position, getSizeByTier(tier),
     ROTATION_SPEED, MOVEMENT_SPEED,
@@ -32,7 +32,7 @@ class EnemyTank(
     EnemyAICallback {
 
 
-    private val enemyAI = EnemyAI(world, body.position, targetPosition, this)
+    private val enemyAI = EnemyAI(world, body.position, target, this)
     private val nuggetValue: Int
     private val weapon: Weapon
     override val currentWeapon: Weapon
@@ -40,7 +40,7 @@ class EnemyTank(
 
     override fun act(delta: Float) {
         if(isAlive && !isFrozen){
-            enemyAI.update(delta)
+            enemyAI.update()
         }else{
             await()
         }

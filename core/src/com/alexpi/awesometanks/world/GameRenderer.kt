@@ -126,7 +126,7 @@ class GameRenderer(private val game: MainGame,
                         this,
                         game.manager,
                         world,
-                        tank.body.position,
+                        tank,
                         gameMap.toWorldPos(row,col),
                         level
                     )
@@ -135,7 +135,7 @@ class GameRenderer(private val game: MainGame,
                         this,
                         game.manager,
                         world,
-                        tank.body.position,
+                        tank,
                         gameMap.toWorldPos(row,col),
                         level
                     )
@@ -153,7 +153,7 @@ class GameRenderer(private val game: MainGame,
                             this,
                             game.manager,
                             world,
-                            tank.body.position,
+                            tank,
                             gameMap.toWorldPos(row,col),
                             num
                         )
@@ -161,7 +161,7 @@ class GameRenderer(private val game: MainGame,
                 } else if(value in Constants.MINIGUN_BOSS..Constants.RAILGUN_BOSS){
                     val type = value.code - Constants.MINIGUN_BOSS.code
                     entityGroup.addActor(
-                        EnemyTank(game.manager, world, gameMap.toWorldPos(row, col),tank.body.position,
+                        EnemyTank(game.manager, world, gameMap.toWorldPos(row, col),tank,
                             EnemyTank.Tier.BOSS,type,this )
                     )
                 }
@@ -343,16 +343,18 @@ class GameRenderer(private val game: MainGame,
         gameStage.addActor(explosionShine)
         val bodies = com.badlogic.gdx.utils.Array<Body>()
         world.getBodies(bodies)
-        for (body: Body in bodies) {
+        world.QueryAABB({
             val distanceFromMine = Utils.fastHypot(
-                (body.position.x - x).toDouble(),
-                (body.position.y - y).toDouble()
+                (it.body.position.x - x).toDouble(),
+                (it.body.position.y - y).toDouble()
             ).toFloat()
-            if (body.userData is DamageableActor && (distanceFromMine < explosionRadius)) {
-                val damageableActor = (body.userData as DamageableActor)
+            if (it.userData is DamageableActor && (distanceFromMine < explosionRadius)) {
+                val damageableActor = (it.userData as DamageableActor)
                 damageableActor.takeDamage(maxDamage * (explosionRadius - distanceFromMine) / explosionRadius)
             }
-        }
+                        true
+        },x-explosionRadius,y-explosionRadius,x+explosionRadius,y+explosionRadius)
+
         if (Settings.soundsOn) explosionSound.play(volume)
         Rumble.rumble(rumblePower, rumbleLength)
     }

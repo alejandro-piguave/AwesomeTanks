@@ -164,7 +164,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun changeGun(index: Int){
-        if(index == gameRenderer.tank.currentWeaponIndex) return
+        if(index == gameRenderer.tank.currentWeaponIndex || buttons[index].isDisabled) return
 
         if (Settings.soundsOn) gunChangeSound.play()
         gameRenderer.tank.currentWeaponIndex = index
@@ -325,11 +325,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     //EVENTS FOR DESKTOP
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            Gdx.app.log("touchDown", "screenX: $screenX screenY: $screenY")
-            gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
-                screenX - Gdx.graphics.width*.5f,
-                (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
-            )
             gameRenderer.tank.isShooting = !gameRenderer.isLevelCompleted
             screenPointer = pointer
             return true
@@ -353,10 +348,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             if (pointer == screenPointer) {
-                gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
-                    screenX - Gdx.graphics.width*.5f,
-                    (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
-                )
                 gameRenderer.tank.isShooting = false
                 return true
             }
@@ -391,6 +382,13 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            gameRenderer.tank.currentWeapon.setDesiredAngleRotation(
+                screenX - Gdx.graphics.width*.5f,
+                (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
+            )
+            return true
+        }
         return false
     }
 

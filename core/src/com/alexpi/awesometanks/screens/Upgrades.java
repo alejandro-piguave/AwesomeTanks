@@ -197,7 +197,9 @@ public class Upgrades extends BaseScreen {
                 }}});
 
 
-        weaponPower = new UpgradeTable(game.getManager(), "Power", weaponPowerValues[0],5,Constants.gunUpgradePrices[0][weaponPowerValues[0]]);
+        weaponPower = new UpgradeTable(game.getManager(), "Power", weaponPowerValues[0],5,weaponPowerValues[0] >=5? 5 : Constants.gunUpgradePrices[0][weaponPowerValues[0]]);
+        if(weaponPower.isMaxValue())
+            weaponPower.getBuyButton().setVisible(false);
         weaponPower.getBuyButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

@@ -20,13 +20,14 @@ android {
         minSdkVersion 16
         targetSdkVersion 31
 
-        versionCode 7
+        versionCode 8
         versionName "1.0"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }

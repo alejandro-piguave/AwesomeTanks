@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.ai.TurretAI
 import com.alexpi.awesometanks.entities.items.GoldNugget
+import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
@@ -22,14 +23,14 @@ class Turret(
     listener: DamageListener,
     manager: AssetManager,
     world: World,
-    targetPosition: Vector2,
+    target: PlayerTank,
     pos: Vector2,
     type: Int
 ) : Block(
     manager, "sprites/turret_base.png", world, PolygonShape(), getHealthByType(type), pos, .8f, true, listener
 ), EnemyAICallback {
     private val weapon: Weapon
-    private val enemyAI = TurretAI(world, body.position, targetPosition, this)
+    private val enemyAI = TurretAI(world, body.position, target, this)
     private val nuggetValue: Int
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
@@ -40,7 +41,7 @@ class Turret(
 
     override fun act(delta: Float) {
         if (isAlive && !isFrozen){
-            enemyAI.update(delta)
+            enemyAI.update()
         } else{
             await()
         }

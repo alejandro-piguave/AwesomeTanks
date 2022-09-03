@@ -6,6 +6,7 @@ import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
+import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.badlogic.gdx.assets.AssetManager
@@ -20,7 +21,7 @@ class Box(
     listener: DamageListener,
     manager: AssetManager,
     world: World,
-    private val targetPosition: Vector2,
+    private val target: PlayerTank,
     pos: Vector2,
     level: Int
 ) : Block(
@@ -52,7 +53,7 @@ class Box(
                     manager,
                     body.world,
                     body.position,
-                    targetPosition,
+                    target,
                     EnemyTank.Tier.MINI,
                     Utils.getRandomInt(maxType + 1),
                     damageListener

@@ -31,6 +31,9 @@ class PlayerTank (
         map.visualRange = visibilityRadius
     }
 
+    val position: Vector2
+        get() = body.position
+
     override fun takeDamage(damage: Float) {
         super.takeDamage(damage * (1f - armor*.1f))
     }
