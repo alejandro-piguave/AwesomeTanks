@@ -4,16 +4,9 @@ package com.alexpi.awesometanks.utils;
  * Created by Alex on 14/01/2016.
  */
 public class Constants {
-    public static final float SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 720,
-            TILE_SIZE =80;
-    public static final char wall = 'X', space = ' ',start = 'S', gate = '@', bricks = '#', box = '*'
-            , bomb = 'O', spawner = '+',
-            MINIGUN_BOSS = 'A', SHOTGUN_BOSS = 'B', RICOCHET_BOSS = 'C', FLAMETHROWER_BOSS = 'D', CANON_BOSS = 'E',
-            ROCKET_BOSS = 'F', LASERGUN_BOSS = 'G', RAILGUN_BOSS = 'H';
+    public static final float SCREEN_WIDTH = 1280, SCREEN_HEIGHT = 720, TILE_SIZE =80;
 
     public static final int WEAPON_COUNT = 8;
-
-    public static final char[] solidBlocks = {wall, gate, bricks};
 
     public static final float SQRT2_2 = 0.70710678118f; // sqrt(2)/2
 
@@ -69,6 +62,4 @@ public class Constants {
     public static final short CAT_ENEMY_BULLET = 32;
     public static final short ENEMY_BULLET_MASK = CAT_PLAYER | CAT_BLOCK;
     public static final short PLAYER_BULLET_MASK = CAT_ENEMY | CAT_BLOCK;
-
-
 }

@@ -59,7 +59,6 @@ abstract class DamageableActor(protected val manager: AssetManager,
     override fun act(delta: Float) {
         super.act(delta)
         if (!isAlive) {
-            Gdx.app.log("DamageableActor","Detaching...")
             detach()
             return
         }

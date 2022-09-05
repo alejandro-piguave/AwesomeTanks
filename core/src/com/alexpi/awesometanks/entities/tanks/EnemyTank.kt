@@ -1,18 +1,17 @@
 package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.entities.ai.AStartPathFinding
 import com.alexpi.awesometanks.entities.ai.EnemyAI
 import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.experimental.or
 
 /**
@@ -21,6 +20,7 @@ import kotlin.experimental.or
 class EnemyTank(
     manager: AssetManager,
     world: World,
+    pathFinding: AStartPathFinding,
     position: Vector2,
     target: PlayerTank,
     tier: Tier,
@@ -32,7 +32,7 @@ class EnemyTank(
     EnemyAICallback {
 
 
-    private val enemyAI = EnemyAI(world, body.position, target, this)
+    private val enemyAI = EnemyAI(world, pathFinding, body.position, target, this)
     private val nuggetValue: Int
     private val weapon: Weapon
     override val currentWeapon: Weapon
@@ -133,7 +133,7 @@ class EnemyTank(
         isMoving = false
     }
 
-    override fun approach(angle: Float) {
+    override fun move(angle: Float) {
         setOrientation(angle)
         isMoving = true
         isShooting = false

@@ -2,8 +2,6 @@ package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
-import com.alexpi.awesometanks.utils.Settings
-import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
@@ -12,7 +10,6 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.experimental.or
 
 class PlayerTank (
@@ -81,8 +78,8 @@ class PlayerTank (
 
     private fun updateVisibleArea(){
         val cell = map.toCell(if(isRocketActive) rocketPosition else body.position)
-        map.setPlayerCell(cell)
-        map.scanCircle()
+        map.setPlayerCell(cell.row, cell.col)
+        map.updateVisibleArea()
     }
 
     override fun onRocketMoved(x: Float, y: Float) {

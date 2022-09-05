@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.entities.ai.AStartPathFinding
 import com.alexpi.awesometanks.entities.blocks.Spawner.Companion.getMaxType
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
@@ -21,6 +22,7 @@ class Box(
     listener: DamageListener,
     manager: AssetManager,
     world: World,
+    private val pathFinding: AStartPathFinding,
     private val target: PlayerTank,
     pos: Vector2,
     level: Int
@@ -52,6 +54,7 @@ class Box(
                 EnemyTank(
                     manager,
                     body.world,
+                    pathFinding,
                     body.position,
                     target,
                     EnemyTank.Tier.MINI,

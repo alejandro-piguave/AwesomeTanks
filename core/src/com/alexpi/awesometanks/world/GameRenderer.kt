@@ -3,6 +3,7 @@ package com.alexpi.awesometanks.world
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.actors.*
+import com.alexpi.awesometanks.entities.ai.AStartPathFinding
 import com.alexpi.awesometanks.entities.blocks.*
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
@@ -29,6 +30,7 @@ class GameRenderer(private val game: MainGame,
                    private val level: Int) : DamageListener {
 
     private val gameMap = GameMap(level)
+    private val aStartPathFinding = AStartPathFinding(gameMap)
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
     private val healthBarGroup: Group = Group()
@@ -89,83 +91,84 @@ class GameRenderer(private val game: MainGame,
         }))
 
         val shadeGroup = Group()
-        gameMap.forCell { row, col, value, isVisible ->
-            Gdx.app.debug("Cell", "row $row col $col")
-            if (!isVisible) {
+        gameMap.forCell { cell ->
+            if (!cell.isVisible) {
                 shadeGroup.addActor(
                     Shade(
                         game.manager,
                         gameMap,
-                        row, col
+                        cell.row, cell.col
                     )
                 )
             }
-            if (value == Constants.wall) blockGroup.addActor(
+            if (cell.value == GameMap.WALL) blockGroup.addActor(
                 Wall(
                     game.manager,
-                    world, gameMap.toWorldPos(row, col)
+                    world, gameMap.toWorldPos(cell.row, cell.col)
                 )
             ) else {
-                if(value == Constants.start){
-                    tank.setPos(row,col)
+                if(cell.value == GameMap.START){
+                    tank.setPos(cell.row,cell.col)
                     entityGroup.addActor(tank)
-                } else if (value == Constants.gate) blockGroup.addActor(
+                } else if (cell.value == GameMap.GATE) blockGroup.addActor(
                     Gate(
                         this,
                         game.manager,
-                        world, gameMap.toWorldPos(row,col)
+                        world, gameMap.toWorldPos(cell.row, cell.col)
                     )
-                ) else if (value== Constants.bricks) blockGroup.addActor(
+                ) else if (cell.value == GameMap.BRICKS) blockGroup.addActor(
                     Bricks(
                         this,
                         game.manager,
-                        world, gameMap.toWorldPos(row,col)
+                        world, gameMap.toWorldPos(cell.row, cell.col)
                     )
-                ) else if (value == Constants.box) entityGroup.addActor(//ITS ADDED TO THE ENTITY GROUP BECAUSE THE ITEMS IT DROPS BELONG TO THIS GROUP AND NOT TO THE BLOCK GROUP
+                ) else if (cell.value == GameMap.BOX) entityGroup.addActor(//ITS ADDED TO THE ENTITY GROUP BECAUSE THE ITEMS IT DROPS BELONG TO THIS GROUP AND NOT TO THE BLOCK GROUP
                     Box(
                         this,
                         game.manager,
                         world,
+                        aStartPathFinding,
                         tank,
-                        gameMap.toWorldPos(row,col),
+                        gameMap.toWorldPos(cell.row, cell.col),
                         level
                     )
-                ) else if (value == Constants.spawner) entityGroup.addActor(
+                ) else if (cell.value == GameMap.SPAWNER) entityGroup.addActor(
                     Spawner(
                         this,
                         game.manager,
                         world,
+                        aStartPathFinding,
                         tank,
-                        gameMap.toWorldPos(row,col),
+                        gameMap.toWorldPos(cell.row, cell.col),
                         level
                     )
-                ) else if (value == Constants.bomb) blockGroup.addActor(
+                ) else if (cell.value == GameMap.BOMB) blockGroup.addActor(
                     Mine(
                         this,
                         game.manager,
                         world,
-                        gameMap.toWorldPos(row,col),
+                        gameMap.toWorldPos(cell.row, cell.col),
                     )
-                ) else if (Character.isDigit(value)) {
-                    val num = Character.getNumericValue(value)
+                ) else if (Character.isDigit(cell.value)) {
+                    val num = Character.getNumericValue(cell.value)
                     blockGroup.addActor(
                         Turret(
                             this,
                             game.manager,
                             world,
                             tank,
-                            gameMap.toWorldPos(row,col),
+                            gameMap.toWorldPos(cell.row, cell.col),
                             num
                         )
                     )
-                } else if(value in Constants.MINIGUN_BOSS..Constants.RAILGUN_BOSS){
-                    val type = value.code - Constants.MINIGUN_BOSS.code
+                } else if(cell.value in GameMap.MINIGUN_BOSS..GameMap.RAILGUN_BOSS){
+                    val type = cell.value.code - GameMap.MINIGUN_BOSS.code
                     entityGroup.addActor(
-                        EnemyTank(game.manager, world, gameMap.toWorldPos(row, col),tank,
+                        EnemyTank(game.manager, world, aStartPathFinding, gameMap.toWorldPos(cell.row, cell.col),tank,
                             EnemyTank.Tier.BOSS,type,this )
                     )
                 }
-                gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(row, col)))
+                gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell.row, cell.col)))
             }
         }
 
@@ -292,6 +295,7 @@ class GameRenderer(private val game: MainGame,
     fun dispose(){
         gameStage.dispose()
         world.dispose()
+
     }
 
     override fun onDamage(actor: DamageableActor) {
@@ -362,6 +366,7 @@ class GameRenderer(private val game: MainGame,
         if (Settings.soundsOn) explosionSound.play(volume)
         Rumble.rumble(rumblePower, rumbleLength)
     }
+
 }
 
 enum class Movement{ POSITIVE, NEGATIVE}

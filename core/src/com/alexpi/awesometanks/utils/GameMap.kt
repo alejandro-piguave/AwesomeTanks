@@ -1,6 +1,8 @@
 package com.alexpi.awesometanks.utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.ai.pfa.Connection
+import com.badlogic.gdx.ai.pfa.DefaultConnection
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import java.io.BufferedReader
@@ -13,11 +15,11 @@ import java.util.*
  */
 
 class GameMap(level: Int){
-    private val map: Array<CharArray>
-    private val visibleArea: Array<BooleanArray>
+    private val map: Array<Array<Cell>>
     private var playerCol: Int = -1
     private var playerRow: Int = -1
-    var visualRange: Int = 5
+    var visualRange: Int = 3
+    val cellCount: Int
 
     init {
         val file = Gdx.files.internal("levels/levels.txt")
@@ -37,56 +39,98 @@ class GameMap(level: Int){
         require(!ans.isEmpty()) { "No such level" }
         val cA = ans.firstElement()!!.length
         val rA = ans.size
-        map = Array(rA) { CharArray(cA) }
-
-        //set to true for development purposes
-        visibleArea = Array(rA) { BooleanArray(cA) }
-        for (i in 0 until rA) {
-
-            if(i == 0 || i == rA -1){
-                visibleArea[i] = BooleanArray(cA) { true }
+        cellCount = cA * rA
+        map = Array(rA) { row ->
+            Array(cA){ col ->
+                if(ans[row][col] == START) setPlayerCell(row, col)
+                Cell(row, col, ans[row][col], row == 0 || col == 0|| row == rA -1 || col == cA -1 ) // Make the map bounds visible
             }
-            visibleArea[i][0] = true
-            visibleArea[i][cA -1] = true
+        }
+        updateVisibleArea()
 
-            if(ans[i].contains(Constants.start)){
-                val startX = ans[i].indexOf(Constants.start)
-                for(k in -1..1)
-                    for(j in -1..1)
-                        visibleArea[i + k][startX+j] = true
-
+        forCell { cell ->
+            if(cell.value in airBlocks){
+                forValidNeighbors(cell){ neighbor ->
+                    if(neighbor.value in airBlocks){
+                        // Add connection to walkable neighbor
+                        cell.connections.add(DefaultConnection(cell, neighbor))
+                    }
+                }
+                cell.connections.shuffle()
             }
-            map[i] = ans[i].toCharArray()
         }
     }
 
+    fun getIndex(cell: Cell)  = cell.row * map[cell.row].size + cell.col
+
     fun clear(cell: Cell){
-        map[cell.row][cell.col] = Constants.space
+        if(cell.value == AIR) return
+
+        cell.value = AIR
+        forValidNeighbors(cell){ neighbor ->
+            if(neighbor.value in airBlocks){
+                // Add connection to walkable neighbor
+                cell.connections.add(DefaultConnection(cell, neighbor))
+                val inverseConnection = DefaultConnection(neighbor,cell)
+                if(!neighbor.connections.contains(inverseConnection))
+                    neighbor.connections.add(inverseConnection)
+            }
+        }
+        cell.connections.shuffle()
+        printCellConnections()
     }
 
-    fun setPlayerCell(cell: Cell){
-        playerRow = cell.row
-        playerCol = cell.col
+    private fun printCellConnections(){
+        forCell { cell ->
+            println("Cell $cell")
+            cell.connections.forEach {
+                println("connection from ${it.fromNode} to ${it.toNode}")
+            }
+        }
     }
 
-    fun forCell(predicate: (Int, Int, Char, Boolean) -> Unit){
+    private fun cellConnections(cell: Cell) = if(cell.connections.isEmpty) "" else cell.connections.items.fold("") { a, b->
+        a + "${b.toNode?: "empty"}, " }
+
+    fun setPlayerCell(row: Int, col: Int){
+        playerRow = row
+        playerCol = col
+    }
+
+    fun forCell(predicate: (Cell) -> Unit){
         for (row in map.indices)
             for (col in 0 until map[row].size)
-                predicate(row,col, map[row][col], visibleArea[row][col]) // (row, column)
+                predicate(map[row][col])
+    }
+
+    private inline fun forValidNeighbors(cell: Cell, predicate: (Cell) -> Unit){
+        for (offset in NEIGHBORHOOD.indices) {
+            val neighborCol: Int = cell.col + NEIGHBORHOOD[offset][0]
+            val neighborRow: Int = cell.row + NEIGHBORHOOD[offset][1]
+            if (neighborRow in map.indices && neighborCol >= 0 && neighborCol < map[0].size) {
+                predicate( map[neighborRow][neighborCol])
+            }
+        }
     }
 
     fun toWorldPos(row: Int, col: Int): Vector2 {
         return Vector2( col.toFloat(), (map.size - row).toFloat())
     }
 
-    fun toCell(pos: Vector2): Cell {
-        return Cell(map.size - pos.y.toInt(), pos.x.toInt())
+    fun toWorldPos(cell: Cell): Vector2 {
+        return Vector2( cell.col.toFloat(), (map.size - cell.row).toFloat())
     }
 
-    fun isVisible(row: Int, col: Int) = visibleArea[row][col]
+    fun toCell(pos: Vector2): Cell {
+        val row = map.size - pos.y.toInt()
+        val col = pos.x.toInt()
+        return map[row][col]
+    }
 
-    fun scanCircle(){
-        visibleArea[playerRow][playerCol] = true
+    fun isVisible(row: Int, col: Int) = map[row][col].isVisible
+
+    fun updateVisibleArea(){
+        map[playerRow][playerCol].isVisible = true
         for(i in 0 until 360 step 2){
             val x = MathUtils.cos(i*.01745f)
             val y = MathUtils.sin(i*.01745f)
@@ -102,8 +146,8 @@ class GameMap(level: Int){
             val oyInt = oy.toInt()
             if(oxInt < 0 || oxInt >= map[0].size || oyInt < 0 || oyInt >= map.size)
                 return
-            visibleArea[oy.toInt()][ox.toInt()] = true //Set the tile to visible.
-            if (Constants.solidBlocks.contains(map[oy.toInt()][ox.toInt()] ))
+            map[oy.toInt()][ox.toInt()].isVisible = true //Set the tile to visible.
+            if (map[oy.toInt()][ox.toInt()].value in solidBlocks)
                 return
             ox += x
             oy += y
@@ -111,6 +155,32 @@ class GameMap(level: Int){
         }
     }
 
+    companion object{
+        private val NEIGHBORHOOD = arrayOf(intArrayOf(-1, 0), intArrayOf(0, -1), intArrayOf(0, 1), intArrayOf(1, 0))
+        const val WALL = 'X'
+        const val AIR = ' '
+        const val START = 'S'
+        const val GATE = '@'
+        const val BRICKS = '#'
+        const val BOX = '*'
+        const val BOMB = 'O'
+        const val SPAWNER = '+'
+        const val MINIGUN_BOSS = 'A'
+        const val SHOTGUN_BOSS = 'B'
+        const val RICOCHET_BOSS = 'C'
+        const val FLAMETHROWER_BOSS = 'D'
+        const val CANON_BOSS = 'E'
+        const val ROCKET_BOSS = 'F'
+        const val LASERGUN_BOSS = 'G'
+        const val RAILGUN_BOSS = 'H'
+
+        val solidBlocks = charArrayOf(WALL, GATE, BRICKS)
+        val airBlocks = charArrayOf(AIR, START, SPAWNER)
+    }
+
 }
 
-data class Cell(val row: Int, val col: Int)
+class Cell(val row: Int, val col: Int, var value: Char, var isVisible: Boolean){
+    val connections: com.badlogic.gdx.utils.Array<Connection<Cell>> = com.badlogic.gdx.utils.Array()
+    override fun toString(): String = "($row, $col)"
+}

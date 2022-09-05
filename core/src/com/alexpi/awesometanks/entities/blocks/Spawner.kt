@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.entities.ai.AStartPathFinding
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
@@ -21,6 +22,7 @@ class Spawner(
     listener: DamageListener,
     manager: AssetManager,
     world: World,
+    private val pathFinding: AStartPathFinding,
     private val target: PlayerTank,
     pos: Vector2,
     level: Int
@@ -53,6 +55,7 @@ class Spawner(
                 EnemyTank(
                     manager,
                     body.world,
+                    pathFinding,
                     body.position,
                     target,
                     EnemyTank.Tier.NORMAL,
