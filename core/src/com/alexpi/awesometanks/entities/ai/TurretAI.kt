@@ -9,7 +9,7 @@ import kotlin.math.atan2
 class TurretAI(private val world: World,
                private val position: Vector2,
                private val target: PlayerTank,
-               private val callback: EnemyAICallback,
+               private val callback: TurretAICallback,
                visibilityRadius: Float = VISIBILITY_RADIUS) {
     private val visibilityRadius2 = visibilityRadius * visibilityRadius
     private var isTargetVisible = false
@@ -48,4 +48,9 @@ class TurretAI(private val world: World,
     companion object {
         private const val VISIBILITY_RADIUS = 9f
     }
+}
+
+interface TurretAICallback{
+    fun attack(angle: Float)
+    fun await()
 }

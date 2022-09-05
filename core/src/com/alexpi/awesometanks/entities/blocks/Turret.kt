@@ -3,6 +3,7 @@ package com.alexpi.awesometanks.entities.blocks
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.ai.TurretAI
+import com.alexpi.awesometanks.entities.ai.TurretAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.Constants
@@ -14,7 +15,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Filter
 import com.badlogic.gdx.physics.box2d.PolygonShape
 import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.scenes.scene2d.Group
 
 /**
  * Created by Alex on 18/02/2016.
@@ -28,7 +28,7 @@ class Turret(
     type: Int
 ) : Block(
     manager, "sprites/turret_base.png", world, PolygonShape(), getHealthByType(type), pos, .8f, true, listener
-), EnemyAICallback {
+), TurretAICallback {
     private val weapon: Weapon
     private val enemyAI = TurretAI(world, body.position, target, this)
     private val nuggetValue: Int

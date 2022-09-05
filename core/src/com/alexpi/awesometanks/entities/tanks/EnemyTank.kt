@@ -128,10 +128,15 @@ class EnemyTank(
     }
 
     override fun attack(angle: Float) {
-        setOrientation(angle)
         weapon.desiredAngleRotation = angle
-        isMoving = true
         isShooting = true
+        isMoving = false
+    }
+
+    override fun approach(angle: Float) {
+        setOrientation(angle)
+        isMoving = true
+        isShooting = false
     }
 
     override fun await() {
