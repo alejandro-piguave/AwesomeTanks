@@ -2,18 +2,20 @@ package com.alexpi.awesometanks.entities.ai
 
 import com.alexpi.awesometanks.entities.blocks.Block
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.TimeUtils
 import kotlin.math.atan2
 
-class EnemyAI(private val world: World,
-              private val pathFinding: AStartPathFinding,
+class EnemyAI(
               private val position: Vector2,
-              private val target: PlayerTank,
               private val callback: EnemyAICallback,
               visibilityRadius: Float = VISIBILITY_RADIUS) {
+    private val world: World = GameModule.getWorld()
+    private val target: PlayerTank = GameModule.getPlayer()
+    private val pathFinding: AStartPathFinding = GameModule.getPathFinding()
     private val visibilityRadius2 = visibilityRadius * visibilityRadius
     private var isTargetVisible = false
     private var lastTargetSighting = 0L

@@ -1,37 +1,31 @@
-package com.alexpi.awesometanks.entities.projectiles;
+package com.alexpi.awesometanks.entities.projectiles
 
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.World;
-import com.alexpi.awesometanks.entities.actors.ParticleActor;
+import com.alexpi.awesometanks.entities.actors.ParticleActor
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 
 /**
  * Created by Alex on 16/01/2016.
  */
-public class Flame extends Projectile {
+class Flame(pos: Vector2, angle: Float, var burnDuration: Float, filter: Boolean) : Projectile(
+    pos, angle, 15f, .1f, 20f, filter
+) {
+    private val particleActor: ParticleActor = ParticleActor(
+        "particles/flame.party",
+        x + bodyWidth / 2,
+        y + bodyHeight / 2,
+        true
+    )
 
-    public float burnDuration;
-    private final ParticleActor particleActor;
-
-    public Flame(AssetManager manager, World world, Vector2 pos, float angle, float burnDuration, boolean filter) {
-        super(world, pos, angle, 15f, .1f, 20f, filter);
-        this.burnDuration = burnDuration;
-        particleActor = new ParticleActor(manager,"particles/flame.party",getX()+ getBodyWidth()/2,getY()+ getBodyHeight()/2,true);
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
+        particleActor.draw(batch, parentAlpha)
     }
 
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-        particleActor.draw(batch, parentAlpha);
-    }
-
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        particleActor.setPosition(getX() + getBodyWidth() / 2, getY()+ getBodyHeight()/2);
-        particleActor.act(delta);
+    override fun act(delta: Float) {
+        super.act(delta)
+        particleActor.setPosition(x + bodyWidth / 2, y + bodyHeight / 2)
+        particleActor.act(delta)
     }
 
 }

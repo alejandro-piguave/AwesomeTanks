@@ -3,7 +3,7 @@ package com.alexpi.awesometanks.entities.blocks
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.utils.Constants
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -14,36 +14,41 @@ import kotlin.experimental.or
 /**
  * Created by Alex on 19/01/2016.
  */
-abstract class Block(
-    manager: AssetManager,
+abstract class Block private constructor(
     texturePath: String,
-    world: World,
-    shape: Shape,
+    shapeType: Shape.Type,
     health: Float,
+    pos: Vector2,
+    size: Float,
+    isIndestructible: Boolean,
+    isFlammable: Boolean, damageListener: DamageListener?,
+    rumble: Boolean,
+) : DamageableActor(health, isFlammable, false, damageListener, rumble, isIndestructible) {
+    private val sprite: Sprite = Sprite(GameModule.getAssetManager().get(texturePath, Texture::class.java))
+    val body: Body
+    val fixture: Fixture
+    protected var size = 0f
+
+    //Constructor for blocks with health
+    constructor(
+        texturePath: String,
+        shapeType: Shape.Type,
+        health: Float,
+        pos: Vector2,
+        size: Float,
+        isFlammable: Boolean, damageListener: DamageListener? = null,
+        rumble: Boolean = true
+    ): this(texturePath, shapeType, health, pos, size, false, isFlammable, damageListener, rumble)
+
+    //Constructor for indestructible blocks
+    constructor(
+    texturePath: String,
+    shapeType: Shape.Type,
     pos: Vector2,
     size: Float,
     isFlammable: Boolean, damageListener: DamageListener? = null,
-    rumble: Boolean = true
-) : DamageableActor(
-    manager, health, isFlammable, false, damageListener, rumble
-) {
-    private val sprite: Sprite = Sprite(manager.get(texturePath, Texture::class.java))
-    @JvmField
-    var body: Body
-    @JvmField
-    var fixture: Fixture
-    protected var size = 0f
-
-    constructor(
-    manager: AssetManager,
-    texturePath: String,
-    world: World,
-    shape: Shape,
-    health: Float,
-    pos: Vector2,
-    size: Float,
-    isFlammable: Boolean, damageListener: DamageListener? = null): this( manager, texturePath, world, shape, health, pos, size, isFlammable, damageListener, true)
-
+    rumble: Boolean = true,
+    ): this(texturePath, shapeType, 1f, pos, size,true,  isFlammable,  damageListener, rumble)
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
@@ -66,16 +71,17 @@ abstract class Block(
         val fixtureDef = FixtureDef()
         bodyDef.type = BodyDef.BodyType.StaticBody
         bodyDef.position.set(pos.x + .5f, pos.y + .5f)
-        if (shape.type == Shape.Type.Polygon) (shape as PolygonShape).setAsBox(
-            size / 2,
-            size / 2
-        ) else if (shape.type == Shape.Type.Circle) shape.radius = size / 2
+        val shape = when (shapeType) {
+            Shape.Type.Circle -> CircleShape().apply { radius = size/2 }
+            Shape.Type.Polygon -> PolygonShape().apply { setAsBox(size/2, size/2) }
+            else -> throw IllegalArgumentException("Illegal shape")
+        }
         fixtureDef.density = 50f
         fixtureDef.shape = shape
         fixtureDef.filter.categoryBits = Constants.CAT_BLOCK
         fixtureDef.filter.maskBits =
             (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY_BULLET or Constants.CAT_ITEM or Constants.CAT_ENEMY).toShort()
-        body = world.createBody(bodyDef)
+        body = GameModule.getWorld().createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         fixture.userData = this
         body.userData = this

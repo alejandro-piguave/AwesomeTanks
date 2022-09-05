@@ -5,36 +5,29 @@ import com.alexpi.awesometanks.utils.GameMap
 import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.Preferences
-import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.World
 import kotlin.experimental.or
 
-class PlayerTank (
-    manager: AssetManager,
-    world: World,
-    gameValues: Preferences,
-    private val map: GameMap)
-    : Tank(manager, world, Vector2(-1f,-1f), .75f,
-    .07f + gameValues.getInteger(Constants.ROTATION_SPEED) / 40f,
-    150 + gameValues.getInteger(Constants.MOVEMENT_SPEED) * 10f,
+class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
+    .07f + GameModule.getGameValues().getInteger(Constants.ROTATION_SPEED) / 40f,
+    150 + GameModule.getGameValues().getInteger(Constants.MOVEMENT_SPEED) * 10f,
     Constants.CAT_PLAYER,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
     500f, false, null, Color.WHITE), RocketListener {
 
-    private val visibilityRadius = 2 + gameValues.getInteger(Constants.VISIBILITY)
-    private val armor = gameValues.getInteger(Constants.ARMOR)
+    private val map: GameMap = GameModule.getGameMap()
+    private val visibilityRadius = 2 + GameModule.getGameValues().getInteger(Constants.VISIBILITY)
+    private val armor = GameModule.getGameValues().getInteger(Constants.ARMOR)
     val position: Vector2
         get() = body.position
 
     var money: Int = 0
     var currentWeaponIndex = 0
     private val weapons: List<Weapon> = (0 until Constants.WEAPON_COUNT).map {
-        Weapon.getWeaponAt(
-            it, manager,
-            gameValues.getFloat("ammo$it"), gameValues.getInteger("power$it"), true, this)
+        Weapon.getWeaponAt(it, GameModule.getGameValues().getFloat("ammo$it"), GameModule.getGameValues().getInteger("power$it"), true, this)
     }
 
     val centerX: Float

@@ -49,7 +49,7 @@ public class ContactManager implements ContactListener {
                     fixtureA.getUserData(): fixtureB.getUserData());
 
             if(projectile instanceof Flame)
-                damageableActor.burn(((Flame) projectile).burnDuration);
+                damageableActor.burn(((Flame) projectile).getBurnDuration());
 
             if(!(projectile.isEnemy() && damageableActor instanceof Spawner)){
                 damageableActor.takeDamage(projectile.getDamage());

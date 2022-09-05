@@ -1,30 +1,23 @@
 package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.entities.DamageListener
-import com.alexpi.awesometanks.entities.ai.AStartPathFinding
 import com.alexpi.awesometanks.entities.ai.EnemyAI
 import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.World
 import kotlin.experimental.or
 
 /**
  * Created by Alex on 17/02/2016.
  */
 class EnemyTank(
-    manager: AssetManager,
-    world: World,
-    pathFinding: AStartPathFinding,
     position: Vector2,
-    target: PlayerTank,
     tier: Tier,
-    type: Int, damageListener: DamageListener?) : Tank(manager, world, position, getSizeByTier(tier),
+    type: Int, damageListener: DamageListener?) : Tank(position, getSizeByTier(tier),
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
@@ -32,7 +25,7 @@ class EnemyTank(
     EnemyAICallback {
 
 
-    private val enemyAI = EnemyAI(world, pathFinding, body.position, target, this)
+    private val enemyAI = EnemyAI(body.position, this)
     private val nuggetValue: Int
     private val weapon: Weapon
     override val currentWeapon: Weapon
@@ -56,8 +49,6 @@ class EnemyTank(
         val num1 = Utils.getRandomInt(5, 15)
         for (i in 0 until num1) parent.addActor(
             GoldNugget(
-                manager,
-                body.world,
                 body.position,
                 Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
             )
@@ -122,7 +113,7 @@ class EnemyTank(
     }
 
     init {
-        weapon = Weapon.getWeaponAt(type, manager, 1f, powerByTier(tier), false)
+        weapon = Weapon.getWeaponAt(type, 1f, powerByTier(tier), false)
         weapon.unlimitedAmmo = true
         nuggetValue = getNuggetValue(tier, type)
     }

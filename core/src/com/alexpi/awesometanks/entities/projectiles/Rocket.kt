@@ -1,29 +1,23 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.weapons.RocketListener
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
-import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.World
-import kotlin.math.atan
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
 //Here the attribute speed is rather used for the magnitude of the force applied
 class Rocket(
-    manager: AssetManager,
-    world: World,
     pos: Vector2,
     angle: Float,
     power: Int,
     filter: Boolean,
     private val rocketListener: RocketListener? = null
-) : Projectile(world, pos, angle, .075f, .38f, .1f, 90F + power * 15, filter){
+) : Projectile(pos, angle, .075f, .38f, .1f, 90F + power * 15, filter){
 
     private var isDestroyedFlag = false
     private val flameSprite: Sprite
@@ -42,8 +36,8 @@ class Rocket(
         forceY = speed * sin(angle)
         body.linearDamping = .5f
         body.applyForceToCenter(forceX, forceY, true)
-        sprite = Sprite(manager.get<Texture>("sprites/rocket.png"))
-        flameSprite = Sprite(manager.get<Texture>("sprites/rocket_flame.png"))
+        sprite = Sprite(GameModule.getAssetManager().get<Texture>("sprites/rocket.png"))
+        flameSprite = Sprite(GameModule.getAssetManager().get<Texture>("sprites/rocket_flame.png"))
     }
 
 

@@ -4,7 +4,7 @@ import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.projectiles.Laser
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -19,13 +19,11 @@ import com.badlogic.gdx.utils.Timer
  * Created by Alex on 04/01/2016.
  */
 class LaserGun(
-    assetManager: AssetManager,
     ammo: Float,
     power: Int,
     isPlayer: Boolean,
 ) : Weapon(
     "Lasergun",
-    assetManager,
     "weapons/laser.png",
     "sounds/laser.ogg",
     ammo,
@@ -34,7 +32,8 @@ class LaserGun(
     .05f,
     .25f
 ) {
-    private val laserRay = Image(assetManager.get<Texture>("sprites/laser_ray.png"))
+    private val world: World = GameModule.getWorld()
+    private val laserRay = Image(GameModule.getAssetManager().get<Texture>("sprites/laser_ray.png"))
     private var playSound = false
     private var minFraction = 1f
 
@@ -42,12 +41,7 @@ class LaserGun(
         laserRay.originY = laserRay.height/2
     }
 
-    override fun shoot(
-        assetManager: AssetManager,
-        group: Group,
-        world: World,
-        position: Vector2
-    ) {
+    override fun shoot(group: Group, position: Vector2) {
         laserRay.rotation = currentAngleRotation * MathUtils.radiansToDegrees
         laserRay.setPosition(position.x * Constants.TILE_SIZE, position.y * Constants.TILE_SIZE - laserRay.height/2)
         if(canShoot()){
@@ -69,7 +63,7 @@ class LaserGun(
             }, coolingDownTime)
             minFraction = 1f
 
-            createProjectile(group, assetManager, world, position)
+            createProjectile(group, position)
 
             world.rayCast({ fixture, point, _, fraction ->
                 if(fixture.userData is DamageableActor){
@@ -109,8 +103,8 @@ class LaserGun(
         playSound = false
     }
 
-    override fun createProjectile(group: Group, assetManager: AssetManager, world: World, position: Vector2) {
-        group.addActor(Laser( world, position, currentAngleRotation, power.toFloat(), isPlayer))
+    override fun createProjectile(group: Group, position: Vector2) {
+        group.addActor(Laser( position, currentAngleRotation, power.toFloat(), isPlayer))
     }
 
     companion object {

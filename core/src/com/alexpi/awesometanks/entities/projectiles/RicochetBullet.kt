@@ -1,57 +1,53 @@
-package com.alexpi.awesometanks.entities.projectiles;
+package com.alexpi.awesometanks.entities.projectiles
 
-import com.alexpi.awesometanks.utils.Settings;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.World;
-import com.alexpi.awesometanks.entities.actors.ParticleActor;
-import com.badlogic.gdx.graphics.Texture;
+import com.alexpi.awesometanks.entities.actors.ParticleActor
+import com.alexpi.awesometanks.utils.Settings.soundsOn
+import com.alexpi.awesometanks.world.GameModule
+import com.badlogic.gdx.audio.Sound
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.math.Vector2
 
 /**
  * Created by Alex on 16/01/2016.
  */
-public class RicochetBullet extends Projectile {
-
-    private final ParticleActor particleActor;
-    int hits;
-    Sound hitSound;
-
-    private final static int MAX_HITS = 3;
-
-    public RicochetBullet(AssetManager manager, World world, Vector2 pos, Sound sound, float angle, float power, boolean isPlayer) {
-        super(world, pos, angle,20f,.2f,35+power*5,isPlayer);
-        hitSound = sound;
-        sprite = new Sprite(manager.get("sprites/ricochet_bullet.png",Texture.class));
-        particleActor = new ParticleActor(manager,"particles/ricochets.party",getX()+ getBodyWidth()/2,getY()+ getBodyHeight()/2,true);
+class RicochetBullet(
+    pos: Vector2,
+    var hitSound: Sound,
+    angle: Float,
+    power: Float,
+    isPlayer: Boolean
+) : Projectile(pos, angle, 20f, .2f, 35 + power * 5, isPlayer) {
+    private val particleActor: ParticleActor
+    var hits = 0
+    override fun act(delta: Float) {
+        super.act(delta)
+        particleActor.setPosition(x + bodyWidth / 2, y + bodyHeight / 2)
+        particleActor.act(delta)
     }
 
-
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        particleActor.setPosition(getX() + getBodyWidth() / 2, getY() + getBodyHeight() / 2);
-        particleActor.act(delta);
+    override fun draw(batch: Batch, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
+        particleActor.draw(batch, parentAlpha)
     }
 
-
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
-        particleActor.draw(batch, parentAlpha);
-    }
-
-    @Override
-    public void destroy() {
-        if(hits <MAX_HITS){
-            hits++;
-            if(Settings.INSTANCE.getSoundsOn())hitSound.play();
-        } else{
-            super.destroy();
+    override fun destroy() {
+        if (hits < MAX_HITS) {
+            hits++
+            if (soundsOn) hitSound.play()
+        } else {
+            super.destroy()
         }
     }
 
+    companion object {
+        private const val MAX_HITS = 3
+    }
+
+    init {
+        sprite = Sprite(GameModule.getAssetManager().get("sprites/ricochet_bullet.png", Texture::class.java))
+        particleActor =
+            ParticleActor("particles/ricochets.party", x + bodyWidth / 2, y + bodyHeight / 2, true)
+    }
 }

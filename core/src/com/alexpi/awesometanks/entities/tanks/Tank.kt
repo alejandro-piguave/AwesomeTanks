@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -21,8 +22,6 @@ import kotlin.math.min
  * Created by Alex on 02/01/2016.
  */
 abstract class Tank(
-    manager: AssetManager,
-    world: World,
     position: Vector2,
     private val bodySize: Float,
     private val rotationSpeed: Float,
@@ -33,10 +32,10 @@ abstract class Tank(
     isFreezable: Boolean,
     damageListener: DamageListener? = null,
     tankColor: Color
-    ) : DamageableActor(manager, maxHealth, true, isFreezable, damageListener, true){
+    ) : DamageableActor( maxHealth, true, isFreezable, damageListener, true){
 
-    private val bodySprite: Sprite = Sprite(manager.get("sprites/tank_body.png", Texture::class.java))
-    private val wheelsSprite: Sprite = Sprite(manager.get("sprites/tank_wheels.png", Texture::class.java))
+    private val bodySprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/tank_body.png", Texture::class.java))
+    private val wheelsSprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/tank_wheels.png", Texture::class.java))
 
     val body: Body
     private val fixture: Fixture
@@ -86,12 +85,7 @@ abstract class Tank(
         }
         currentWeapon.updateAngleRotation(rotationSpeed)
         if (isShooting && isAlive) {
-            currentWeapon.shoot(
-                manager,
-                parent,
-                body.world,
-                body.position
-            )
+            currentWeapon.shoot(parent, body.position)
         } else currentWeapon.await()
         setPosition(
             (body.position.x - bodySize*.5f) * Constants.TILE_SIZE,
@@ -149,7 +143,7 @@ abstract class Tank(
         fixtureDef.shape = shape
         fixtureDef.filter.categoryBits = categoryBits
         fixtureDef.filter.maskBits = maskBits
-        body = world.createBody(bodyDef)
+        body = GameModule.getWorld().createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         fixture.userData = this
         body.userData = this

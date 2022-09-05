@@ -2,8 +2,7 @@ package com.alexpi.awesometanks.entities.actors
 
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.utils.Rumble
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -14,21 +13,22 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 23/02/2016.
  */
-abstract class DamageableActor(protected val manager: AssetManager,
+abstract class DamageableActor(
                                val maxHealth: Float,
                                private val isFlammable: Boolean,
                                private val isFreezable: Boolean,
-                               protected val damageListener: DamageListener? = null, private val rumble: Boolean) :
+                               protected val damageListener: DamageListener? = null, private val rumble: Boolean, private val isImmortal: Boolean = false) :
     Actor() {
     var health: Float = maxHealth
     private set
     protected var isBurning = false
     protected var isFrozen = false
     private var lastHit: Long = System.currentTimeMillis()
-    private val flameSprite: ParticleActor = ParticleActor(manager, "particles/flame.party", x, y, true)
-    private val frozenSprite: Sprite = Sprite(manager.get("sprites/frozen.png", Texture::class.java))
+    private val flameSprite: ParticleActor = ParticleActor( "particles/flame.party", x, y, true)
+    private val frozenSprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/frozen.png", Texture::class.java))
 
     open fun takeDamage(damage: Float) {
+        if(isImmortal) return
         if (health - damage > 0) {
             health -= damage
             if(lastHit + HEALTH_BAR_DURATION < TimeUtils.millis()){
@@ -94,7 +94,6 @@ abstract class DamageableActor(protected val manager: AssetManager,
     open fun detach() {
         if(rumble)Rumble.rumble(15f, .3f)
         parent.addActor(ParticleActor(
-            manager,
             "particles/explosion.party",
             x + width / 2,
             y + height / 2,
@@ -111,9 +110,7 @@ abstract class DamageableActor(protected val manager: AssetManager,
     }
 
     companion object{
-        private const val HEALTH_BAR_DURATION = 1500
-        const val HEALTH_BAR_DURATION_SECONDS = 1.5f
-
+        const val HEALTH_BAR_DURATION = 1500
     }
 
 }

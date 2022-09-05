@@ -1,17 +1,13 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
-import com.alexpi.awesometanks.entities.ai.AStartPathFinding
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
-import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.utils.TimeUtils
 import kotlin.experimental.or
 
@@ -20,18 +16,11 @@ import kotlin.experimental.or
  */
 class Spawner(
     listener: DamageListener,
-    manager: AssetManager,
-    world: World,
-    private val pathFinding: AStartPathFinding,
-    private val target: PlayerTank,
-    pos: Vector2,
-    level: Int
+    pos: Vector2
 ) : Block(
-    manager,
     "sprites/spawner.png",
-    world,
-    PolygonShape(),
-    getHealth(level),
+    Shape.Type.Polygon,
+    getHealth(GameModule.level),
     pos,
     1f,
     true,
@@ -53,11 +42,7 @@ class Spawner(
             maxSpan += 5000
             parent.addActor(
                 EnemyTank(
-                    manager,
-                    body.world,
-                    pathFinding,
                     body.position,
-                    target,
                     EnemyTank.Tier.NORMAL,
                     Utils.getRandomInt(minType, maxType + 1),
                     damageListener
@@ -99,14 +84,8 @@ class Spawner(
 
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(10, 15)
-        for (i in 0 until num1) parent.addActor(
-            GoldNugget(
-                manager,
-                body.world,
-                body.position,
-                Utils.getRandomInt(nuggetValue-10, nuggetValue+10)
-            )
-        )
+        for (i in 0 until num1)
+            parent.addActor(GoldNugget(body.position, Utils.getRandomInt(nuggetValue-10, nuggetValue+10)))
     }
 
     init {
@@ -114,8 +93,8 @@ class Spawner(
             (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ITEM)
         lastSpawn = TimeUtils.millis()
         interval = 1000
-        maxType = getMaxType(level)
-        minType = getMinType(level)
-        nuggetValue = getNuggetValue(level)
+        maxType = getMaxType(GameModule.level)
+        minType = getMinType(GameModule.level)
+        nuggetValue = getNuggetValue(GameModule.level)
     }
 }

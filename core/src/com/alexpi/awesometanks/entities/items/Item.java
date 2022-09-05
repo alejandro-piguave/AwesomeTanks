@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.items;
 
 import com.alexpi.awesometanks.utils.Constants;
+import com.alexpi.awesometanks.world.GameModule;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -25,7 +26,7 @@ public abstract class Item extends Actor{
     public float size;
     public boolean collected;
 
-    public Item(AssetManager manager,String fileName, World world,Vector2 position, float size){
+    public Item(String fileName, Vector2 position, float size){
         this.size = size;
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef();
@@ -42,13 +43,13 @@ public abstract class Item extends Actor{
         fixtureDef.filter.categoryBits = Constants.CAT_ITEM;
         fixtureDef.filter.maskBits = Constants.CAT_PLAYER | Constants.CAT_BLOCK | Constants.CAT_ENEMY;
 
-        body = world.createBody(bodyDef);
+        body = GameModule.INSTANCE.getWorld().createBody(bodyDef);
         body.setLinearDamping(1f);
         body.setAngularDamping(.5f);
         fixture = body.createFixture(fixtureDef);
         fixture.setUserData(this);
 
-        sprite = new Sprite(manager.get(fileName, Texture.class));
+        sprite = new Sprite(GameModule.INSTANCE.getAssetManager().get(fileName, Texture.class));
         setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE);
         setOrigin(getOriginX() + getWidth() / 2, getOriginY() + getHeight() / 2);
         setPosition((body.getPosition().x - size / 2) * Constants.TILE_SIZE, (body.getPosition().y - size / 2) * Constants.TILE_SIZE);

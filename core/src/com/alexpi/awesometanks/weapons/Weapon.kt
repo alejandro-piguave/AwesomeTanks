@@ -2,24 +2,14 @@ package com.alexpi.awesometanks.weapons
 
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Settings.soundsOn
-import com.badlogic.gdx.graphics.g2d.Sprite
-import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.math.Vector2
-import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.weapons.MiniGun
-import com.alexpi.awesometanks.weapons.ShotGun
-import com.alexpi.awesometanks.weapons.Ricochet
-import com.alexpi.awesometanks.weapons.Flamethrower
-import com.alexpi.awesometanks.weapons.Canon
-import com.alexpi.awesometanks.weapons.RocketLauncher
-import com.alexpi.awesometanks.weapons.LaserGun
-import com.alexpi.awesometanks.weapons.RailGun
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Timer
 import kotlin.math.atan2
@@ -29,7 +19,6 @@ import kotlin.math.atan2
  */
 abstract class Weapon(
     val name: String,
-    assetManager: AssetManager,
     texturePath: String,
     shotSoundPath: String,
     ammo: Float,
@@ -101,9 +90,9 @@ abstract class Weapon(
     }
 
 
-    open fun shoot(assetManager: AssetManager, group: Group, world: World, position: Vector2) {
+    open fun shoot( group: Group, position: Vector2) {
         if (canShoot()) {
-            createProjectile(group, assetManager, world, position)
+            createProjectile(group, position)
             if (soundsOn) shotSound.play()
             if (!unlimitedAmmo) decreaseAmmo()
             isCoolingDown = true
@@ -116,41 +105,35 @@ abstract class Weapon(
     }
 
     open fun await() {}
-    abstract fun createProjectile(
-        group: Group,
-        assetManager: AssetManager,
-        world: World,
-        position: Vector2
-    )
+    abstract fun createProjectile(group: Group, position: Vector2)
 
     protected open fun canShoot(): Boolean = (hasAmmo() || unlimitedAmmo) && !isCoolingDown && hasRotated()
 
     companion object {
         fun getWeaponAt(
             i: Int,
-            assetManager: AssetManager,
             ammo: Float,
             power: Int,
             isPlayer: Boolean,
             rocketListener: RocketListener? = null
         ): Weapon {
             return when (i) {
-                Constants.MINIGUN -> MiniGun(assetManager, ammo, power, isPlayer)
-                Constants.SHOTGUN -> ShotGun(assetManager, ammo, power, isPlayer)
-                Constants.RICOCHET -> Ricochet(assetManager, ammo, power, isPlayer)
-                Constants.FLAMETHROWER -> Flamethrower(assetManager, ammo, power, isPlayer)
-                Constants.CANON -> Canon(assetManager, ammo, power, isPlayer)
-                Constants.ROCKET -> RocketLauncher(assetManager, ammo, power, isPlayer, rocketListener)
-                Constants.LASERGUN -> LaserGun(assetManager, ammo, power, isPlayer)
-                Constants.RAILGUN -> RailGun(assetManager, ammo, power, isPlayer)
+                Constants.MINIGUN -> MiniGun( ammo, power, isPlayer)
+                Constants.SHOTGUN -> ShotGun( ammo, power, isPlayer)
+                Constants.RICOCHET -> Ricochet( ammo, power, isPlayer)
+                Constants.FLAMETHROWER -> Flamethrower( ammo, power, isPlayer)
+                Constants.CANON -> Canon( ammo, power, isPlayer)
+                Constants.ROCKET -> RocketLauncher( ammo, power, isPlayer, rocketListener)
+                Constants.LASERGUN -> LaserGun( ammo, power, isPlayer)
+                Constants.RAILGUN -> RailGun( ammo, power, isPlayer)
                 else -> throw IllegalArgumentException("Invalid index")
             }
         }
     }
 
     init {
-        sprite = Sprite(assetManager.get(texturePath, Texture::class.java))
-        shotSound = assetManager.get(shotSoundPath, Sound::class.java)
+        sprite = Sprite(GameModule.getAssetManager().get(texturePath, Texture::class.java))
+        shotSound = GameModule.getAssetManager().get(shotSoundPath, Sound::class.java)
         this.ammo = ammo
         this.power = power
         this.isPlayer = isPlayer

@@ -1,36 +1,28 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
-import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.ai.TurretAI
 import com.alexpi.awesometanks.entities.ai.TurretAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
-import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Filter
-import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.physics.box2d.Shape
 
 /**
  * Created by Alex on 18/02/2016.
  */
 class Turret(
     listener: DamageListener,
-    manager: AssetManager,
-    world: World,
-    target: PlayerTank,
     pos: Vector2,
     type: Int
-) : Block(
-    manager, "sprites/turret_base.png", world, PolygonShape(), getHealthByType(type), pos, .8f, true, listener
+) : Block( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, listener
 ), TurretAICallback {
     private val weapon: Weapon
-    private val enemyAI = TurretAI(world, body.position, target, this)
+    private val enemyAI = TurretAI(body.position, this)
     private val nuggetValue: Int
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)
@@ -89,14 +81,8 @@ class Turret(
 
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(10, 15)
-        for (i in 0 until num1) parent.addActor(
-            GoldNugget(
-                manager,
-                body.world,
-                body.position,
-                Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
-            )
-        )
+        for (i in 0 until num1)
+            parent.addActor(GoldNugget(body.position, Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
     }
 
     init {
@@ -104,7 +90,7 @@ class Turret(
         filter.categoryBits = Constants.CAT_ENEMY
         fixture.filterData = filter
         nuggetValue = getNuggetValue(type)
-        weapon = Weapon.getWeaponAt(type, manager, 1f, 2, false)
+        weapon = Weapon.getWeaponAt(type, 1f, 2, false)
         weapon.unlimitedAmmo = true
         setOrigin(width / 2, height / 2)
     }
@@ -112,7 +98,7 @@ class Turret(
     override fun attack(angle: Float) {
         weapon.desiredAngleRotation = angle
         weapon.updateAngleRotation(ROTATION_SPEED)
-        weapon.shoot(manager, parent, body.world, body.position)
+        weapon.shoot(parent, body.position)
     }
 
     override fun await() {

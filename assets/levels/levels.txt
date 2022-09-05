@@ -104,7 +104,7 @@ XXXXXXXXXXXXXXXXXXXX
 XXXXX*         XXXXX
 XXXXX      # + XXXXX
 XXXXX          XXXXX
-XXXXX     O    E  X
+XXXXX     O     E  X
 XXXXX    XXX  @@@@ X
 XXXXX    XXX  ##   X
 X   @    XXX  #    X

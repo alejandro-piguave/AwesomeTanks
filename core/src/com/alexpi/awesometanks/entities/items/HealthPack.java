@@ -15,8 +15,8 @@ public class HealthPack extends Item {
     }
 
     private final int health;
-    public HealthPack(AssetManager manager, World world, Vector2 position) {
-        super(manager, "sprites/health_pack.png", world, position,.4f);
+    public HealthPack( Vector2 position) {
+        super("sprites/health_pack.png", position,.4f);
         health = Utils.getRandomInt(100,200);
     }
 }

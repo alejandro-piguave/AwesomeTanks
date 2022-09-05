@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.actors;
 
+import com.alexpi.awesometanks.world.GameModule;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
@@ -12,9 +13,9 @@ public class ParticleActor extends Actor {
 
     private ParticleEffect effect;
     private boolean loop;
-    public ParticleActor(AssetManager manager,String effectFile, float x, float y, boolean loop){
+    public ParticleActor(String effectFile, float x, float y, boolean loop){
         this.loop = loop;
-        effect = new ParticleEffect(manager.get(effectFile,ParticleEffect.class));
+        effect = new ParticleEffect(GameModule.INSTANCE.getAssetManager().get(effectFile,ParticleEffect.class));
         setPosition(x, y);
         effect.setPosition(getX(),getY());
         effect.start();

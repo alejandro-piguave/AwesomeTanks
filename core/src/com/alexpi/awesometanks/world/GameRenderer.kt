@@ -12,11 +12,12 @@ import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.*
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Preferences
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -27,7 +28,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 
 class GameRenderer(private val game: MainGame,
                    private val gameListener: GameListener,
-                   private val level: Int) : DamageListener {
+                   level: Int) : DamageListener {
 
     private val gameMap = GameMap(level)
     private val aStartPathFinding = AStartPathFinding(gameMap)
@@ -46,20 +47,20 @@ class GameRenderer(private val game: MainGame,
     private var alreadyExecuted = false
     var isLevelCompleted = false
         private set
-    val tank: PlayerTank = PlayerTank(
-        game.manager,
-        world,
-        game.gameValues,
-        gameMap)
+    val player: PlayerTank
 
     init {
+        GameModule.set(game.manager, world, gameMap, aStartPathFinding, game.gameValues)
+        GameModule.level = level
+        player = PlayerTank()
+        GameModule.setPlayer(player)
         world.setContactListener(ContactManager( object: ContactManager.ContactListener{
             override fun onGoldNuggetFound(goldNugget: GoldNugget) {
-                tank.money += goldNugget.value
+                player.money += goldNugget.value
             }
 
             override fun onHealthPackFound(healthPack: HealthPack) {
-                tank.heal(healthPack.health)
+                player.heal(healthPack.health)
             }
 
             override fun onFreezingBallFound(freezingBall: FreezingBall) {
@@ -70,15 +71,7 @@ class GameRenderer(private val game: MainGame,
             }
 
             override fun onBulletCollision(x: Float, y: Float) {
-                gameStage.addActor(
-                    ParticleActor(
-                        game.manager,
-                        "particles/collision.party",
-                        x,
-                        y,
-                        false
-                    )
-                )
+                gameStage.addActor(ParticleActor("particles/collision.party", x, y, false))
             }
 
             override fun onLandMineFound(x: Float, y: Float) {
@@ -93,86 +86,37 @@ class GameRenderer(private val game: MainGame,
         val shadeGroup = Group()
         gameMap.forCell { cell ->
             if (!cell.isVisible) {
-                shadeGroup.addActor(
-                    Shade(
-                        game.manager,
-                        gameMap,
-                        cell.row, cell.col
-                    )
-                )
+                shadeGroup.addActor(Shade(cell.row, cell.col))
             }
-            if (cell.value == GameMap.WALL) blockGroup.addActor(
-                Wall(
-                    game.manager,
-                    world, gameMap.toWorldPos(cell.row, cell.col)
-                )
-            ) else {
+            if (cell.value == GameMap.WALL)
+                blockGroup.addActor(Wall(gameMap.toWorldPos(cell.row, cell.col)))
+            else {
                 if(cell.value == GameMap.START){
-                    tank.setPos(cell.row,cell.col)
-                    entityGroup.addActor(tank)
-                } else if (cell.value == GameMap.GATE) blockGroup.addActor(
-                    Gate(
-                        this,
-                        game.manager,
-                        world, gameMap.toWorldPos(cell.row, cell.col)
-                    )
-                ) else if (cell.value == GameMap.BRICKS) blockGroup.addActor(
-                    Bricks(
-                        this,
-                        game.manager,
-                        world, gameMap.toWorldPos(cell.row, cell.col)
-                    )
-                ) else if (cell.value == GameMap.BOX) entityGroup.addActor(//ITS ADDED TO THE ENTITY GROUP BECAUSE THE ITEMS IT DROPS BELONG TO THIS GROUP AND NOT TO THE BLOCK GROUP
-                    Box(
-                        this,
-                        game.manager,
-                        world,
-                        aStartPathFinding,
-                        tank,
-                        gameMap.toWorldPos(cell.row, cell.col),
-                        level
-                    )
-                ) else if (cell.value == GameMap.SPAWNER) entityGroup.addActor(
-                    Spawner(
-                        this,
-                        game.manager,
-                        world,
-                        aStartPathFinding,
-                        tank,
-                        gameMap.toWorldPos(cell.row, cell.col),
-                        level
-                    )
-                ) else if (cell.value == GameMap.BOMB) blockGroup.addActor(
-                    Mine(
-                        this,
-                        game.manager,
-                        world,
-                        gameMap.toWorldPos(cell.row, cell.col),
-                    )
+                    player.setPos(cell.row,cell.col)
+                    entityGroup.addActor(player)
+                } else if (cell.value == GameMap.GATE)
+                    blockGroup.addActor( Gate(this, gameMap.toWorldPos(cell.row, cell.col))
+                ) else if (cell.value == GameMap.BRICKS)
+                    blockGroup.addActor(Bricks(this, gameMap.toWorldPos(cell.row, cell.col))
+                ) else if (cell.value == GameMap.BOX)
+                //ITS ADDED TO THE ENTITY GROUP BECAUSE THE ITEMS IT DROPS BELONG TO THIS GROUP AND NOT TO THE BLOCK GROUP
+                    entityGroup.addActor(Box(this, gameMap.toWorldPos(cell.row, cell.col))
+                ) else if (cell.value == GameMap.SPAWNER)
+                    entityGroup.addActor(Spawner(this, gameMap.toWorldPos(cell.row, cell.col))
+                ) else if (cell.value == GameMap.BOMB)
+                    blockGroup.addActor( Mine(this, gameMap.toWorldPos(cell.row, cell.col))
                 ) else if (Character.isDigit(cell.value)) {
                     val num = Character.getNumericValue(cell.value)
-                    blockGroup.addActor(
-                        Turret(
-                            this,
-                            game.manager,
-                            world,
-                            tank,
-                            gameMap.toWorldPos(cell.row, cell.col),
-                            num
-                        )
-                    )
+                    blockGroup.addActor(Turret(this, gameMap.toWorldPos(cell.row, cell.col), num))
                 } else if(cell.value in GameMap.MINIGUN_BOSS..GameMap.RAILGUN_BOSS){
                     val type = cell.value.code - GameMap.MINIGUN_BOSS.code
-                    entityGroup.addActor(
-                        EnemyTank(game.manager, world, aStartPathFinding, gameMap.toWorldPos(cell.row, cell.col),tank,
-                            EnemyTank.Tier.BOSS,type,this )
-                    )
+                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell.row, cell.col), EnemyTank.Tier.BOSS,type,this ))
                 }
                 gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell.row, cell.col)))
             }
         }
 
-        healthBarGroup.addActor(HealthBar(game.manager, tank))
+        healthBarGroup.addActor(HealthBar(player))
         gameStage.addActor(entityGroup)
         gameStage.addActor(blockGroup)
         gameStage.addActor(healthBarGroup)
@@ -187,7 +131,7 @@ class GameRenderer(private val game: MainGame,
             world.step(1 / 60f, 6, 2)
             gameStage.act(delta)
             checkLevelState()
-            gameStage.camera.position.set(tank.centerX, tank.centerY, 0f)
+            gameStage.camera.position.set(player.centerX, player.centerY, 0f)
             if (Rumble.rumbleTimeLeft > 0){
                 Rumble.tick(delta)
                 gameStage.camera.translate(Rumble.pos.x, Rumble.pos.y,0f)
@@ -198,7 +142,7 @@ class GameRenderer(private val game: MainGame,
 
     private fun checkLevelState() {
         isLevelCompleted = isLevelCleared()
-        if (!tank.isAlive && !alreadyExecuted) {
+        if (!player.isAlive && !alreadyExecuted) {
             alreadyExecuted = true
             gameListener.onLevelFailed()
         } else if (isLevelCompleted && !alreadyExecuted) {
@@ -208,7 +152,7 @@ class GameRenderer(private val game: MainGame,
     }
 
     fun setRotationInput(x: Float, y: Float){
-        tank.setRotationInput(x,y)
+        player.setRotationInput(x,y)
     }
 
     fun moveUp(){
@@ -252,28 +196,28 @@ class GameRenderer(private val game: MainGame,
     }
 
     private fun updateMovement(){
-        tank.isMoving = true
+        player.isMoving = true
         if(horizontalMovement.isEmpty() && verticalMovement.isEmpty()){
-            tank.isMoving = false
+            player.isMoving = false
         } else if(horizontalMovement.isEmpty() && verticalMovement.isNotEmpty()){
             when(verticalMovement.last()){
-                Movement.POSITIVE -> tank.setOrientation(0f, 1f) //MOVING UP
-                Movement.NEGATIVE -> tank.setOrientation(0f, -1f) // MOVING DOWN
+                Movement.POSITIVE -> player.setOrientation(0f, 1f) //MOVING UP
+                Movement.NEGATIVE -> player.setOrientation(0f, -1f) // MOVING DOWN
             }
         } else if(horizontalMovement.isNotEmpty() && verticalMovement.isEmpty()){
             when(horizontalMovement.last()){
-                Movement.POSITIVE -> tank.setOrientation(1f, 0f) //MOVING RIGHT
-                Movement.NEGATIVE -> tank.setOrientation(-1f, 0f) // MOVING LEFT
+                Movement.POSITIVE -> player.setOrientation(1f, 0f) //MOVING RIGHT
+                Movement.NEGATIVE -> player.setOrientation(-1f, 0f) // MOVING LEFT
             }
         } else {
             if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.POSITIVE)
-                tank.setOrientation(Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH EAST
+                player.setOrientation(Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH EAST
             else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.POSITIVE)
-                tank.setOrientation(-Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH WEST
+                player.setOrientation(-Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH WEST
             else if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.NEGATIVE)
-                tank.setOrientation(Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH EAST
+                player.setOrientation(Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH EAST
             else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.NEGATIVE)
-                tank.setOrientation(-Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH WEST
+                player.setOrientation(-Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH WEST
         }
     }
 
@@ -295,11 +239,11 @@ class GameRenderer(private val game: MainGame,
     fun dispose(){
         gameStage.dispose()
         world.dispose()
-
+        GameModule.dispose()
     }
 
     override fun onDamage(actor: DamageableActor) {
-        healthBarGroup.addActor(HealthBar(game.manager, actor, DamageableActor.HEALTH_BAR_DURATION_SECONDS))
+        healthBarGroup.addActor(HealthBar(actor, DamageableActor.HEALTH_BAR_DURATION))
     }
 
     override fun onDeath(actor: DamageableActor) {
@@ -323,15 +267,13 @@ class GameRenderer(private val game: MainGame,
         val explosionY = Constants.TILE_SIZE * y
         gameStage.addActor(
             ParticleActor(
-                game.manager,
                 "particles/big-explosion.party",
                 explosionX,
                 explosionY,
                 false
             )
         )
-        val explosionShine =
-            Image(game.manager.get("sprites/explosion_shine.png", Texture::class.java))
+        val explosionShine = Image(game.manager.get("sprites/explosion_shine.png", Texture::class.java))
         explosionShine.setBounds(
             explosionX - explosionSize * .5f,
             explosionY - explosionSize * .5f,
@@ -349,8 +291,7 @@ class GameRenderer(private val game: MainGame,
             )
         )
         gameStage.addActor(explosionShine)
-        val bodies = com.badlogic.gdx.utils.Array<Body>()
-        world.getBodies(bodies)
+
         world.QueryAABB({
             val distanceFromMine = Utils.fastHypot(
                 (it.body.position.x - x).toDouble(),
@@ -366,7 +307,43 @@ class GameRenderer(private val game: MainGame,
         if (Settings.soundsOn) explosionSound.play(volume)
         Rumble.rumble(rumblePower, rumbleLength)
     }
+}
 
+object GameModule{
+    var level: Int = 0
+    private var assetManager: AssetManager? = null
+    private var world: World? = null
+    private var gameMap: GameMap? = null
+    private var pathFinding: AStartPathFinding? = null
+    private var gameValues: Preferences? = null
+    private var _player: PlayerTank? = null
+
+    fun getAssetManager(): AssetManager = assetManager!!
+    fun getWorld(): World = world!!
+    fun getGameMap(): GameMap = gameMap!!
+    fun getPathFinding(): AStartPathFinding = pathFinding!!
+    fun getGameValues(): Preferences = gameValues!!
+    fun getPlayer(): PlayerTank = _player!!
+
+    fun set(assetManager: AssetManager, world: World, gameMap: GameMap, pathFinding: AStartPathFinding, gameValues: Preferences){
+        this.assetManager = assetManager
+        this.world = world
+        this.gameMap = gameMap
+        this.pathFinding = pathFinding
+        this.gameValues = gameValues
+    }
+    fun setPlayer(player: PlayerTank){
+        _player = player
+    }
+
+    fun dispose(){
+        assetManager = null
+        world = null
+        gameMap = null
+        pathFinding = null
+        gameValues = null
+        _player = null
+    }
 }
 
 enum class Movement{ POSITIVE, NEGATIVE}

@@ -1,20 +1,18 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.*
-import java.lang.IllegalArgumentException
+import com.badlogic.gdx.scenes.scene2d.Actor
 
 /**
  * Created by Alex on 16/01/2016.
  */
 abstract class Projectile private constructor(
-    world: World,
     position: Vector2,
     shapeType: Shape.Type,
     angle: Float,
@@ -72,17 +70,15 @@ abstract class Projectile private constructor(
     }
 
     constructor(
-        world: World,
         position: Vector2,
         angle: Float,
         speed: Float,
         radius: Float,
         damage: Float,
         isPlayer: Boolean
-    ): this(world, position, Shape.Type.Circle, angle, speed, radius, radius, damage, isPlayer)
+    ): this(position, Shape.Type.Circle, angle, speed, radius, radius, damage, isPlayer)
 
     constructor(
-        world: World,
         position: Vector2,
         angle: Float,
         speed: Float,
@@ -90,7 +86,7 @@ abstract class Projectile private constructor(
         bodyHeight: Float,
         damage: Float,
         isPlayer: Boolean
-    ): this(world, position, Shape.Type.Polygon, angle, speed, bodyWidth, bodyHeight, damage, isPlayer)
+    ): this(position, Shape.Type.Polygon, angle, speed, bodyWidth, bodyHeight, damage, isPlayer)
 
     init {
         val bodyDef = BodyDef()
@@ -110,7 +106,7 @@ abstract class Projectile private constructor(
             if (isPlayer) Constants.CAT_PLAYER_BULLET else Constants.CAT_ENEMY_BULLET
         fixtureDef.filter.maskBits =
             if (isPlayer) Constants.PLAYER_BULLET_MASK else Constants.ENEMY_BULLET_MASK
-        body = world.createBody(bodyDef)
+        body = GameModule.getWorld().createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         fixture.userData = this
         shape.dispose()

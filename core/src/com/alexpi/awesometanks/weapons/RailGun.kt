@@ -5,7 +5,7 @@ import com.alexpi.awesometanks.entities.projectiles.Rail
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Settings.soundsOn
 import com.alexpi.awesometanks.utils.Utils
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -19,10 +19,9 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 04/01/2016.
  */
-class RailGun(assetManager: AssetManager, ammo: Float, power: Int, filter: Boolean) :
+class RailGun(ammo: Float, power: Int, filter: Boolean) :
     Weapon(
         "Railgun",
-        assetManager,
         "weapons/railgun.png",
         "sounds/railgun.ogg",
         ammo,
@@ -32,7 +31,8 @@ class RailGun(assetManager: AssetManager, ammo: Float, power: Int, filter: Boole
         1f
     ) {
 
-    private val laserRay = Image(assetManager.get<Texture>("sprites/railgun_laser.png"))
+    private val world: World = GameModule.getWorld()
+    private val laserRay = Image(GameModule.getAssetManager().get<Texture>("sprites/railgun_laser.png"))
     private var drawLaser = false
     private var minFraction = 1f
 
@@ -40,12 +40,7 @@ class RailGun(assetManager: AssetManager, ammo: Float, power: Int, filter: Boole
         laserRay.originY = laserRay.height/2
     }
 
-    override fun shoot(
-        assetManager: AssetManager,
-        group: Group,
-        world: World,
-        position: Vector2
-    ) {
+    override fun shoot(group: Group, position: Vector2) {
         if (canShoot()) {
             minFraction = 1f
             laserRay.rotation = currentAngleRotation * MathUtils.radiansToDegrees
@@ -66,7 +61,7 @@ class RailGun(assetManager: AssetManager, ammo: Float, power: Int, filter: Boole
                 1f
             }, position, point2)
 
-            createProjectile(group, assetManager, world, position)
+            createProjectile(group, position)
             if (soundsOn) shotSound.play()
             if (!unlimitedAmmo) decreaseAmmo()
             isCoolingDown = true
@@ -105,8 +100,8 @@ class RailGun(assetManager: AssetManager, ammo: Float, power: Int, filter: Boole
 
     override fun await() {}
 
-    override fun createProjectile(group: Group, assetManager: AssetManager, world: World, position: Vector2) {
-        group.addActor(Rail( assetManager, world, position, currentAngleRotation, power.toFloat(), isPlayer))
+    override fun createProjectile(group: Group, position: Vector2) {
+        group.addActor(Rail( position, currentAngleRotation, power.toFloat(), isPlayer))
     }
 
     companion object {

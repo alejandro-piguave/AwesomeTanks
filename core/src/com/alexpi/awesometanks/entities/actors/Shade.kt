@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.entities.actors
 
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -11,9 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 /**
  * Created by Alex on 22/02/2016.
  */
-class Shade(manager: AssetManager,
-            private val map: GameMap,
-            private val row: Int, private val column: Int) : Image() {
+class Shade(private val row: Int, private val column: Int) : Image() {
+    private val map: GameMap = GameModule.getGameMap()
     private var isFading = false
     private fun fadeOut() {
         addAction(Actions.fadeOut(.75f))
@@ -35,7 +34,7 @@ class Shade(manager: AssetManager,
 
     init {
         drawable = TextureRegionDrawable(
-            manager.get(
+            GameModule.getAssetManager().get(
                 "sprites/shade.png",
                 Texture::class.java
             )
