@@ -98,10 +98,10 @@ abstract class Projectile private constructor(
         bodyDef.position.set(position)
         bodyDef.bullet = true
         val fixtureDef = FixtureDef()
-        fixtureDef.density = 0.1f
+        fixtureDef.density = 1f
         val shape = when (shapeType) {
-            Shape.Type.Circle -> CircleShape().apply { radius = bodyWidth }
-            Shape.Type.Polygon -> PolygonShape().apply { setAsBox(bodyWidth, bodyHeight) }
+            Shape.Type.Circle -> CircleShape().apply { radius = bodyWidth/2 }
+            Shape.Type.Polygon -> PolygonShape().apply { setAsBox(bodyWidth/2, bodyHeight/2) }
             else -> throw IllegalArgumentException("Illegal shape")
         }
         fixtureDef.shape = shape
@@ -114,6 +114,7 @@ abstract class Projectile private constructor(
         fixture = body.createFixture(fixtureDef)
         fixture.userData = this
         shape.dispose()
+        body.isBullet = true
         body.setLinearVelocity(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed)
         body.setTransform(body.position, angle)
         setSize(Constants.TILE_SIZE * bodyWidth, Constants.TILE_SIZE * bodyHeight)
