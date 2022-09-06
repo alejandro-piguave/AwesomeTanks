@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.actors
 
+import com.alexpi.awesometanks.utils.Cell
 import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.GameMap
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -11,8 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 /**
  * Created by Alex on 22/02/2016.
  */
-class Shade(private val row: Int, private val column: Int) : Image() {
-    private val map: GameMap = GameModule.getGameMap()
+class Shade(private val cell: Cell) : Image() {
     private var isFading = false
     private fun fadeOut() {
         addAction(Actions.fadeOut(.75f))
@@ -21,7 +20,7 @@ class Shade(private val row: Int, private val column: Int) : Image() {
     override fun act(delta: Float) {
         super.act(delta)
         if (!isFading) {
-            if(map.isVisible(row,column)){
+            if(cell.isVisible){
                 fadeOut()
                 isFading = true
             }
@@ -39,7 +38,7 @@ class Shade(private val row: Int, private val column: Int) : Image() {
                 Texture::class.java
             )
         )
-        val position = map.toWorldPos(row,column)
+        val position = GameModule.getGameMap().toWorldPos(cell)
         setBounds(
             position.x * Constants.TILE_SIZE * SIZE,
             position.y * Constants.TILE_SIZE * SIZE,

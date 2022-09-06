@@ -12,14 +12,12 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.badlogic.gdx.utils.viewport.FillViewport
 import ktx.actors.onClick
 
 /**
@@ -94,6 +92,10 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
         batch.end()
         stage.act()
         stage.draw()
+    }
+
+    override fun resize(width: Int, height: Int) {
+        stage.viewport.update(width, height, true)
     }
 
     override fun hide() {

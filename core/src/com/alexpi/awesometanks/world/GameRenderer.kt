@@ -54,6 +54,7 @@ class GameRenderer(private val game: MainGame,
         GameModule.level = level
         player = PlayerTank()
         GameModule.setPlayer(player)
+
         world.setContactListener(ContactManager( object: ContactManager.ContactListener{
             override fun onGoldNuggetFound(goldNugget: GoldNugget) {
                 player.money += goldNugget.value
@@ -86,33 +87,33 @@ class GameRenderer(private val game: MainGame,
         val shadeGroup = Group()
         gameMap.forCell { cell ->
             if (!cell.isVisible) {
-                shadeGroup.addActor(Shade(cell.row, cell.col))
+                shadeGroup.addActor(Shade(cell))
             }
             if (cell.value == GameMap.WALL)
-                blockGroup.addActor(Wall(gameMap.toWorldPos(cell.row, cell.col)))
+                blockGroup.addActor(Wall(gameMap.toWorldPos(cell)))
             else {
                 if(cell.value == GameMap.START){
-                    player.setPos(cell.row,cell.col)
+                    player.setPos(cell)
                     entityGroup.addActor(player)
                 } else if (cell.value == GameMap.GATE)
-                    blockGroup.addActor( Gate(this, gameMap.toWorldPos(cell.row, cell.col))
+                    blockGroup.addActor( Gate(this, gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.BRICKS)
-                    blockGroup.addActor(Bricks(this, gameMap.toWorldPos(cell.row, cell.col))
+                    blockGroup.addActor(Bricks(this, gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.BOX)
                 //ITS ADDED TO THE ENTITY GROUP BECAUSE THE ITEMS IT DROPS BELONG TO THIS GROUP AND NOT TO THE BLOCK GROUP
-                    entityGroup.addActor(Box(this, gameMap.toWorldPos(cell.row, cell.col))
+                    entityGroup.addActor(Box(this, gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.SPAWNER)
-                    entityGroup.addActor(Spawner(this, gameMap.toWorldPos(cell.row, cell.col))
+                    entityGroup.addActor(Spawner(this, gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.BOMB)
-                    blockGroup.addActor( Mine(this, gameMap.toWorldPos(cell.row, cell.col))
-                ) else if (Character.isDigit(cell.value)) {
+                    blockGroup.addActor( Mine(this, gameMap.toWorldPos(cell))
+                ) else if (cell.value.isDigit()) {
                     val num = Character.getNumericValue(cell.value)
-                    blockGroup.addActor(Turret(this, gameMap.toWorldPos(cell.row, cell.col), num))
+                    blockGroup.addActor(Turret(this, gameMap.toWorldPos(cell), num))
                 } else if(cell.value in GameMap.MINIGUN_BOSS..GameMap.RAILGUN_BOSS){
                     val type = cell.value.code - GameMap.MINIGUN_BOSS.code
-                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell.row, cell.col), EnemyTank.Tier.BOSS,type,this ))
+                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS,type,this ))
                 }
-                gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell.row, cell.col)))
+                gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell)))
             }
         }
 
@@ -149,6 +150,10 @@ class GameRenderer(private val game: MainGame,
             alreadyExecuted = true
             gameListener.onLevelCompleted()
         }
+    }
+
+    fun updateViewport(width: Int, height: Int){
+        gameStage.viewport.update(width, height, true)
     }
 
     fun setRotationInput(x: Float, y: Float){

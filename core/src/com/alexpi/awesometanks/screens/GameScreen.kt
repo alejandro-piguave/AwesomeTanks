@@ -2,7 +2,10 @@ package com.alexpi.awesometanks.screens
 
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.utils.*
+import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.utils.Settings
+import com.alexpi.awesometanks.utils.Styles
+import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.widget.AmmoBar
 import com.alexpi.awesometanks.widget.MoneyLabel
 import com.alexpi.awesometanks.world.GameListener
@@ -12,7 +15,8 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
@@ -61,6 +65,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun resize(width: Int, height: Int) {
+        uiStage.viewport.update(width, height, true)
+        gameRenderer.updateViewport(width, height)
     }
 
     override fun render(delta: Float) {

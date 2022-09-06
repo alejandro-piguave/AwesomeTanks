@@ -3,7 +3,10 @@ package com.alexpi.awesometanks.screens;
 import static com.alexpi.awesometanks.utils.Constants.TRANSITION_DURATION;
 import static com.alexpi.awesometanks.utils.Constants.upgradePrices;
 
+import com.alexpi.awesometanks.MainGame;
+import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.utils.Settings;
+import com.alexpi.awesometanks.utils.Styles;
 import com.alexpi.awesometanks.widget.GameButton;
 import com.alexpi.awesometanks.widget.UpgradeTable;
 import com.badlogic.gdx.Gdx;
@@ -17,18 +20,13 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.alexpi.awesometanks.MainGame;
-import com.alexpi.awesometanks.utils.Constants;
-import com.alexpi.awesometanks.utils.Styles;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 
 /**
  * Created by Alex on 29/01/2016.
@@ -252,7 +250,12 @@ public class Upgrades extends BaseScreen {
         Gdx.input.setCatchBackKey(true);
 
         stage.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(TRANSITION_DURATION)));
- }
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
 
     @Override
     public void hide() {

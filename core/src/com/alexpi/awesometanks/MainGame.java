@@ -123,6 +123,7 @@ public class MainGame extends Game {
 		gameSettings = Gdx.app.getPreferences("settings");
 		gameValues = Gdx.app.getPreferences("values");
 
+		gameValues.putInteger("money",1000000).flush();
 		boolean soundsOn = gameSettings.getBoolean("areSoundsActivated",true);
 		Settings.INSTANCE.setSoundsOn(soundsOn);
 

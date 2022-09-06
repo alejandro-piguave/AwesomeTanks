@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.tanks
 
+import com.alexpi.awesometanks.utils.Cell
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
 import com.alexpi.awesometanks.weapons.RocketLauncher
@@ -61,8 +62,8 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
         } else currentWeapon.setDesiredAngleRotation(x,y)
     }
 
-    fun setPos(row: Int, col: Int){
-        body.setTransform(map.toWorldPos(row, col).add(.5f,.5f), body.angle)
+    fun setPos(cell: Cell){
+        body.setTransform(map.toWorldPos(cell).add(.5f,.5f), body.angle)
     }
 
     fun saveProgress(gameValues: Preferences) {
