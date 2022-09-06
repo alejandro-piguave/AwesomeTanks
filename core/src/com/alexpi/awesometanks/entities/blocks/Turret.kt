@@ -18,9 +18,8 @@ import com.badlogic.gdx.physics.box2d.Shape
 class Turret(
     listener: DamageListener,
     pos: Vector2,
-    type: Int
-) : Block( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, listener
-), TurretAICallback {
+    type: Weapon.Type
+) : Block( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, true, listener), TurretAICallback {
     private val weapon: Weapon
     private val enemyAI = TurretAI(body.position, this)
     private val nuggetValue: Int
@@ -43,30 +42,30 @@ class Turret(
     companion object {
         private const val ROTATION_SPEED = .035f
 
-        fun getHealthByType(type: Int): Float{
+        fun getHealthByType(type: Weapon.Type): Float{
             val typeMultiplier: Float = when(type){
-                Constants.MINIGUN -> 0f
-                Constants.SHOTGUN -> .2f
-                Constants.RICOCHET -> .3f
-                Constants.FLAMETHROWER -> .6f
-                Constants.ROCKET -> .6f
-                Constants.CANON -> .6f
-                Constants.LASERGUN -> 1f
-                else -> 1f
+                Weapon.Type.MINIGUN -> 0f
+                Weapon.Type.SHOTGUN -> .2f
+                Weapon.Type.RICOCHET -> .3f
+                Weapon.Type.FLAMETHROWER -> .6f
+                Weapon.Type.ROCKET -> .6f
+                Weapon.Type.CANNON -> .6f
+                Weapon.Type.LASERGUN -> 1f
+                Weapon.Type.RAILGUN -> 1f
 
             }
-            return 300f + typeMultiplier * 500f
+            return 200f + typeMultiplier * 500f
         }
 
-        private fun getNuggetValue(type: Int): Int{
+        private fun getNuggetValue(type: Weapon.Type): Int{
             val typeMultiplier: Float = when(type){
-                Constants.MINIGUN -> 0f
-                Constants.SHOTGUN -> .2f
-                Constants.RICOCHET -> .3f
-                Constants.FLAMETHROWER -> .6f
-                Constants.CANON -> .6f
-                Constants.ROCKET -> .6f
-                Constants.LASERGUN -> 1f
+                Weapon.Type.MINIGUN -> 0f
+                Weapon.Type.SHOTGUN -> .2f
+                Weapon.Type.RICOCHET -> .3f
+                Weapon.Type.FLAMETHROWER -> .6f
+                Weapon.Type.CANNON -> .6f
+                Weapon.Type.ROCKET -> .6f
+                Weapon.Type.LASERGUN -> 1f
                 else -> 1f
 
             }

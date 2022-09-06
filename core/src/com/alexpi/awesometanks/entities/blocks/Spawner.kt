@@ -5,6 +5,7 @@ import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
@@ -24,18 +25,18 @@ class Spawner(
     pos,
     1f,
     true,
+    true,
     listener
 ) {
     private var lastSpawn: Long
     private var interval: Long
     private var maxSpan = 15000
-    private val maxType: Int
-    private val minType: Int
+    private var generatedTypes: List<Weapon.Type> = getEnemyTypes(GameModule.level)
     private val nuggetValue: Int
     override fun act(delta: Float) {
         super.act(delta)
 
-        if (lastSpawn + interval < TimeUtils.millis()) {
+        if (lastSpawn + interval < TimeUtils.millis() && !isFrozen) {
             lastSpawn = TimeUtils.millis()
             //It increments the spawn interval by 5 seconds each time to prevent excessive enemy generation
             interval = Utils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
@@ -44,7 +45,7 @@ class Spawner(
                 EnemyTank(
                     body.position,
                     EnemyTank.Tier.NORMAL,
-                    Utils.getRandomInt(minType, maxType + 1),
+                    generatedTypes.random(),
                     damageListener
                 )
             )
@@ -53,27 +54,32 @@ class Spawner(
 
     companion object {
         private fun getHealth(level: Int): Float {
-            return 400f + (1000f) / (Constants.LEVEL_COUNT - 1) * level
+            return 400f + level.toFloat()/ (Constants.LEVEL_COUNT - 1) * 1000f
         }
 
         private fun getNuggetValue(level: Int): Int{
             return 60 + (level.toFloat()/(Constants.LEVEL_COUNT -1)*80).toInt()
         }
 
-        @JvmStatic
-        fun getMaxType(level: Int): Int {
-            return if (level <= 7) Constants.RICOCHET
-            else if(level <= 15) Constants.ROCKET
-            else if(level <= 22) Constants.LASERGUN
-            else Constants.RAILGUN
+        private fun getMaxType(level: Int): Int {
+            return if (level <= 7) Weapon.Type.RICOCHET.ordinal
+            else if(level <= 15) Weapon.Type.ROCKET.ordinal
+            else if(level <= 22) Weapon.Type.LASERGUN.ordinal
+            else Weapon.Type.RAILGUN.ordinal
         }
 
-        @JvmStatic
-        fun getMinType(level: Int): Int {
-            return if (level <= 10) Constants.MINIGUN
-            else if(level <= 12) Constants.SHOTGUN
-            else if(level <= 16) Constants.RICOCHET
-            else Constants.FLAMETHROWER
+        private fun getMinType(level: Int): Int {
+            return if (level <= 10) Weapon.Type.MINIGUN.ordinal
+            else if(level <= 12) Weapon.Type.SHOTGUN.ordinal
+            else if(level <= 16) Weapon.Type.RICOCHET.ordinal
+            else Weapon.Type.FLAMETHROWER.ordinal
+        }
+
+        private fun getEnemyTypes(level: Int): List<Weapon.Type> {
+            val minType = getMinType(level)
+            val maxType = getMaxType(level)
+
+            return Weapon.Type.values().slice(minType..maxType)
         }
     }
 
@@ -93,8 +99,6 @@ class Spawner(
             (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ITEM)
         lastSpawn = TimeUtils.millis()
         interval = 1000
-        maxType = getMaxType(GameModule.level)
-        minType = getMinType(GameModule.level)
         nuggetValue = getNuggetValue(GameModule.level)
     }
 }

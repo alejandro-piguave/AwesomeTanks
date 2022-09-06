@@ -1,7 +1,10 @@
 package com.alexpi.awesometanks;
 
-import com.alexpi.awesometanks.utils.Constants;
+import com.alexpi.awesometanks.screens.LevelScreen;
+import com.alexpi.awesometanks.screens.MainScreen;
+import com.alexpi.awesometanks.screens.UpgradesScreen;
 import com.alexpi.awesometanks.utils.Settings;
+import com.alexpi.awesometanks.weapons.Weapon;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -18,16 +21,13 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.alexpi.awesometanks.screens.LevelScreen;
-import com.alexpi.awesometanks.screens.MainScreen;
-import com.alexpi.awesometanks.screens.Upgrades;
 
 public class MainGame extends Game {
 
 	private AssetManager manager;
     public MainScreen mainScreen;
     public LevelScreen levelScreen;
-	public Upgrades upgrades;
+	public UpgradesScreen upgradesScreen;
 	private Preferences gameSettings;
 	private Preferences gameValues;
 
@@ -114,11 +114,11 @@ public class MainGame extends Game {
 		manager.load("weapons/laser.png", Texture.class);
 		manager.load("weapons/railgun.png", Texture.class);
 
-		for(int i = 0; i < Constants.WEAPON_COUNT; i++) manager.load("icons/icon_"+i+".png",Texture.class);
+		for(int i = 0; i < Weapon.Type.values().length; i++) manager.load("icons/icon_"+i+".png",Texture.class);
 
-		for(int i = 0; i <Constants.WEAPON_COUNT; i++) manager.load("icons/icon_disabled_"+i+".png", Texture.class);
+		for(int i = 0; i < Weapon.Type.values().length; i++) manager.load("icons/icon_disabled_"+i+".png", Texture.class);
 
-		manager.finishLoading();//TERMINA DE CARGAR
+		manager.finishLoading();
 
 		gameSettings = Gdx.app.getPreferences("settings");
 		gameValues = Gdx.app.getPreferences("values");
@@ -128,9 +128,9 @@ public class MainGame extends Game {
 
         mainScreen = new MainScreen(this);
         levelScreen = new LevelScreen(this);
-		upgrades = new Upgrades(this);
+		upgradesScreen = new UpgradesScreen(this);
 
-		setScreen(mainScreen);//PONE LA PANTALLA PRINCIPAL
+		setScreen(mainScreen);
 	}
 
 	private void loadFonts(){

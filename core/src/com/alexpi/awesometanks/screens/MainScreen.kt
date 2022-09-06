@@ -45,7 +45,7 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
             stage.addAction(
                 Actions.sequence(
                     Actions.fadeOut(Constants.TRANSITION_DURATION),
-                    Actions.run { game.screen = game.upgrades }
+                    Actions.run { game.screen = game.upgradesScreen }
                 )
             )
         }, "Play")

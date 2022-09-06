@@ -1,13 +1,13 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.DamageListener
-import com.alexpi.awesometanks.entities.blocks.Spawner.Companion.getMaxType
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
@@ -18,8 +18,8 @@ import com.badlogic.gdx.physics.box2d.Shape
 class Box(
     listener: DamageListener,
     pos: Vector2,
-) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, listener) {
-    private val maxType: Int = getMaxType(GameModule.level)
+) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false,  listener) {
+    private var generatedTypes: List<Weapon.Type> = getEnemyTypes(GameModule.level)
     private val nuggetValue: Int = getNuggetValue(GameModule.level)
     private fun drop() {
         when (Utils.getRandomInt(4)) {
@@ -42,7 +42,7 @@ class Box(
                 EnemyTank(
                     body.position,
                     EnemyTank.Tier.MINI,
-                    Utils.getRandomInt(maxType + 1),
+                    generatedTypes.random(),
                     damageListener
                 )
             )
@@ -57,6 +57,18 @@ class Box(
     companion object {
         private fun getNuggetValue(level: Int): Int {
             return (20 + level.toFloat() / (Constants.LEVEL_COUNT - 1) * 50).toInt()
+        }
+
+        private fun getMaxType(level: Int): Int {
+            return if (level <= 7) Weapon.Type.RICOCHET.ordinal
+            else if(level <= 15) Weapon.Type.ROCKET.ordinal
+            else if(level <= 22) Weapon.Type.LASERGUN.ordinal
+            else Weapon.Type.RAILGUN.ordinal
+        }
+
+        private fun getEnemyTypes(level: Int): List<Weapon.Type> {
+            val maxType = getMaxType(level)
+            return Weapon.Type.values().slice(0..maxType)
         }
     }
 

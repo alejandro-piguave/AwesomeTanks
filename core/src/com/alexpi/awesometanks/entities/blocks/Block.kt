@@ -21,34 +21,32 @@ abstract class Block private constructor(
     pos: Vector2,
     size: Float,
     isIndestructible: Boolean,
-    isFlammable: Boolean, damageListener: DamageListener?,
+    isFlammable: Boolean, isFreezable: Boolean, damageListener: DamageListener?,
     rumble: Boolean,
-) : DamageableActor(health, isFlammable, false, damageListener, rumble, isIndestructible) {
+) : DamageableActor(health, isFlammable, isFreezable, damageListener, rumble, isIndestructible) {
     private val sprite: Sprite = Sprite(GameModule.getAssetManager().get(texturePath, Texture::class.java))
     val body: Body
     val fixture: Fixture
     protected var size = 0f
 
-    //Constructor for blocks with health
+    //Constructor for breakable blocks
     constructor(
         texturePath: String,
         shapeType: Shape.Type,
         health: Float,
         pos: Vector2,
         size: Float,
-        isFlammable: Boolean, damageListener: DamageListener? = null,
+        isFlammable: Boolean, isFreezable: Boolean, damageListener: DamageListener,
         rumble: Boolean = true
-    ): this(texturePath, shapeType, health, pos, size, false, isFlammable, damageListener, rumble)
+    ): this(texturePath, shapeType, health, pos, size, false, isFlammable, isFreezable, damageListener, rumble)
 
-    //Constructor for indestructible blocks
+    //Constructor for unbreakable blocks
     constructor(
     texturePath: String,
     shapeType: Shape.Type,
     pos: Vector2,
     size: Float,
-    isFlammable: Boolean, damageListener: DamageListener? = null,
-    rumble: Boolean = true,
-    ): this(texturePath, shapeType, 1f, pos, size,true,  isFlammable,  damageListener, rumble)
+    ): this(texturePath, shapeType, 1f, pos, size,true, false,  false,  null, false)
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)

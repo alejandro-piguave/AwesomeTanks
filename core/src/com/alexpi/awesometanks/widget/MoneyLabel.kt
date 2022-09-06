@@ -1,16 +1,16 @@
 package com.alexpi.awesometanks.widget
 
-import com.alexpi.awesometanks.entities.tanks.PlayerTank
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.MoneyValue
 import com.alexpi.awesometanks.utils.Styles
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 
-class MoneyLabel(assetManager: AssetManager, private val tank: PlayerTank): Label("${tank.money} $",
-    Styles.getLabelStyle(assetManager, (Constants.TILE_SIZE / 3).toInt())
+class MoneyLabel(assetManager: AssetManager, private val moneyValue: MoneyValue):
+    Label("\$${moneyValue.money}",
+        Styles.getLabelStyleBackground(assetManager)
 ) {
     override fun act(delta: Float) {
         super.act(delta)
-        setText("${tank.money} $")
+        setText("\$${moneyValue.money}")
     }
 }

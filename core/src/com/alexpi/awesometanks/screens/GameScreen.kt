@@ -6,8 +6,9 @@ import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Settings
 import com.alexpi.awesometanks.utils.Styles
 import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.widget.AmmoBar
-import com.alexpi.awesometanks.widget.MoneyLabel
+import com.alexpi.awesometanks.widget.ProfitLabel
 import com.alexpi.awesometanks.world.GameListener
 import com.alexpi.awesometanks.world.GameRenderer
 import com.badlogic.gdx.*
@@ -39,8 +40,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
     private lateinit var gameRenderer: GameRenderer
     private lateinit var ammoBar: AmmoBar
-    private val gunName = Label(Constants.WEAPON_NAMES[0], Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
-    private val buttons: List<ImageButton> = (0 until Constants.WEAPON_COUNT).map {
+    private val gunName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
+    private val buttons: List<ImageButton> = (0 until Weapon.Type.values().size).map {
         val texture = game.manager.get<Texture>("icons/icon_$it.png")
         val disabled = game.manager.get<Texture>("icons/icon_disabled_$it.png")
         val style = ImageButtonStyle(game.manager.get<Skin>("uiskin/uiskin.json").get(ButtonStyle::class.java))
@@ -84,7 +85,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         ammoBar.setSize(300f, 30f)
         ammoBar.isVisible = false
 
-        val money = MoneyLabel(game.manager, gameRenderer.player)
+        val money = ProfitLabel(game.manager, gameRenderer.player)
 
         val joystickSize = Constants.SCREEN_HEIGHT / 2.25f
         val movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
@@ -131,8 +132,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             val index = buttons.indexOf(button)
 
             if(index > 0) {
-                button.isDisabled = game.gameValues.getBoolean("weapon$index",true);
-                button.setColor(button.color.r,button.color.g,button.color.b,.5f);
+                button.isDisabled = game.gameValues.getBoolean("weapon$index",true)
+                button.setColor(button.color.r,button.color.g,button.color.b,.5f)
             }
             if(!button.isDisabled) {
                 button.onClick {
@@ -221,7 +222,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 saveProgress()
                 uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                gameRenderer.fadeOut{ game.screen = game.upgrades}
+                gameRenderer.fadeOut{ game.screen = game.upgradesScreen}
             }
         })
         table.add(continueButton).expand().top().right().pad(24f)
@@ -239,7 +240,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                gameRenderer.fadeOut{ game.screen = game.upgrades}
+                gameRenderer.fadeOut{ game.screen = game.upgradesScreen}
             }
         })
         table.add(continueButton).expand().top().right().pad(24f)

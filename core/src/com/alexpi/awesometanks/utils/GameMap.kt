@@ -89,9 +89,6 @@ class GameMap(level: Int){
         }
     }
 
-    private fun cellConnections(cell: Cell) = if(cell.connections.isEmpty) "" else cell.connections.items.fold("") { a, b->
-        a + "${b.toNode?: "empty"}, " }
-
     fun setPlayerCell(row: Int, col: Int){
         playerRow = row
         playerCol = col
@@ -113,10 +110,6 @@ class GameMap(level: Int){
         }
     }
 
-    fun toWorldPos(row: Int, col: Int): Vector2 {
-        return Vector2( col.toFloat(), (map.size - row).toFloat())
-    }
-
     fun toWorldPos(cell: Cell): Vector2 {
         return Vector2( cell.col.toFloat(), (map.size - cell.row).toFloat())
     }
@@ -126,8 +119,6 @@ class GameMap(level: Int){
         val col = pos.x.toInt()
         return map[row][col]
     }
-
-    fun isVisible(row: Int, col: Int) = map[row][col].isVisible
 
     fun updateVisibleArea(){
         map[playerRow][playerCol].isVisible = true

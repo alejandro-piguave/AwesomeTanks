@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.Shape
  * Created by Alex on 29/01/2016.
  */
 class Gate(listener: DamageListener, pos: Vector2) : Block(
-    "sprites/gate.png", Shape.Type.Polygon, 100f, pos, 1f, true, listener
+    "sprites/gate.png", Shape.Type.Polygon, 100f, pos, 1f, true, false, listener
 ) {
 
     override fun detach() {

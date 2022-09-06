@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.tanks
 
+import com.alexpi.awesometanks.screens.UpgradeType
 import com.alexpi.awesometanks.utils.Cell
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.GameMap
@@ -13,22 +14,24 @@ import com.badlogic.gdx.math.Vector2
 import kotlin.experimental.or
 
 class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
-    .07f + GameModule.getGameValues().getInteger(Constants.ROTATION_SPEED) / 40f,
-    150 + GameModule.getGameValues().getInteger(Constants.MOVEMENT_SPEED) * 10f,
+    .07f + GameModule.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
+    150 + GameModule.getGameValues().getInteger(UpgradeType.SPEED.name) * 10f,
     Constants.CAT_PLAYER,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
     500f, false, null, Color.WHITE), RocketListener {
 
     private val map: GameMap = GameModule.getGameMap()
-    private val visibilityRadius = 2 + GameModule.getGameValues().getInteger(Constants.VISIBILITY)
-    private val armor = GameModule.getGameValues().getInteger(Constants.ARMOR)
+    private val visibilityRadius = 2 + GameModule.getGameValues().getInteger(UpgradeType.VISIBILITY.name)
+    private val armor = GameModule.getGameValues().getInteger(UpgradeType.ARMOR.name)
     val position: Vector2
         get() = body.position
 
     var money: Int = 0
     var currentWeaponIndex = 0
-    private val weapons: List<Weapon> = (0 until Constants.WEAPON_COUNT).map {
-        Weapon.getWeaponAt(it, GameModule.getGameValues().getFloat("ammo$it"), GameModule.getGameValues().getInteger("power$it"), true, this)
+    private val weapons: List<Weapon> = Weapon.Type.values().map {
+        val weaponAmmo =  GameModule.getGameValues().getFloat("ammo${it.ordinal}")
+        val weaponPower = GameModule.getGameValues().getInteger("power${it.ordinal}")
+        Weapon.getWeaponAt(it,weaponAmmo, weaponPower, true, this)
     }
 
     val centerX: Float
@@ -57,7 +60,7 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
 
     fun setRotationInput(x: Float, y: Float){
         if(isRocketActive){
-            val rocketLauncher = weapons[Constants.ROCKET] as RocketLauncher
+            val rocketLauncher = weapons[Weapon.Type.ROCKET.ordinal] as RocketLauncher
             rocketLauncher.rocket?.updateOrientation(x,y)
         } else currentWeapon.setDesiredAngleRotation(x,y)
     }

@@ -107,7 +107,7 @@ public class LevelScreen extends BaseScreen {
             stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run(new Runnable() {
                 @Override
                 public void run() {
-                    game.setScreen(game.upgrades);
+                    game.setScreen(game.upgradesScreen);
                 }
             })));}
     }

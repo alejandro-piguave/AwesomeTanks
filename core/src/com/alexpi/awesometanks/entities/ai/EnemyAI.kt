@@ -82,8 +82,8 @@ class EnemyAI(
     }
 
     companion object {
-        private const val VISIBILITY_RADIUS = 20f
-        private const val FORGET_TARGET_LIMIT_MILLIS = 100000
+        private const val VISIBILITY_RADIUS = 5f
+        private const val FORGET_TARGET_LIMIT_MILLIS = 7000
         private const val PATHFINDING_INTERVAL = 500
     }
 }

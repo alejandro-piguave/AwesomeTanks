@@ -17,7 +17,7 @@ import kotlin.experimental.or
 class EnemyTank(
     position: Vector2,
     tier: Tier,
-    type: Int, damageListener: DamageListener?) : Tank(position, getSizeByTier(tier),
+    type: Weapon.Type, damageListener: DamageListener?) : Tank(position, getSizeByTier(tier),
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
@@ -59,25 +59,26 @@ class EnemyTank(
         private const val ROTATION_SPEED = .035f
         private const val MOVEMENT_SPEED = 60f
 
-        private fun getNuggetValue(tier: Tier, type: Int): Int{
+        private fun getTypeMultiplier(type: Weapon.Type): Float = when(type){
+            Weapon.Type.MINIGUN -> 0f
+            Weapon.Type.SHOTGUN -> .2f
+            Weapon.Type.RICOCHET -> .3f
+            Weapon.Type.FLAMETHROWER -> .6f
+            Weapon.Type.CANNON -> .6f
+            Weapon.Type.ROCKET -> .6f
+            Weapon.Type.LASERGUN -> 1f
+            Weapon.Type.RAILGUN -> 1f
+
+        }
+
+        private fun getNuggetValue(tier: Tier, type: Weapon.Type): Int{
             val tierMultiplier: Float = when(tier){
                 Tier.MINI -> .5f
                 Tier.NORMAL -> 1f
                 Tier.BOSS -> 1.5f
             }
 
-            val typeMultiplier: Float = when(type){
-                Constants.MINIGUN -> 0f
-                Constants.SHOTGUN -> .2f
-                Constants.RICOCHET -> .3f
-                Constants.FLAMETHROWER -> .6f
-                Constants.CANON -> .6f
-                Constants.ROCKET -> .6f
-                Constants.LASERGUN -> 1f
-                else -> 1f
-
-            }
-            return 50 + (typeMultiplier* 75 * tierMultiplier).toInt()
+            return 50 + (getTypeMultiplier(type)* 75 * tierMultiplier).toInt()
         }
 
         private fun getSizeByTier(tier: Tier): Float{
@@ -87,11 +88,11 @@ class EnemyTank(
                 Tier.BOSS -> .9f
             }
         }
-        private fun getHealthByTierAndType(tier: Tier, type: Int): Float{
+        private fun getHealthByTierAndType(tier: Tier, type: Weapon.Type): Float{
             return when (tier){
-                Tier.MINI -> 100f + type/Constants.RAILGUN * 100f
-                Tier.NORMAL -> 150f + type/Constants.RAILGUN * 300f
-                Tier.BOSS -> 300f + type/Constants.RAILGUN * 500f
+                Tier.MINI -> 75f + getTypeMultiplier(type) * 100f
+                Tier.NORMAL -> 125f + getTypeMultiplier(type) * 300f
+                Tier.BOSS -> 250f + getTypeMultiplier(type) * 500f
             }
         }
 

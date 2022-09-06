@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.weapons
 
-import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Settings.soundsOn
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.audio.Sound
@@ -111,22 +110,21 @@ abstract class Weapon(
 
     companion object {
         fun getWeaponAt(
-            i: Int,
+            type: Type,
             ammo: Float,
             power: Int,
             isPlayer: Boolean,
             rocketListener: RocketListener? = null
         ): Weapon {
-            return when (i) {
-                Constants.MINIGUN -> MiniGun( ammo, power, isPlayer)
-                Constants.SHOTGUN -> ShotGun( ammo, power, isPlayer)
-                Constants.RICOCHET -> Ricochet( ammo, power, isPlayer)
-                Constants.FLAMETHROWER -> Flamethrower( ammo, power, isPlayer)
-                Constants.CANON -> Canon( ammo, power, isPlayer)
-                Constants.ROCKET -> RocketLauncher( ammo, power, isPlayer, rocketListener)
-                Constants.LASERGUN -> LaserGun( ammo, power, isPlayer)
-                Constants.RAILGUN -> RailGun( ammo, power, isPlayer)
-                else -> throw IllegalArgumentException("Invalid index")
+            return when (type) {
+                Type.MINIGUN -> MiniGun( ammo, power, isPlayer)
+                Type.SHOTGUN -> ShotGun( ammo, power, isPlayer)
+                Type.RICOCHET -> Ricochet( ammo, power, isPlayer)
+                Type.FLAMETHROWER -> Flamethrower( ammo, power, isPlayer)
+                Type.CANNON -> Canon( ammo, power, isPlayer)
+                Type.ROCKET -> RocketLauncher( ammo, power, isPlayer, rocketListener)
+                Type.LASERGUN -> LaserGun( ammo, power, isPlayer)
+                Type.RAILGUN -> RailGun( ammo, power, isPlayer)
             }
         }
     }
@@ -138,5 +136,16 @@ abstract class Weapon(
         this.power = power
         this.isPlayer = isPlayer
         this.coolingDownTime = coolingDownTime
+    }
+
+    enum class Type(val price: Int, val ammoPrice: Int, val upgradePrices: List<Int>){
+        MINIGUN(0, 0, listOf(200, 300, 400, 500, 600)),
+        SHOTGUN(2750, 100, listOf(500, 900, 1300, 1700, 2100)),
+        RICOCHET(8000, 200, listOf(2500, 3000, 3500, 4000, 4500)),
+        FLAMETHROWER(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
+        CANNON(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
+        ROCKET(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
+        LASERGUN(28000, 400, listOf(11000, 12000, 13000, 14000, 15000)),
+        RAILGUN(28000, 400, listOf(11000, 12000, 13000, 14000, 15000))
     }
 }

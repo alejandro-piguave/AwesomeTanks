@@ -11,6 +11,7 @@ import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.*
+import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
@@ -107,11 +108,12 @@ class GameRenderer(private val game: MainGame,
                 ) else if (cell.value == GameMap.BOMB)
                     blockGroup.addActor( Mine(this, gameMap.toWorldPos(cell))
                 ) else if (cell.value.isDigit()) {
-                    val num = Character.getNumericValue(cell.value)
-                    blockGroup.addActor(Turret(this, gameMap.toWorldPos(cell), num))
+                    val weaponType = Weapon.Type.values()[Character.getNumericValue(cell.value)]
+                    blockGroup.addActor(Turret(this, gameMap.toWorldPos(cell), weaponType))
                 } else if(cell.value in GameMap.MINIGUN_BOSS..GameMap.RAILGUN_BOSS){
                     val type = cell.value.code - GameMap.MINIGUN_BOSS.code
-                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS,type,this ))
+                    val weaponType = Weapon.Type.values()[type]
+                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS,weaponType,this ))
                 }
                 gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell)))
             }
