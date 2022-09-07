@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.actors
 
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.utils.Rumble
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
@@ -17,7 +16,8 @@ abstract class DamageableActor(
                                val maxHealth: Float,
                                private val isFlammable: Boolean,
                                private val isFreezable: Boolean,
-                               protected val damageListener: DamageListener? = null, private val rumble: Boolean, private val isImmortal: Boolean = false) :
+                               private val rumble: Boolean,
+                               private val isImmortal: Boolean = false) :
     Actor() {
     var health: Float = maxHealth
     private set
@@ -32,19 +32,19 @@ abstract class DamageableActor(
         if (health - damage > 0) {
             health -= damage
             if(lastHit + HEALTH_BAR_DURATION < TimeUtils.millis()){
-                damageListener?.onDamage(this)
+                GameModule.getDamageListener()?.onDamage(this)
                 lastHit = TimeUtils.millis()
             }
         }
         else {
             health = 0f
-            damageListener?.onDeath(this)
+            GameModule.getDamageListener()?.onDeath(this)
         }
     }
 
     open fun killInstantly(){
         health = 0f
-        damageListener?.onDeath(this)
+        GameModule.getDamageListener()?.onDeath(this)
     }
 
     fun freeze(freezingTime: Float) {

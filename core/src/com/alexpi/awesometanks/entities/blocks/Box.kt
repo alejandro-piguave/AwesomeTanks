@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.blocks
 
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
@@ -15,10 +14,7 @@ import com.badlogic.gdx.physics.box2d.Shape
 /**
  * Created by Alex on 19/01/2016.
  */
-class Box(
-    listener: DamageListener,
-    pos: Vector2,
-) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false,  listener) {
+class Box(pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false) {
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(GameModule.level)
     private val nuggetValue: Int = getNuggetValue(GameModule.level)
     private fun drop() {
@@ -42,8 +38,7 @@ class Box(
                 EnemyTank(
                     body.position,
                     EnemyTank.Tier.MINI,
-                    generatedTypes.random(),
-                    damageListener
+                    generatedTypes.random()
                 )
             )
         }

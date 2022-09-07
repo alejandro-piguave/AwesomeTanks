@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.blocks
 
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.world.GameModule
@@ -21,9 +20,9 @@ abstract class Block private constructor(
     pos: Vector2,
     size: Float,
     isIndestructible: Boolean,
-    isFlammable: Boolean, isFreezable: Boolean, damageListener: DamageListener?,
+    isFlammable: Boolean, isFreezable: Boolean,
     rumble: Boolean,
-) : DamageableActor(health, isFlammable, isFreezable, damageListener, rumble, isIndestructible) {
+) : DamageableActor(health, isFlammable, isFreezable, rumble, isIndestructible) {
     private val sprite: Sprite = Sprite(GameModule.getAssetManager().get(texturePath, Texture::class.java))
     val body: Body
     val fixture: Fixture
@@ -36,9 +35,9 @@ abstract class Block private constructor(
         health: Float,
         pos: Vector2,
         size: Float,
-        isFlammable: Boolean, isFreezable: Boolean, damageListener: DamageListener,
+        isFlammable: Boolean, isFreezable: Boolean,
         rumble: Boolean = true
-    ): this(texturePath, shapeType, health, pos, size, false, isFlammable, isFreezable, damageListener, rumble)
+    ): this(texturePath, shapeType, health, pos, size, false, isFlammable, isFreezable, rumble)
 
     //Constructor for unbreakable blocks
     constructor(
@@ -46,7 +45,7 @@ abstract class Block private constructor(
     shapeType: Shape.Type,
     pos: Vector2,
     size: Float,
-    ): this(texturePath, shapeType, 1f, pos, size,true, false,  false,  null, false)
+    ): this(texturePath, shapeType, 1f, pos, size,true, false,  false, false)
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawSprite(batch)

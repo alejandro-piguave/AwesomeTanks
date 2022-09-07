@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.blocks
 
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.utils.Constants
@@ -15,18 +14,14 @@ import kotlin.experimental.or
 /**
  * Created by Alex on 15/02/2016.
  */
-class Spawner(
-    listener: DamageListener,
-    pos: Vector2
-) : Block(
+class Spawner(pos: Vector2) : Block(
     "sprites/spawner.png",
     Shape.Type.Polygon,
     getHealth(GameModule.level),
     pos,
     1f,
     true,
-    true,
-    listener
+    true
 ) {
     private var lastSpawn: Long
     private var interval: Long
@@ -45,8 +40,7 @@ class Spawner(
                 EnemyTank(
                     body.position,
                     EnemyTank.Tier.NORMAL,
-                    generatedTypes.random(),
-                    damageListener
+                    generatedTypes.random()
                 )
             )
         }
@@ -54,24 +48,24 @@ class Spawner(
 
     companion object {
         private fun getHealth(level: Int): Float {
-            return 400f + level.toFloat()/ (Constants.LEVEL_COUNT - 1) * 1000f
+            return 400f + level.toFloat() / (Constants.LEVEL_COUNT - 1) * 1000f
         }
 
-        private fun getNuggetValue(level: Int): Int{
-            return 60 + (level.toFloat()/(Constants.LEVEL_COUNT -1)*80).toInt()
+        private fun getNuggetValue(level: Int): Int {
+            return 60 + (level.toFloat() / (Constants.LEVEL_COUNT - 1) * 80).toInt()
         }
 
         private fun getMaxType(level: Int): Int {
             return if (level <= 7) Weapon.Type.RICOCHET.ordinal
-            else if(level <= 15) Weapon.Type.ROCKET.ordinal
-            else if(level <= 22) Weapon.Type.LASERGUN.ordinal
+            else if (level <= 15) Weapon.Type.ROCKET.ordinal
+            else if (level <= 22) Weapon.Type.LASERGUN.ordinal
             else Weapon.Type.RAILGUN.ordinal
         }
 
         private fun getMinType(level: Int): Int {
             return if (level <= 10) Weapon.Type.MINIGUN.ordinal
-            else if(level <= 12) Weapon.Type.SHOTGUN.ordinal
-            else if(level <= 16) Weapon.Type.RICOCHET.ordinal
+            else if (level <= 12) Weapon.Type.SHOTGUN.ordinal
+            else if (level <= 16) Weapon.Type.RICOCHET.ordinal
             else Weapon.Type.FLAMETHROWER.ordinal
         }
 
@@ -91,7 +85,12 @@ class Spawner(
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(10, 15)
         for (i in 0 until num1)
-            parent.addActor(GoldNugget(body.position, Utils.getRandomInt(nuggetValue-10, nuggetValue+10)))
+            parent.addActor(
+                GoldNugget(
+                    body.position,
+                    Utils.getRandomInt(nuggetValue - 10, nuggetValue + 10)
+                )
+            )
     }
 
     init {

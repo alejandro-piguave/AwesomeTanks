@@ -51,40 +51,11 @@ class GameRenderer(private val game: MainGame,
     val player: PlayerTank
 
     init {
-        GameModule.set(game.manager, world, gameMap, aStartPathFinding, game.gameValues)
+        GameModule.set(game.manager, world, gameMap, aStartPathFinding, game.gameValues, this)
         GameModule.level = level
         player = PlayerTank()
         GameModule.setPlayer(player)
-
-        world.setContactListener(ContactManager( object: ContactManager.ContactListener{
-            override fun onGoldNuggetFound(goldNugget: GoldNugget) {
-                player.money += goldNugget.value
-            }
-
-            override fun onHealthPackFound(healthPack: HealthPack) {
-                player.heal(healthPack.health)
-            }
-
-            override fun onFreezingBallFound(freezingBall: FreezingBall) {
-                for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
-                    (a as DamageableActor).freeze(5f)
-                }
-                for (a: Actor in blockGroup.children) if (a is Turret) a.freeze(5f)
-            }
-
-            override fun onBulletCollision(x: Float, y: Float) {
-                gameStage.addActor(ParticleActor("particles/collision.party", x, y, false))
-            }
-
-            override fun onLandMineFound(x: Float, y: Float) {
-                createLandMineExplosion(x,y)
-            }
-
-            override fun onExplosiveProjectileCollided(x: Float, y: Float) {
-                createCanonBallExplosion(x,y)
-            }
-        }))
-
+        setWorldContactListener()
         val shadeGroup = Group()
         gameMap.forCell { cell ->
             if (!cell.isVisible) {
@@ -97,23 +68,22 @@ class GameRenderer(private val game: MainGame,
                     player.setPos(cell)
                     entityGroup.addActor(player)
                 } else if (cell.value == GameMap.GATE)
-                    blockGroup.addActor( Gate(this, gameMap.toWorldPos(cell))
+                    blockGroup.addActor( Gate(gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.BRICKS)
-                    blockGroup.addActor(Bricks(this, gameMap.toWorldPos(cell))
+                    blockGroup.addActor(Bricks(gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.BOX)
-                //ITS ADDED TO THE ENTITY GROUP BECAUSE THE ITEMS IT DROPS BELONG TO THIS GROUP AND NOT TO THE BLOCK GROUP
-                    entityGroup.addActor(Box(this, gameMap.toWorldPos(cell))
+                    entityGroup.addActor(Box(gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.SPAWNER)
-                    entityGroup.addActor(Spawner(this, gameMap.toWorldPos(cell))
+                    entityGroup.addActor(Spawner(gameMap.toWorldPos(cell))
                 ) else if (cell.value == GameMap.BOMB)
-                    blockGroup.addActor( Mine(this, gameMap.toWorldPos(cell))
+                    blockGroup.addActor( Mine(gameMap.toWorldPos(cell))
                 ) else if (cell.value.isDigit()) {
                     val weaponType = Weapon.Type.values()[Character.getNumericValue(cell.value)]
-                    blockGroup.addActor(Turret(this, gameMap.toWorldPos(cell), weaponType))
+                    blockGroup.addActor(Turret(gameMap.toWorldPos(cell), weaponType))
                 } else if(cell.value in GameMap.MINIGUN_BOSS..GameMap.RAILGUN_BOSS){
                     val type = cell.value.code - GameMap.MINIGUN_BOSS.code
                     val weaponType = Weapon.Type.values()[type]
-                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS,weaponType,this ))
+                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS, weaponType))
                 }
                 gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell)))
             }
@@ -131,16 +101,13 @@ class GameRenderer(private val game: MainGame,
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         if (!isPaused) {
-            world.step(1 / 60f, 6, 2)
             gameStage.act(delta)
             checkLevelState()
             gameStage.camera.position.set(player.centerX, player.centerY, 0f)
-            if (Rumble.rumbleTimeLeft > 0){
-                Rumble.tick(delta)
-                gameStage.camera.translate(Rumble.pos.x, Rumble.pos.y,0f)
-            }
+            updateRumble(delta)
         }
         gameStage.draw()
+        if(!isPaused) world.step(1 / 60f, 6, 2)
     }
 
     private fun checkLevelState() {
@@ -228,19 +195,48 @@ class GameRenderer(private val game: MainGame,
         }
     }
 
+    private fun updateRumble(delta: Float){
+        if (Rumble.rumbleTimeLeft > 0){
+            Rumble.tick(delta)
+            gameStage.camera.translate(Rumble.pos.x, Rumble.pos.y,0f)
+        }
+    }
     private fun isLevelCleared(): Boolean {
         for (actor: Actor in blockGroup.children) if (actor is Turret) return false
         for (actor: Actor in entityGroup.children) if (actor is EnemyTank || actor is Spawner) return false
         return true
     }
 
-    fun fadeOut(runnable: Runnable){
-        gameStage.addAction(
-            Actions.sequence(
-                Actions.fadeOut(Constants.TRANSITION_DURATION),
-                Actions.run(runnable)
-            )
-        )
+    private fun setWorldContactListener(){
+        world.setContactListener(ContactManager(object: ContactManager.ContactListener{
+
+            override fun onGoldNuggetFound(goldNugget: GoldNugget) {
+                player.money += goldNugget.value
+            }
+
+            override fun onHealthPackFound(healthPack: HealthPack) {
+                player.heal(healthPack.health)
+            }
+
+            override fun onFreezingBallFound(freezingBall: FreezingBall) {
+                for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
+                    (a as DamageableActor).freeze(5f)
+                }
+                for (a: Actor in blockGroup.children) if (a is Turret) a.freeze(5f)
+            }
+
+            override fun onBulletCollision(x: Float, y: Float) {
+                gameStage.addActor(ParticleActor("particles/collision.party", x, y, false))
+            }
+
+            override fun onLandMineFound(x: Float, y: Float) {
+                createLandMineExplosion(x,y)
+            }
+
+            override fun onExplosiveProjectileCollided(x: Float, y: Float) {
+                createCanonBallExplosion(x,y)
+            }
+        }))
     }
 
     fun dispose(){
@@ -316,6 +312,7 @@ class GameRenderer(private val game: MainGame,
     }
 }
 
+//Object that holds references to common game objects to avoid passing them in the constructor every time we need them.
 object GameModule{
     var level: Int = 0
     private var assetManager: AssetManager? = null
@@ -323,6 +320,7 @@ object GameModule{
     private var gameMap: GameMap? = null
     private var pathFinding: AStartPathFinding? = null
     private var gameValues: Preferences? = null
+    private var damageListener: DamageListener? = null
     private var _player: PlayerTank? = null
 
     fun getAssetManager(): AssetManager = assetManager!!
@@ -330,25 +328,29 @@ object GameModule{
     fun getGameMap(): GameMap = gameMap!!
     fun getPathFinding(): AStartPathFinding = pathFinding!!
     fun getGameValues(): Preferences = gameValues!!
+    fun getDamageListener(): DamageListener? = damageListener
     fun getPlayer(): PlayerTank = _player!!
 
-    fun set(assetManager: AssetManager, world: World, gameMap: GameMap, pathFinding: AStartPathFinding, gameValues: Preferences){
+    fun set(assetManager: AssetManager, world: World, gameMap: GameMap, pathFinding: AStartPathFinding, gameValues: Preferences, damageListener: DamageListener){
         this.assetManager = assetManager
         this.world = world
         this.gameMap = gameMap
         this.pathFinding = pathFinding
         this.gameValues = gameValues
+        this.damageListener = damageListener
     }
     fun setPlayer(player: PlayerTank){
         _player = player
     }
 
+    //Calling this method when disposing the GameRenderer is very important to avoid memory leaks
     fun dispose(){
         assetManager = null
         world = null
         gameMap = null
         pathFinding = null
         gameValues = null
+        damageListener = null
         _player = null
     }
 }

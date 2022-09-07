@@ -10,6 +10,7 @@ import com.alexpi.awesometanks.entities.items.Item;
 import com.alexpi.awesometanks.entities.projectiles.CanonBall;
 import com.alexpi.awesometanks.entities.projectiles.Flame;
 import com.alexpi.awesometanks.entities.projectiles.Projectile;
+import com.alexpi.awesometanks.entities.projectiles.Rail;
 import com.alexpi.awesometanks.entities.projectiles.Rocket;
 import com.alexpi.awesometanks.entities.tanks.PlayerTank;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -54,7 +55,7 @@ public class ContactManager implements ContactListener {
             if(!(projectile.isEnemy() && damageableActor instanceof Spawner)){
                 damageableActor.takeDamage(projectile.getDamage());
             }
-            if(projectile instanceof CanonBall || projectile instanceof Rocket){
+            if(projectile instanceof CanonBall || projectile instanceof Rocket || projectile instanceof Rail){
                 contactListener.onExplosiveProjectileCollided(projectile.getX()+projectile.getBodyWidth()*.5f, projectile.getY()+projectile.getBodyHeight()*.5f);
             }
             projectile.destroy();

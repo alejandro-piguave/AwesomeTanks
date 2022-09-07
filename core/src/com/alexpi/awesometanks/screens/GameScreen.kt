@@ -115,7 +115,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         }
 
         val weaponMenuButton = ImageButton(TextureRegionDrawable(game.manager.get("sprites/gun_menu_icon.png",Texture::class.java))).apply {
-            setColor(color.r, color.g, color.b, 0.5f)
+            alpha = .5f
             onClick {
                 gameRenderer.isPaused = if(!gameRenderer.isPaused){
                     uiStage.addActor(weaponMenuTable)
@@ -221,8 +221,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 saveProgress()
-                uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                gameRenderer.fadeOut{ game.screen = game.upgradesScreen}
+                uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
             }
         })
         table.add(continueButton).expand().top().right().pad(24f)
@@ -239,8 +238,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         )
         continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
-                uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                gameRenderer.fadeOut{ game.screen = game.upgradesScreen}
+                uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
             }
         })
         table.add(continueButton).expand().top().right().pad(24f)
@@ -262,8 +260,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                     val back = TextButton("Back", Styles.getTextButtonStyle1(game.manager))
                     back.onClick {
                         gameRenderer.isPaused = false
-                        uiStage.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                        gameRenderer.fadeOut{ game.screen = game.levelScreen}
+                        uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
                     }
                     val resume = TextButton("Resume", Styles.getTextButtonStyle1(game.manager))
                     resume.onClick {

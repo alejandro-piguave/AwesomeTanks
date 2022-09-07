@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.tanks
 
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.EnemyAI
 import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
@@ -17,11 +16,11 @@ import kotlin.experimental.or
 class EnemyTank(
     position: Vector2,
     tier: Tier,
-    type: Weapon.Type, damageListener: DamageListener?) : Tank(position, getSizeByTier(tier),
+    type: Weapon.Type) : Tank(position, getSizeByTier(tier),
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
-    getHealthByTierAndType(tier, type),true, damageListener, getColorByTier(tier)),
+    getHealthByTierAndType(tier, type),true, getColorByTier(tier)),
     EnemyAICallback {
 
 
@@ -40,6 +39,11 @@ class EnemyTank(
         super.act(delta)
     }
 
+    override fun takeDamage(damage: Float) {
+        super.takeDamage(damage)
+        enemyAI.receiveDamage()
+    }
+
     override fun detach() {
         dropLoot()
         super.detach()
@@ -47,12 +51,10 @@ class EnemyTank(
 
     private fun dropLoot() {
         val num1 = Utils.getRandomInt(5, 15)
-        for (i in 0 until num1) parent.addActor(
-            GoldNugget(
-                body.position,
-                Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
+        for (i in 0 until num1)
+            parent.addActor(
+                GoldNugget(body.position, Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5))
             )
-        )
     }
 
     companion object {
@@ -62,7 +64,7 @@ class EnemyTank(
         private fun getTypeMultiplier(type: Weapon.Type): Float = when(type){
             Weapon.Type.MINIGUN -> 0f
             Weapon.Type.SHOTGUN -> .2f
-            Weapon.Type.RICOCHET -> .3f
+            Weapon.Type.RICOCHET -> .4f
             Weapon.Type.FLAMETHROWER -> .6f
             Weapon.Type.CANNON -> .6f
             Weapon.Type.ROCKET -> .6f
@@ -85,14 +87,14 @@ class EnemyTank(
             return when (tier){
                 Tier.MINI -> .6f
                 Tier.NORMAL -> .75f
-                Tier.BOSS -> .9f
+                Tier.BOSS -> .87f
             }
         }
         private fun getHealthByTierAndType(tier: Tier, type: Weapon.Type): Float{
             return when (tier){
                 Tier.MINI -> 75f + getTypeMultiplier(type) * 100f
                 Tier.NORMAL -> 125f + getTypeMultiplier(type) * 300f
-                Tier.BOSS -> 250f + getTypeMultiplier(type) * 500f
+                Tier.BOSS -> 250f + getTypeMultiplier(type) * 400f
             }
         }
 

@@ -3,7 +3,6 @@ package com.alexpi.awesometanks.entities.ai
 import com.alexpi.awesometanks.entities.blocks.Block
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.world.GameModule
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.TimeUtils
@@ -27,7 +26,6 @@ class EnemyAI(
             return
         }
 
-
         val dX = target.position.x - position.x
         val dY = target.position.y - position.y
 
@@ -50,25 +48,25 @@ class EnemyAI(
             isTargetVisible = false
             callback.await()
         }
+    }
 
+    fun receiveDamage(){
+        lastTargetSighting = TimeUtils.millis()
     }
 
     private fun searchPath(){
         if(lastPathFindingExecution + PATHFINDING_INTERVAL < TimeUtils.millis()){
             lastPathFindingExecution = TimeUtils.millis()
-            Gdx.app.log("EnemyAI", "Finding next position...")
             val nextPosition = pathFinding.findNextPosition(position, target.position)
             if(nextPosition == null) callback.await()
             else {
                 val deltaX = nextPosition.x - position.x
                 val deltaY = nextPosition.y - position.y
                 val moveAngle = atan2(deltaY, deltaX)
-                Gdx.app.log("EnemyAI", "Moving to next position...")
                 callback.move(moveAngle)
             }
         }
     }
-
 
     private fun checkTargetVisibility(){
         isTargetVisible = true

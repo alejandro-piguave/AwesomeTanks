@@ -1,11 +1,9 @@
 package com.alexpi.awesometanks.entities.tanks
 
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
-import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -13,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.*
-import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -30,9 +27,8 @@ abstract class Tank(
     maskBits: Short,
     maxHealth: Float,
     isFreezable: Boolean,
-    damageListener: DamageListener? = null,
     tankColor: Color
-    ) : DamageableActor( maxHealth, true, isFreezable, damageListener, true){
+    ) : DamageableActor( maxHealth, true, isFreezable, true){
 
     private val bodySprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/tank_body.png", Texture::class.java))
     private val wheelsSprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/tank_wheels.png", Texture::class.java))

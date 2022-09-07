@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.blocks
 
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.TurretAI
 import com.alexpi.awesometanks.entities.ai.TurretAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
@@ -16,10 +15,9 @@ import com.badlogic.gdx.physics.box2d.Shape
  * Created by Alex on 18/02/2016.
  */
 class Turret(
-    listener: DamageListener,
     pos: Vector2,
     type: Weapon.Type
-) : Block( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, true, listener), TurretAICallback {
+) : Block( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, true), TurretAICallback {
     private val weapon: Weapon
     private val enemyAI = TurretAI(body.position, this)
     private val nuggetValue: Int

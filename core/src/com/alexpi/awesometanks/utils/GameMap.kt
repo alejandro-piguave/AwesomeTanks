@@ -49,9 +49,9 @@ class GameMap(level: Int){
         updateVisibleArea()
 
         forCell { cell ->
-            if(cell.value in airBlocks){
+            if(cell.value in emptyBlocks){
                 forValidNeighbors(cell){ neighbor ->
-                    if(neighbor.value in airBlocks){
+                    if(neighbor.value in emptyBlocks){
                         // Add connection to walkable neighbor
                         cell.connections.add(DefaultConnection(cell, neighbor))
                     }
@@ -68,7 +68,7 @@ class GameMap(level: Int){
 
         cell.value = AIR
         forValidNeighbors(cell){ neighbor ->
-            if(neighbor.value in airBlocks){
+            if(neighbor.value in emptyBlocks){
                 // Add connection to walkable neighbor
                 cell.connections.add(DefaultConnection(cell, neighbor))
                 val inverseConnection = DefaultConnection(neighbor,cell)
@@ -166,7 +166,7 @@ class GameMap(level: Int){
         const val RAILGUN_BOSS = 'H'
 
         val solidBlocks = charArrayOf(WALL, GATE, BRICKS)
-        val airBlocks = charArrayOf(AIR, START, SPAWNER)
+        val emptyBlocks = charArrayOf(AIR, START, SPAWNER, MINIGUN_BOSS, SHOTGUN_BOSS, RICOCHET_BOSS, FLAMETHROWER_BOSS, CANON_BOSS, ROCKET_BOSS, LASERGUN_BOSS, RAILGUN_BOSS)
     }
 
 }
