@@ -154,7 +154,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         if(Gdx.app.type != Application.ApplicationType.Desktop){
             uiBottomTable.add(movementTouchpad).size(joystickSize).left().pad(10f)
             uiBottomTable.add(weaponMenuButton).expandX().right()
-            uiBottomTable.add(aimTouchpad).size(joystickSize).right().pad(10f).row()
+            uiBottomTable.add(aimTouchpad).size(joystickSize).right().padRight(Gdx.graphics.safeInsetRight.toFloat()).row()
 
             weaponMenuTable.setFillParent(true)
         } else {
