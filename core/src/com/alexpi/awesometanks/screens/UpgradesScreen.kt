@@ -82,9 +82,16 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             if (upgradeTable.isMaxValue) upgradeTable.buyButton.isVisible = false
             upgradeTable
         }
+        //Creates the back button
+        val backButton = GameButton(game.manager, {
+            stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run {
+                game.screen = game.mainScreen
+            }))
+        }, "Back")
 
-        //Creates the play button
-        val playButton = GameButton(game.manager, {
+
+        //Creates the next button
+        val nextButton = GameButton(game.manager, {
             for (p: UpgradeTable in upgradeTables) game.gameValues.putInteger(p.name, p.value)
             weaponValues.forEachIndexed { index, values ->
                 game.gameValues.putInteger("power$index", values.power)
@@ -100,7 +107,8 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
                     }
                 )
             )
-        }, "Play")
+        }, "Next")
+
 
         val currentWeaponImage = ImageButton(getWeaponButtonStyle(0))
         val currentWeaponName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyleSmall(game.manager))
@@ -209,7 +217,9 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         table.add(performance)
         table.add(currentWeaponTable).row()
         table.add(buttons).colspan(2).row()
-        table.add(playButton).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).colspan(2).padBottom(16f)
+        table.add(backButton).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).padBottom(16f).right()
+            .spaceRight(40f)
+        table.add(nextButton).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).padBottom(16f).left()
         stage.addActor(table)
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true

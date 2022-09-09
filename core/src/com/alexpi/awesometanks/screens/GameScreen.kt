@@ -8,6 +8,7 @@ import com.alexpi.awesometanks.utils.Styles
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.widget.AmmoBar
+import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.ProfitLabel
 import com.alexpi.awesometanks.world.GameListener
 import com.alexpi.awesometanks.world.GameRenderer
@@ -40,6 +41,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
     private lateinit var gameRenderer: GameRenderer
     private lateinit var ammoBar: AmmoBar
+    private lateinit var pauseButton: GameButton
     private val gunName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
     private val buttons: List<ImageButton> = (0 until Weapon.Type.values().size).map {
         val texture = game.manager.get<Texture>("icons/icon_$it.png")
@@ -127,6 +129,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
         }
 
+        pauseButton = GameButton(game.manager, {
+                showPauseMenu()
+        }, "Pause")
+
 
         buttons.forEach { button ->
             val index = buttons.indexOf(button)
@@ -146,15 +152,28 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
         val uiTopTable = Table()
         val uiBottomTable = Table()
-        uiTopTable.add(ammoBar).expandX().uniformX().pad(10f)
-        uiTopTable.add(money).expandX().uniform().pad(10f)
-        uiTopTable.add().expandX().uniformX()
+        uiTopTable.add(ammoBar).expandX().uniformX().pad(10f).apply {
+            if(Gdx.graphics.safeInsetLeft > 0)
+                padLeft(Gdx.graphics.safeInsetLeft.toFloat())
+        }
+
+        uiTopTable.add(money).expandX().uniformX().pad(10f)
+        uiTopTable.add(pauseButton).size(140f, 64f).expandX().uniformX().right().pad(10f).apply {
+            if(Gdx.graphics.safeInsetRight > 0)
+                padRight(Gdx.graphics.safeInsetRight.toFloat())
+        }.row()
         uiTable.add(uiTopTable).growX().row()
         uiTable.add().expand().row()
         if(Gdx.app.type != Application.ApplicationType.Desktop){
-            uiBottomTable.add(movementTouchpad).size(joystickSize).left().pad(10f)
+            uiBottomTable.add(movementTouchpad).size(joystickSize).left().pad(10f).apply {
+                if(Gdx.graphics.safeInsetLeft > 0)
+                    padLeft(Gdx.graphics.safeInsetLeft.toFloat())
+            }
             uiBottomTable.add(weaponMenuButton).expandX().right()
-            uiBottomTable.add(aimTouchpad).size(joystickSize).right().padRight(Gdx.graphics.safeInsetRight.toFloat()).row()
+            uiBottomTable.add(aimTouchpad).size(joystickSize).right().apply {
+                if(Gdx.graphics.safeInsetRight > 0)
+                    padRight(Gdx.graphics.safeInsetRight.toFloat())
+            }.row()
 
             weaponMenuTable.setFillParent(true)
         } else {
@@ -227,6 +246,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         table.add(continueButton).expand().top().right().pad(24f)
         uiStage.addActor(table)
 
+        pauseButton.isVisible = false
+
     }
 
     private fun showLevelCompletedButton() {
@@ -244,6 +265,32 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         table.add(continueButton).expand().top().right().pad(24f)
         uiStage.addActor(table)
         saveProgress(true)
+
+        pauseButton.isVisible = false
+    }
+
+    private fun showPauseMenu(){
+        gameRenderer.isPaused = true
+
+        val table = Table()
+        table.setFillParent(true)
+        val back = TextButton("Back", Styles.getTextButtonStyle1(game.manager))
+        back.onClick {
+            gameRenderer.isPaused = false
+            uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+        }
+        val resume = TextButton("Resume", Styles.getTextButtonStyle1(game.manager))
+        resume.onClick {
+            gameRenderer.isPaused = false
+            table.remove()
+            pauseButton.isVisible = true
+        }
+        table.add(back).top().right().pad(24f)
+        table.add(resume).top().right().pad(24f)
+
+        uiStage.addActor(table)
+        pauseButton.isVisible = false
+
     }
 
     override fun keyDown(keycode: Int): Boolean {
@@ -253,24 +300,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                     weaponMenuTable.remove()
                     gameRenderer.isPaused = false
                 } else if(!gameRenderer.isLevelCompleted){
-                    gameRenderer.isPaused = true
-
-                    val table = Table()
-                    table.setFillParent(true)
-                    val back = TextButton("Back", Styles.getTextButtonStyle1(game.manager))
-                    back.onClick {
-                        gameRenderer.isPaused = false
-                        uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
-                    }
-                    val resume = TextButton("Resume", Styles.getTextButtonStyle1(game.manager))
-                    resume.onClick {
-                        gameRenderer.isPaused = false
-                        table.remove()
-                    }
-                    table.add(back).top().right().pad(24f)
-                    table.add(resume).top().right().pad(24f)
-
-                    uiStage.addActor(table)
+                    showPauseMenu()
                 }
                 return true
             }
