@@ -17,7 +17,7 @@ class RocketLauncher(ammo: Float, power: Int, isPlayer: Boolean, private val roc
     var rocket: Rocket? = null
         private set
 
-    override fun canShoot(): Boolean = super.canShoot() && rocket?.isDestroyed ?: true
+    override fun canShoot(): Boolean = super.canShoot() && rocket?.hasCollided ?: true
 
     override fun createProjectile(group: Group, position: Vector2) {
         rocket = Rocket(position,currentRotationAngle, power, isPlayer, rocketListener)

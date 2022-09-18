@@ -1,11 +1,17 @@
 package com.alexpi.awesometanks.entities.tanks
 
-import com.alexpi.awesometanks.entities.ai.EnemyAI
 import com.alexpi.awesometanks.entities.ai.EnemyAICallback
+import com.alexpi.awesometanks.entities.ai.EnemyTankState
+import com.alexpi.awesometanks.entities.ai.FrozenState
+import com.alexpi.awesometanks.entities.ai.WanderState
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine
+import com.badlogic.gdx.ai.msg.MessageManager
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import kotlin.experimental.or
@@ -21,40 +27,39 @@ class EnemyTank(
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
     getHealthByTierAndType(tier, type),true, getColorByTier(tier)),
-    EnemyAICallback {
+    EnemyAICallback, Telegraph {
 
-
-    private val enemyAI = EnemyAI(body.position, this)
+    val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState(position.cpy()))
     private val nuggetValue: Int
     private val weapon: Weapon
     override val currentWeapon: Weapon
         get() = weapon
 
-    override fun act(delta: Float) {
-        if(isAlive && !isFrozen){
-            enemyAI.update()
-        }else{
-            await()
-        }
-        super.act(delta)
+    override fun onAlive(delta: Float) {
+        super.onAlive(delta)
+        if(isAlive) stateMachine.update()
     }
 
     override fun takeDamage(damage: Float) {
         super.takeDamage(damage)
-        enemyAI.receiveDamage()
+        MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
     }
 
-    override fun detach() {
+    override fun freeze(){
+        super.freeze()
+        stateMachine.changeState(FrozenState)
+    }
+
+    override fun destroy() {
         dropLoot()
-        super.detach()
+        super.destroy()
     }
 
     private fun dropLoot() {
-        val num1 = Utils.getRandomInt(5, 15)
-        for (i in 0 until num1)
-            parent.addActor(
-                GoldNugget(body.position, Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5))
-            )
+        val count = Utils.getRandomInt(5, 15)
+        repeat(count){
+            parent.addActor(GoldNugget(body.position, Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+        }
     }
 
     companion object {
@@ -141,5 +146,7 @@ class EnemyTank(
     enum class Tier{
         MINI, NORMAL, BOSS
     }
+
+    override fun handleMessage(msg: Telegram): Boolean  = true
 
 }

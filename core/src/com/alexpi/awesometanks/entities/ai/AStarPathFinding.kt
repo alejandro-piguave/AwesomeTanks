@@ -2,13 +2,9 @@ package com.alexpi.awesometanks.entities.ai
 
 import com.alexpi.awesometanks.utils.Cell
 import com.alexpi.awesometanks.utils.GameMap
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.pfa.*
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph
-import com.badlogic.gdx.ai.utils.Collision
-import com.badlogic.gdx.ai.utils.Ray
-import com.badlogic.gdx.ai.utils.RaycastCollisionDetector
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import kotlin.math.abs
@@ -29,6 +25,13 @@ class AStartPathFinding(private val map: GameMap) {
         return if (connectionPath.count == 0) null else map.toWorldPos(connectionPath[0].toNode).add(.5f, .5f)
     }
 
+    fun findPath(source: Cell, target: Cell): GraphPath<Connection<Cell>> {
+        val connectionPath: GraphPath<Connection<Cell>> = DefaultGraphPath()
+
+        pathfinder.searchConnectionPath(source, target, heuristic, connectionPath)
+        return connectionPath
+
+    }
 }
 
 class GameMapGraph(private val map: GameMap) : IndexedGraph<Cell> {

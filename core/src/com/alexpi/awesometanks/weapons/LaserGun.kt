@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Timer
@@ -31,7 +30,6 @@ class LaserGun(
     .05f,
     .2f
 ) {
-    private val world: World = GameModule.getWorld()
     private val laserRay = Image(GameModule.getAssetManager().get<Texture>("sprites/laser_ray.png"))
     private var playSound = false
     private var minFraction = 1f
@@ -64,7 +62,7 @@ class LaserGun(
 
             createProjectile(group, position)
 
-            world.rayCast({ fixture, point, _, fraction ->
+            GameModule.getWorld().rayCast({ fixture, point, _, fraction ->
                 if(fixture.userData is DamageableActor){
                     if(fraction < minFraction){
                         minFraction = fraction

@@ -94,7 +94,7 @@ class GameMap(level: Int){
         var col: Int = -1
         var row: Int = -1
         while (row < 0 || row >= map.size || col < 0 || col >= map[0].size
-            || col == cell.col || row == cell.row
+            || (col == cell.col && row == cell.row)
             || map[row][col].value in solidBlocks){
             val colOffset = MathUtils.randomSign() * MathUtils.random(radius)
             val rowOffset = MathUtils.randomSign() * MathUtils.random(radius)

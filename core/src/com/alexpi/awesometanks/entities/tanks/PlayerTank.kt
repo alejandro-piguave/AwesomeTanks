@@ -49,8 +49,8 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
         map.visualRange = visibilityRadius
     }
 
-    override fun act(delta: Float) {
-        super.act(delta)
+    override fun onAlive(delta: Float) {
+        super.onAlive(delta)
         if(isMoving || isRocketActive) updateVisibleArea()
     }
 

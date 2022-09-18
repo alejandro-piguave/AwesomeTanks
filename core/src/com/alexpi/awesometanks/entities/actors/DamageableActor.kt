@@ -54,21 +54,24 @@ abstract class DamageableActor(
         lastFreezingTime = TimeUtils.millis()
     }
 
-    override fun act(delta: Float) {
+    final override fun act(delta: Float) {
         super.act(delta)
         if (!isAlive) {
-            detach()
-            return
-        }
-        if (isBurning && isFlammable) {
-            flameSprite.setPosition(x + width / 2, y + height / 2)
-            flameSprite.act(delta)
-            takeDamage(.35f)
-        }
-        if(isFrozen && lastFreezingTime + FREEZING_TIME_MILLIS < TimeUtils.millis()){
-            isFrozen = false
+            destroy()
+        } else {
+            if (isBurning && isFlammable) {
+                flameSprite.setPosition(x + width / 2, y + height / 2)
+                flameSprite.act(delta)
+                takeDamage(.35f)
+            }
+            if(isFrozen && lastFreezingTime + FREEZING_TIME_MILLIS < TimeUtils.millis()){
+                isFrozen = false
+            }
+            onAlive(delta)
         }
     }
+
+    open fun onAlive(delta: Float) {}
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         drawBurning(batch, parentAlpha)
@@ -92,7 +95,7 @@ abstract class DamageableActor(
         }, duration)
     }
 
-    open fun detach() {
+    open fun destroy() {
         if(rumble)Rumble.rumble(15f, .3f)
         parent.addActor(ParticleActor(
             "particles/explosion.party",

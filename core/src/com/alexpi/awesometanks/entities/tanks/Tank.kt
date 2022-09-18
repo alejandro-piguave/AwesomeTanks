@@ -69,8 +69,7 @@ abstract class Tank(
         super.draw(batch, parentAlpha)
     }
 
-    override fun act(delta: Float) {
-        super.act(delta)
+    override fun onAlive(delta: Float) {
         if (isMoving) {
             updateAngleRotation()
             body.setLinearVelocity(movement.x * delta, movement.y * delta)
@@ -88,6 +87,11 @@ abstract class Tank(
             (body.position.y - bodySize*.5f) * Constants.TILE_SIZE
         )
         rotation = body.angle * MathUtils.radiansToDegrees
+    }
+
+    override fun destroy() {
+        body.world.destroyBody(body)
+        remove()
     }
 
     //x and y values must be normalized
@@ -115,14 +119,6 @@ abstract class Tank(
         }
 
         currentAngleRotation += min(change, max(-change, diff))
-    }
-
-    override fun detach() {
-        super.detach()
-        fixture.userData = null
-        body.destroyFixture(fixture)
-        body.world.destroyBody(body)
-        remove()
     }
 
     init {

@@ -26,25 +26,23 @@ abstract class Projectile private constructor(
     private val fixture: Fixture
     @JvmField
     protected var sprite: Sprite? = null
-    var isDestroyed = false
+    var hasCollided = false
         private set
     val isEnemy: Boolean
         get() = fixture.filterData.maskBits == Constants.ENEMY_BULLET_MASK
 
-    fun detach() {
-        fixture.userData = null
-        body.destroyFixture(fixture)
+    private fun destroy() {
         body.world.destroyBody(body)
         remove()
     }
 
-    open fun destroy() {
-        isDestroyed = true
+    open fun collide() {
+        hasCollided = true
     }
 
     override fun act(delta: Float) {
-        if (isDestroyed) {
-            detach()
+        if (hasCollided) {
+            destroy()
             return
         }
         setPosition(
@@ -92,7 +90,8 @@ abstract class Projectile private constructor(
     init {
         val bodyDef = BodyDef()
         bodyDef.type = BodyDef.BodyType.DynamicBody
-        bodyDef.position.set(position)
+        bodyDef.position.x = position.x
+        bodyDef.position.y = position.y
         bodyDef.bullet = true
         val fixtureDef = FixtureDef()
         fixtureDef.density = 1f

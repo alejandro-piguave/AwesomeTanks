@@ -17,7 +17,7 @@ import com.badlogic.gdx.physics.box2d.Shape
 class Box(pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false) {
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(GameModule.level)
     private val nuggetValue: Int = getNuggetValue(GameModule.level)
-    private fun drop() {
+    private fun dropLoot() {
         when (Utils.getRandomInt(4)) {
             0 -> {
                 val num1 = Utils.getRandomInt(10, 16)
@@ -44,9 +44,9 @@ class Box(pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos,
         }
     }
 
-    override fun detach() {
-        drop()
-        super.detach()
+    override fun destroy() {
+        dropLoot()
+        super.destroy()
     }
 
     companion object {

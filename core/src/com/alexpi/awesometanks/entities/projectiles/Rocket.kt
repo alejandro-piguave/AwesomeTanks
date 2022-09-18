@@ -53,11 +53,11 @@ class Rocket(
         body.applyForceToCenter(forceX, forceY,true)
         if(body.linearVelocity.len2() > MAX_VELOCITY2)
             body.linearVelocity.setLength2(MAX_VELOCITY2)
-        if(isDestroyed && !isDestroyedFlag){
+        if(hasCollided && !isDestroyedFlag){
             rocketListener?.onRocketCollided()
             isDestroyedFlag = true
             return
-        } else if (!isDestroyed) rocketListener?.onRocketMoved(body.position.x, body.position.y)
+        } else if (!hasCollided) rocketListener?.onRocketMoved(body.position.x, body.position.y)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

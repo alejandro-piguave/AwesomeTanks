@@ -56,9 +56,8 @@ abstract class Block private constructor(
         batch.draw(sprite, x, y, width, height)
     }
 
-    override fun detach() {
-        super.detach()
-        body.destroyFixture(fixture)
+    override fun destroy() {
+        super.destroy()
         body.world.destroyBody(body)
         remove()
     }

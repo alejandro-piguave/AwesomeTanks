@@ -28,8 +28,8 @@ class Turret(
         drawFrozen(batch)
     }
 
-    override fun act(delta: Float) {
-        if (isAlive && !isFrozen){
+    override fun onAlive(delta: Float) {
+        if (!isFrozen){
             enemyAI.update()
         } else{
             await()
@@ -71,15 +71,17 @@ class Turret(
         }
     }
 
-    override fun detach() {
+    override fun destroy() {
         dropLoot()
-        super.detach()
+        super.destroy()
     }
 
     private fun dropLoot() {
-        val num1 = Utils.getRandomInt(10, 15)
-        for (i in 0 until num1)
+        val count = Utils.getRandomInt(10, 15)
+        repeat(count){
             parent.addActor(GoldNugget(body.position, Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+
+        }
     }
 
     init {

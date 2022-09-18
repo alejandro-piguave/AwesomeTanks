@@ -32,12 +32,12 @@ class RicochetBullet(
         particleActor.draw(batch, parentAlpha)
     }
 
-    override fun destroy() {
+    override fun collide() {
         if (hits < MAX_HITS) {
             hits++
             if (soundsOn) hitSound.play()
         } else {
-            super.destroy()
+            super.collide()
         }
     }
 
@@ -47,7 +47,6 @@ class RicochetBullet(
 
     init {
         sprite = Sprite(GameModule.getAssetManager().get("sprites/ricochet_bullet.png", Texture::class.java))
-        particleActor =
-            ParticleActor("particles/ricochets.party", x + bodyWidth / 2, y + bodyHeight / 2, true)
+        particleActor = ParticleActor("particles/ricochets.party", x + bodyWidth / 2, y + bodyHeight / 2, true)
     }
 }

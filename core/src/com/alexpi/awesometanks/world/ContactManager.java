@@ -58,7 +58,7 @@ public class ContactManager implements ContactListener {
             if(projectile instanceof CanonBall || projectile instanceof Rocket || projectile instanceof Rail){
                 contactListener.onExplosiveProjectileCollided(projectile.getX()+projectile.getBodyWidth()*.5f, projectile.getY()+projectile.getBodyHeight()*.5f);
             }
-            projectile.destroy();
+            projectile.collide();
 
             contactListener.onBulletCollision(projectile.getX()+projectile.getBodyWidth()*.5f, projectile.getY()+projectile.getBodyHeight()*.5f);
 

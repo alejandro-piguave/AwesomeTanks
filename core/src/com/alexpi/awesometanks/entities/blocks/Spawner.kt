@@ -28,8 +28,8 @@ class Spawner(pos: Vector2) : Block(
     private var maxSpan = 15000
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(GameModule.level)
     private val nuggetValue: Int
-    override fun act(delta: Float) {
-        super.act(delta)
+    override fun onAlive(delta: Float) {
+        super.onAlive(delta)
 
         if (lastSpawn + interval < TimeUtils.millis() && !isFrozen) {
             lastSpawn = TimeUtils.millis()
@@ -77,9 +77,9 @@ class Spawner(pos: Vector2) : Block(
         }
     }
 
-    override fun detach() {
+    override fun destroy() {
         dropLoot()
-        super.detach()
+        super.destroy()
     }
 
     private fun dropLoot() {
