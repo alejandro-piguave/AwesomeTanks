@@ -77,9 +77,9 @@ class Spawner(pos: Vector2) : Block(
         }
     }
 
-    override fun destroy() {
+    override fun onDestroy() {
         dropLoot()
-        super.destroy()
+        super.onDestroy()
     }
 
     private fun dropLoot() {

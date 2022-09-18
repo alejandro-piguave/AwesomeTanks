@@ -71,9 +71,9 @@ class Turret(
         }
     }
 
-    override fun destroy() {
+    override fun onDestroy() {
         dropLoot()
-        super.destroy()
+        super.onDestroy()
     }
 
     private fun dropLoot() {

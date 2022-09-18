@@ -95,7 +95,7 @@ abstract class DamageableActor(
         }, duration)
     }
 
-    open fun destroy() {
+    private fun destroy() {
         if(rumble)Rumble.rumble(15f, .3f)
         parent.addActor(ParticleActor(
             "particles/explosion.party",
@@ -103,7 +103,10 @@ abstract class DamageableActor(
             y + height / 2,
             false
         ))
+        onDestroy()
     }
+
+    open fun onDestroy() {}
 
     val isAlive: Boolean
         get() = health > 0

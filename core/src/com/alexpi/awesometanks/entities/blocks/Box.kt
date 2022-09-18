@@ -44,9 +44,9 @@ class Box(pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos,
         }
     }
 
-    override fun destroy() {
+    override fun onDestroy() {
         dropLoot()
-        super.destroy()
+        super.onDestroy()
     }
 
     companion object {

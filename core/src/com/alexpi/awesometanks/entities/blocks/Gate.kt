@@ -9,9 +9,9 @@ import com.badlogic.gdx.physics.box2d.Shape
 class Gate(pos: Vector2) :
     Block("sprites/gate.png", Shape.Type.Polygon, 100f, pos, 1f, true, false) {
 
-    override fun destroy() {
+    override fun onDestroy() {
         destroyNeighboringGates()
-        super.destroy()
+        super.onDestroy()
     }
 
     private fun destroyNeighboringGates() {

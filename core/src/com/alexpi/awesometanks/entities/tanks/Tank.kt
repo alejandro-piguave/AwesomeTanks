@@ -89,7 +89,7 @@ abstract class Tank(
         rotation = body.angle * MathUtils.radiansToDegrees
     }
 
-    override fun destroy() {
+    override fun onDestroy() {
         body.world.destroyBody(body)
         remove()
     }

@@ -22,6 +22,8 @@ sealed class EnemyTankState: State<EnemyTank>{
         const val AWAIT_TIME_MILLIS = 2000
         const val HALF_VISIBILITY_ANGLE = 60 * MathUtils.degreesToRadians //120 DEGREES OF VISIBILITY / 2
         const val DAMAGE_RECEIVED_MESSAGE = 0
+        const val CELL_OFFSET = .05f
+        const val VISITED_CELL_COUNT_LIMIT = 3
     }
 
     val target = GameModule.getPlayer()
@@ -122,26 +124,32 @@ class PeekState(private val peekAngle: Float): EnemyTankState(){
 }
 class WanderState(startingPosition: Vector2): EnemyTankState(){
     private val path: GraphPath<Connection<Cell>>
+    private var nextPosition: Vector2
+    private var visitedCellCount = 0
     init {
         val currentCell = gameMap.toCell(startingPosition)
         val randomCell = gameMap.getRandomEmptyAdjacentCell(currentCell, 2)
         path = pathFinding.findPath(currentCell, randomCell)
+        val nextCell = if (path.count > 0 ) path[0].toNode else null
+        nextPosition = nextCell?.let { gameMap.toWorldPos(it).add(.5f,.5f) } ?: startingPosition
     }
 
     override fun update(entity: EnemyTank) {
         super.update(entity)
 
-        val currentCell = gameMap.toCell(entity.body.position)
-        val nextCell = path.firstOrNull { it.fromNode.col == currentCell.col && it.fromNode.row == currentCell.row }?.toNode
-
-        if(nextCell == null){
-            //If there is no next position, rotate to check the area
-            val nextState = PeekState(MathUtils.random() * MathUtils.PI2)
-            entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
-            return
+        if (withinBounds(entity.body.position)){
+            visitedCellCount++
+            val currentCell = gameMap.toCell(entity.body.position)
+            val nextCell = path.firstOrNull { it.fromNode.col == currentCell.col && it.fromNode.row == currentCell.row }?.toNode
+            if(nextCell == null || visitedCellCount > VISITED_CELL_COUNT_LIMIT){
+                //If there is no next position, rotate to check the area
+                val nextState = PeekState(MathUtils.random() * MathUtils.PI2)
+                entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
+                return
+            } else {
+                nextPosition = gameMap.toWorldPos(nextCell).add(.5f,.5f)
+            }
         }
-
-        val nextPosition = gameMap.toWorldPos(nextCell).add(.5f,.5f)
 
         //Else, move to the next position
         val rotationAngle = MathUtils.atan2(nextPosition.y - entity.body.position.y, nextPosition.x - entity.body.position.x)
@@ -149,6 +157,11 @@ class WanderState(startingPosition: Vector2): EnemyTankState(){
         entity.currentWeapon.desiredRotationAngle = rotationAngle
         entity.setOrientation(rotationAngle)
         entity.isMoving = true
+    }
+
+    private fun withinBounds(position: Vector2): Boolean{
+        return position.x >= nextPosition.x - CELL_OFFSET && position.x <= nextPosition.x + CELL_OFFSET
+                && position.y >= nextPosition.y - CELL_OFFSET && position.y <= nextPosition.y + CELL_OFFSET
     }
 
     override fun exit(entity: EnemyTank) {
