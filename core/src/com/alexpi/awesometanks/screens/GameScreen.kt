@@ -204,7 +204,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
         ammoBar.isVisible = index != 0
 
-        gunName.setText(gameRenderer.player.currentWeapon.name)
+        val gunNameText = Weapon.Type.values()[gameRenderer.player.currentWeaponIndex].name
+        gunName.setText(gunNameText)
         gunName.addAction(Actions.alpha(1f))
         Timer.schedule(object : Timer.Task() {
             override fun run() {
@@ -240,7 +241,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 saveProgress()
-                uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+                uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.upgradesScreen }))
             }
         })
         table.add(continueButton).expand().top().right().pad(24f)

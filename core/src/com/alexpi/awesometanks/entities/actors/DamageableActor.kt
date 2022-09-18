@@ -22,7 +22,9 @@ abstract class DamageableActor(
     var health: Float = maxHealth
     private set
     protected var isBurning = false
-    protected var isFrozen = false
+    var isFrozen = false
+        private set
+    private var lastFreezingTime = 0L
     private var lastHit: Long = System.currentTimeMillis()
     private val flameSprite: ParticleActor = ParticleActor( "particles/flame.party", x, y, true)
     private val frozenSprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/frozen.png", Texture::class.java))
@@ -47,13 +49,9 @@ abstract class DamageableActor(
         GameModule.getDamageListener()?.onDeath(this)
     }
 
-    fun freeze(freezingTime: Float) {
+    open fun freeze() {
         isFrozen = true
-        Timer.schedule(object : Timer.Task() {
-            override fun run() {
-                isFrozen = false
-            }
-        }, freezingTime)
+        lastFreezingTime = TimeUtils.millis()
     }
 
     override fun act(delta: Float) {
@@ -66,6 +64,9 @@ abstract class DamageableActor(
             flameSprite.setPosition(x + width / 2, y + height / 2)
             flameSprite.act(delta)
             takeDamage(.35f)
+        }
+        if(isFrozen && lastFreezingTime + FREEZING_TIME_MILLIS < TimeUtils.millis()){
+            isFrozen = false
         }
     }
 
@@ -111,6 +112,7 @@ abstract class DamageableActor(
 
     companion object{
         const val HEALTH_BAR_DURATION = 1500
+        private const val FREEZING_TIME_MILLIS = 5000
     }
 
 }

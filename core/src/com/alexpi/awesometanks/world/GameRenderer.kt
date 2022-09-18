@@ -13,8 +13,6 @@ import com.alexpi.awesometanks.entities.tanks.PlayerTank
 import com.alexpi.awesometanks.utils.*
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Preferences
-import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
@@ -58,33 +56,37 @@ class GameRenderer(private val game: MainGame,
         setWorldContactListener()
         val shadeGroup = Group()
         gameMap.forCell { cell ->
-            if (!cell.isVisible) {
+            if (!cell.isVisible)
                 shadeGroup.addActor(Shade(cell))
-            }
+
             if (cell.value == GameMap.WALL)
                 blockGroup.addActor(Wall(gameMap.toWorldPos(cell)))
             else {
-                if(cell.value == GameMap.START){
-                    player.setPos(cell)
-                    entityGroup.addActor(player)
-                } else if (cell.value == GameMap.GATE)
-                    blockGroup.addActor( Gate(gameMap.toWorldPos(cell))
-                ) else if (cell.value == GameMap.BRICKS)
-                    blockGroup.addActor(Bricks(gameMap.toWorldPos(cell))
-                ) else if (cell.value == GameMap.BOX)
-                    entityGroup.addActor(Box(gameMap.toWorldPos(cell))
-                ) else if (cell.value == GameMap.SPAWNER)
-                    entityGroup.addActor(Spawner(gameMap.toWorldPos(cell))
-                ) else if (cell.value == GameMap.BOMB)
-                    blockGroup.addActor( Mine(gameMap.toWorldPos(cell))
-                ) else if (cell.value.isDigit()) {
-                    val weaponType = Weapon.Type.values()[Character.getNumericValue(cell.value)]
-                    blockGroup.addActor(Turret(gameMap.toWorldPos(cell), weaponType))
-                } else if(cell.value in GameMap.MINIGUN_BOSS..GameMap.RAILGUN_BOSS){
-                    val type = cell.value.code - GameMap.MINIGUN_BOSS.code
-                    val weaponType = Weapon.Type.values()[type]
-                    entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS, weaponType))
+                when(cell.value){
+                    GameMap.START -> {
+                        player.setPos(cell)
+                        entityGroup.addActor(player)
+                    }
+
+                    GameMap.GATE -> blockGroup.addActor( Gate(gameMap.toWorldPos(cell)))
+                    GameMap.BRICKS -> blockGroup.addActor(Bricks(gameMap.toWorldPos(cell)))
+                    GameMap.BOX -> entityGroup.addActor(Box(gameMap.toWorldPos(cell)))
+                    GameMap.SPAWNER -> entityGroup.addActor(Spawner(gameMap.toWorldPos(cell)))
+                    GameMap.BOMB -> blockGroup.addActor( Mine(gameMap.toWorldPos(cell)))
+
+                    in GameMap.bosses -> {
+                        val type = cell.value.code - GameMap.MINIGUN_BOSS.code
+                        val weaponType = Weapon.Type.values()[type]
+                        entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS, weaponType))
+                    }
+
+                    in GameMap.turrets -> {
+                        val weaponType = Weapon.Type.values()[Character.getNumericValue(cell.value)]
+                        blockGroup.addActor(Turret(gameMap.toWorldPos(cell), weaponType))
+                    }
+
                 }
+
                 gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell)))
             }
         }
@@ -220,9 +222,9 @@ class GameRenderer(private val game: MainGame,
 
             override fun onFreezingBallFound(freezingBall: FreezingBall) {
                 for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
-                    (a as DamageableActor).freeze(5f)
+                    (a as DamageableActor).freeze()
                 }
-                for (a: Actor in blockGroup.children) if (a is Turret) a.freeze(5f)
+                for (a: Actor in blockGroup.children) if (a is Turret) a.freeze()
             }
 
             override fun onBulletCollision(x: Float, y: Float) {
@@ -312,48 +314,6 @@ class GameRenderer(private val game: MainGame,
     }
 }
 
-//Object that holds references to common game objects to avoid passing them in the constructor every time we need them.
-object GameModule{
-    var level: Int = 0
-    private var assetManager: AssetManager? = null
-    private var world: World? = null
-    private var gameMap: GameMap? = null
-    private var pathFinding: AStartPathFinding? = null
-    private var gameValues: Preferences? = null
-    private var damageListener: DamageListener? = null
-    private var _player: PlayerTank? = null
-
-    fun getAssetManager(): AssetManager = assetManager!!
-    fun getWorld(): World = world!!
-    fun getGameMap(): GameMap = gameMap!!
-    fun getPathFinding(): AStartPathFinding = pathFinding!!
-    fun getGameValues(): Preferences = gameValues!!
-    fun getDamageListener(): DamageListener? = damageListener
-    fun getPlayer(): PlayerTank = _player!!
-
-    fun set(assetManager: AssetManager, world: World, gameMap: GameMap, pathFinding: AStartPathFinding, gameValues: Preferences, damageListener: DamageListener){
-        this.assetManager = assetManager
-        this.world = world
-        this.gameMap = gameMap
-        this.pathFinding = pathFinding
-        this.gameValues = gameValues
-        this.damageListener = damageListener
-    }
-    fun setPlayer(player: PlayerTank){
-        _player = player
-    }
-
-    //Calling this method when disposing the GameRenderer is very important to avoid memory leaks
-    fun dispose(){
-        assetManager = null
-        world = null
-        gameMap = null
-        pathFinding = null
-        gameValues = null
-        damageListener = null
-        _player = null
-    }
-}
 
 enum class Movement{ POSITIVE, NEGATIVE}
 

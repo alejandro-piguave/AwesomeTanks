@@ -6,14 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.Group
 
 class RocketLauncher(ammo: Float, power: Int, isPlayer: Boolean, private val rocketListener: RocketListener? = null) :
     Weapon(
-        "Rockets",
         "weapons/rocket.png",
         "sounds/rocket_launch.ogg",
         ammo,
         power,
         isPlayer,
         1.5f,
-        1f
+        1.5f
     ) {
     var rocket: Rocket? = null
         private set
@@ -21,7 +20,7 @@ class RocketLauncher(ammo: Float, power: Int, isPlayer: Boolean, private val roc
     override fun canShoot(): Boolean = super.canShoot() && rocket?.isDestroyed ?: true
 
     override fun createProjectile(group: Group, position: Vector2) {
-        rocket = Rocket(position,currentAngleRotation, power, isPlayer, rocketListener)
+        rocket = Rocket(position,currentRotationAngle, power, isPlayer, rocketListener)
         group.addActor(rocket)
     }
 }

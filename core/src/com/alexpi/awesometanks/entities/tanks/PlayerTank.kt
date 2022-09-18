@@ -60,9 +60,9 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
 
     fun setRotationInput(x: Float, y: Float){
         if(isRocketActive){
-            val rocketLauncher = weapons[Weapon.Type.ROCKET.ordinal] as RocketLauncher
+            val rocketLauncher = weapons[Weapon.Type.ROCKETS.ordinal] as RocketLauncher
             rocketLauncher.rocket?.updateOrientation(x,y)
-        } else currentWeapon.setDesiredAngleRotation(x,y)
+        } else currentWeapon.setDesiredRotationAngleFrom(x,y)
     }
 
     fun setPos(cell: Cell){

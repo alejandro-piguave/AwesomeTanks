@@ -23,14 +23,13 @@ class LaserGun(
     power: Int,
     isPlayer: Boolean,
 ) : Weapon(
-    "Lasergun",
     "weapons/laser.png",
     "sounds/laser.ogg",
     ammo,
     power,
     isPlayer,
     .05f,
-    .25f
+    .2f
 ) {
     private val world: World = GameModule.getWorld()
     private val laserRay = Image(GameModule.getAssetManager().get<Texture>("sprites/laser_ray.png"))
@@ -42,11 +41,11 @@ class LaserGun(
     }
 
     override fun shoot(group: Group, position: Vector2) {
-        laserRay.rotation = currentAngleRotation * MathUtils.radiansToDegrees
+        laserRay.rotation = currentRotationAngle * MathUtils.radiansToDegrees
         laserRay.setPosition(position.x * Constants.TILE_SIZE, position.y * Constants.TILE_SIZE - laserRay.height/2)
         if(canShoot()){
-            val dX = MathUtils.cos(currentAngleRotation) * MAXIMUM_REACH
-            val dY = MathUtils.sin(currentAngleRotation) * MAXIMUM_REACH
+            val dX = MathUtils.cos(currentRotationAngle) * MAXIMUM_REACH
+            val dY = MathUtils.sin(currentRotationAngle) * MAXIMUM_REACH
             val point2 = Vector2(position.x + dX, position.y + dY)
 
 
@@ -104,7 +103,7 @@ class LaserGun(
     }
 
     override fun createProjectile(group: Group, position: Vector2) {
-        group.addActor(Laser( position, currentAngleRotation, power.toFloat(), isPlayer))
+        group.addActor(Laser( position, currentRotationAngle, power.toFloat(), isPlayer))
     }
 
     companion object {

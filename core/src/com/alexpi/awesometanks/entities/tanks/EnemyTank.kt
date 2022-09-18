@@ -67,7 +67,7 @@ class EnemyTank(
             Weapon.Type.RICOCHET -> .4f
             Weapon.Type.FLAMETHROWER -> .6f
             Weapon.Type.CANNON -> .6f
-            Weapon.Type.ROCKET -> .6f
+            Weapon.Type.ROCKETS -> .6f
             Weapon.Type.LASERGUN -> 1f
             Weapon.Type.RAILGUN -> 1f
 
@@ -122,7 +122,7 @@ class EnemyTank(
     }
 
     override fun attack(angle: Float) {
-        weapon.desiredAngleRotation = angle
+        weapon.desiredRotationAngle = angle
         isShooting = true
         isMoving = false
     }

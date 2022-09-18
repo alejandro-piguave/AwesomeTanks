@@ -17,59 +17,51 @@ import kotlin.math.atan2
  * Created by Alex on 03/01/2016.
  */
 abstract class Weapon(
-    val name: String,
     texturePath: String,
     shotSoundPath: String,
     ammo: Float,
-    power: Int,
-    isPlayer: Boolean,
-    coolingDownTime: Float,
-    private val ammoConsumption: Float
+    val power: Int,
+    val isPlayer: Boolean,
+    val coolingDownTime: Float,
+    private val ammoConsumption: Float = 1f
 ) {
     var ammo: Float
         protected set
-    @JvmField
-    protected var power: Int
     var sprite: Sprite
-    @JvmField
     protected var shotSound: Sound
-    var desiredAngleRotation = 0f
+    var desiredRotationAngle = 0f
         set(value) {
             field = value
             if (field < 0) field += (Math.PI * 2).toFloat()
         }
-    var currentAngleRotation = 0f
+    var currentRotationAngle = 0f
         protected set
-    @JvmField
-    protected var isPlayer: Boolean
     protected var isCoolingDown = false
-    @JvmField
     var unlimitedAmmo = false
-    protected val coolingDownTime: Float
     protected fun decreaseAmmo() {
         if (ammo - ammoConsumption > 0) ammo -= ammoConsumption else ammo = 0f
     }
 
     private fun hasAmmo(): Boolean =  ammo > 0
 
-    fun setDesiredAngleRotation(x: Float, y: Float) {
-        desiredAngleRotation = atan2(y.toDouble(), x.toDouble()).toFloat()
-        if (desiredAngleRotation < 0) desiredAngleRotation += (Math.PI * 2).toFloat()
+    fun setDesiredRotationAngleFrom(x: Float, y: Float) {
+        desiredRotationAngle = atan2(y.toDouble(), x.toDouble()).toFloat()
+        if (desiredRotationAngle < 0) desiredRotationAngle += (Math.PI * 2).toFloat()
     }
 
-    private fun hasRotated(): Boolean = currentAngleRotation == desiredAngleRotation
+    fun hasRotated(): Boolean = currentRotationAngle == desiredRotationAngle
 
     fun updateAngleRotation(rotationSpeed: Float) {
-        var diff = desiredAngleRotation - currentAngleRotation
+        var diff = desiredRotationAngle - currentRotationAngle
         if (diff < 0) diff += (Math.PI * 2).toFloat()
         if (diff >= Math.PI) {
-            currentAngleRotation -= rotationSpeed
+            currentRotationAngle -= rotationSpeed
             diff -= Math.PI.toFloat()
-        } else if (diff < Math.PI) currentAngleRotation += rotationSpeed
-        if (diff < rotationSpeed) currentAngleRotation = desiredAngleRotation
-        if (currentAngleRotation > Math.PI * 2) currentAngleRotation =
-            0f else if (currentAngleRotation < 0) currentAngleRotation = (Math.PI * 2).toFloat()
-        sprite.rotation = currentAngleRotation * MathUtils.radiansToDegrees
+        } else if (diff < Math.PI) currentRotationAngle += rotationSpeed
+        if (diff < rotationSpeed) currentRotationAngle = desiredRotationAngle
+        if (currentRotationAngle > Math.PI * 2) currentRotationAngle =
+            0f else if (currentRotationAngle < 0) currentRotationAngle = (Math.PI * 2).toFloat()
+        sprite.rotation = currentRotationAngle * MathUtils.radiansToDegrees
     }
 
     open fun draw(
@@ -122,7 +114,7 @@ abstract class Weapon(
                 Type.RICOCHET -> Ricochet( ammo, power, isPlayer)
                 Type.FLAMETHROWER -> Flamethrower( ammo, power, isPlayer)
                 Type.CANNON -> Canon( ammo, power, isPlayer)
-                Type.ROCKET -> RocketLauncher( ammo, power, isPlayer, rocketListener)
+                Type.ROCKETS -> RocketLauncher( ammo, power, isPlayer, rocketListener)
                 Type.LASERGUN -> LaserGun( ammo, power, isPlayer)
                 Type.RAILGUN -> RailGun( ammo, power, isPlayer)
             }
@@ -133,9 +125,6 @@ abstract class Weapon(
         sprite = Sprite(GameModule.getAssetManager().get(texturePath, Texture::class.java))
         shotSound = GameModule.getAssetManager().get(shotSoundPath, Sound::class.java)
         this.ammo = ammo
-        this.power = power
-        this.isPlayer = isPlayer
-        this.coolingDownTime = coolingDownTime
     }
 
     enum class Type(val price: Int, val ammoPrice: Int, val upgradePrices: List<Int>){
@@ -144,7 +133,7 @@ abstract class Weapon(
         RICOCHET(8000, 200, listOf(2500, 3000, 3500, 4000, 4500)),
         FLAMETHROWER(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
         CANNON(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
-        ROCKET(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
+        ROCKETS(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
         LASERGUN(28000, 400, listOf(11000, 12000, 13000, 14000, 15000)),
         RAILGUN(28000, 400, listOf(11000, 12000, 13000, 14000, 15000))
     }

@@ -56,7 +56,7 @@ class Box(pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos,
 
         private fun getMaxType(level: Int): Int {
             return if (level <= 7) Weapon.Type.RICOCHET.ordinal
-            else if(level <= 15) Weapon.Type.ROCKET.ordinal
+            else if(level <= 15) Weapon.Type.ROCKETS.ordinal
             else if(level <= 22) Weapon.Type.LASERGUN.ordinal
             else Weapon.Type.RAILGUN.ordinal
         }

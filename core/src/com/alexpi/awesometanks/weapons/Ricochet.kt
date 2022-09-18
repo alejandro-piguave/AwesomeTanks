@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
  * Created by Alex on 04/01/2016.
  */
 class Ricochet(ammo: Float, power: Int, isPlayer: Boolean) : Weapon(
-    "Ricochet",
     "weapons/ricochet.png",
     "sounds/ricochet.ogg",
     ammo,
@@ -22,7 +21,7 @@ class Ricochet(ammo: Float, power: Int, isPlayer: Boolean) : Weapon(
             RicochetBullet(
                 position,
                 shotSound,
-                currentAngleRotation,
+                currentRotationAngle,
                 power.toFloat(),
                 isPlayer
             )

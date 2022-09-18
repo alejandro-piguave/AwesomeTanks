@@ -32,6 +32,7 @@ abstract class Projectile private constructor(
         get() = fixture.filterData.maskBits == Constants.ENEMY_BULLET_MASK
 
     fun detach() {
+        fixture.userData = null
         body.destroyFixture(fixture)
         body.world.destroyBody(body)
         remove()
@@ -108,8 +109,8 @@ abstract class Projectile private constructor(
             if (isPlayer) Constants.PLAYER_BULLET_MASK else Constants.ENEMY_BULLET_MASK
         body = GameModule.getWorld().createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
-        fixture.userData = this
         shape.dispose()
+        fixture.userData = this
         body.isBullet = true
         body.setLinearVelocity(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed)
         body.setTransform(body.position, angle)

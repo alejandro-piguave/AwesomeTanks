@@ -46,7 +46,7 @@ class Turret(
                 Weapon.Type.SHOTGUN -> .2f
                 Weapon.Type.RICOCHET -> .3f
                 Weapon.Type.FLAMETHROWER -> .6f
-                Weapon.Type.ROCKET -> .6f
+                Weapon.Type.ROCKETS -> .6f
                 Weapon.Type.CANNON -> .6f
                 Weapon.Type.LASERGUN -> 1f
                 Weapon.Type.RAILGUN -> 1f
@@ -62,7 +62,7 @@ class Turret(
                 Weapon.Type.RICOCHET -> .3f
                 Weapon.Type.FLAMETHROWER -> .6f
                 Weapon.Type.CANNON -> .6f
-                Weapon.Type.ROCKET -> .6f
+                Weapon.Type.ROCKETS -> .6f
                 Weapon.Type.LASERGUN -> 1f
                 else -> 1f
 
@@ -93,7 +93,7 @@ class Turret(
     }
 
     override fun attack(angle: Float) {
-        weapon.desiredAngleRotation = angle
+        weapon.desiredRotationAngle = angle
         weapon.updateAngleRotation(ROTATION_SPEED)
         weapon.shoot(parent, body.position)
     }

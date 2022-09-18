@@ -77,16 +77,6 @@ class GameMap(level: Int){
             }
         }
         cell.connections.shuffle()
-        printCellConnections()
-    }
-
-    private fun printCellConnections(){
-        forCell { cell ->
-            println("Cell $cell")
-            cell.connections.forEach {
-                println("connection from ${it.fromNode} to ${it.toNode}")
-            }
-        }
     }
 
     fun setPlayerCell(row: Int, col: Int){
@@ -98,6 +88,20 @@ class GameMap(level: Int){
         for (row in map.indices)
             for (col in 0 until map[row].size)
                 predicate(map[row][col])
+    }
+
+    fun getRandomEmptyAdjacentCell(cell: Cell, radius: Int = 1) : Cell{
+        var col: Int = -1
+        var row: Int = -1
+        while (row < 0 || row >= map.size || col < 0 || col >= map[0].size
+            || col == cell.col || row == cell.row
+            || map[row][col].value in solidBlocks){
+            val colOffset = MathUtils.randomSign() * MathUtils.random(radius)
+            val rowOffset = MathUtils.randomSign() * MathUtils.random(radius)
+            col = cell.col + colOffset
+            row = cell.row + rowOffset
+        }
+        return map[row][col]
     }
 
     private inline fun forValidNeighbors(cell: Cell, predicate: (Cell) -> Unit){
@@ -156,17 +160,31 @@ class GameMap(level: Int){
         const val BOX = '*'
         const val BOMB = 'O'
         const val SPAWNER = '+'
+
         const val MINIGUN_BOSS = 'A'
         const val SHOTGUN_BOSS = 'B'
         const val RICOCHET_BOSS = 'C'
         const val FLAMETHROWER_BOSS = 'D'
-        const val CANON_BOSS = 'E'
+        const val CANNON_BOSS = 'E'
         const val ROCKET_BOSS = 'F'
         const val LASERGUN_BOSS = 'G'
         const val RAILGUN_BOSS = 'H'
 
+        const val MINGUN_TURRET = '1'
+        const val SHOTGUN_TURRET = '2'
+        const val RICOCHET_TURRET = '3'
+        const val FLAMETHROWER_TURRET = '4'
+        const val CANNON_TURRET = '5'
+        const val ROCKET_TURRET = '6'
+        const val LASERGUN_TURRET = '7'
+        const val RAILGUN_TURRET = '8'
+
+
+
+        val bosses = charArrayOf(MINIGUN_BOSS, SHOTGUN_BOSS, RICOCHET_BOSS, FLAMETHROWER_BOSS, CANNON_BOSS, ROCKET_BOSS, LASERGUN_BOSS, RAILGUN_BOSS)
+        val turrets = charArrayOf(MINGUN_TURRET, SHOTGUN_TURRET, RICOCHET_TURRET, FLAMETHROWER_TURRET, CANNON_TURRET, ROCKET_TURRET, LASERGUN_TURRET, RAILGUN_TURRET)
         val solidBlocks = charArrayOf(WALL, GATE, BRICKS)
-        val emptyBlocks = charArrayOf(AIR, START, SPAWNER, MINIGUN_BOSS, SHOTGUN_BOSS, RICOCHET_BOSS, FLAMETHROWER_BOSS, CANON_BOSS, ROCKET_BOSS, LASERGUN_BOSS, RAILGUN_BOSS)
+        val emptyBlocks = charArrayOf(AIR, START, SPAWNER, MINIGUN_BOSS, SHOTGUN_BOSS, RICOCHET_BOSS, FLAMETHROWER_BOSS, CANNON_BOSS, ROCKET_BOSS, LASERGUN_BOSS, RAILGUN_BOSS)
     }
 
 }

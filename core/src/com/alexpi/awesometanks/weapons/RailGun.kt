@@ -21,13 +21,11 @@ import com.badlogic.gdx.utils.Timer
  */
 class RailGun(ammo: Float, power: Int, filter: Boolean) :
     Weapon(
-        "Railgun",
         "weapons/railgun.png",
         "sounds/railgun.ogg",
         ammo,
         power,
         filter,
-        1f,
         1f
     ) {
 
@@ -43,11 +41,11 @@ class RailGun(ammo: Float, power: Int, filter: Boolean) :
     override fun shoot(group: Group, position: Vector2) {
         if (canShoot()) {
             minFraction = 1f
-            laserRay.rotation = currentAngleRotation * MathUtils.radiansToDegrees
+            laserRay.rotation = currentRotationAngle * MathUtils.radiansToDegrees
             laserRay.setPosition(position.x * Constants.TILE_SIZE, position.y * Constants.TILE_SIZE - laserRay.height/2)
 
-            val dX = MathUtils.cos(currentAngleRotation) * MAXIMUM_REACH
-            val dY = MathUtils.sin(currentAngleRotation) * MAXIMUM_REACH
+            val dX = MathUtils.cos(currentRotationAngle) * MAXIMUM_REACH
+            val dY = MathUtils.sin(currentRotationAngle) * MAXIMUM_REACH
             val point2 = Vector2(position.x + dX, position.y + dY)
             world.rayCast({ fixture, point, _, fraction ->
                 if(fixture.userData is DamageableActor){
@@ -101,7 +99,7 @@ class RailGun(ammo: Float, power: Int, filter: Boolean) :
     override fun await() {}
 
     override fun createProjectile(group: Group, position: Vector2) {
-        group.addActor(Rail( position, currentAngleRotation, power.toFloat(), isPlayer))
+        group.addActor(Rail( position, currentRotationAngle, power.toFloat(), isPlayer))
     }
 
     companion object {

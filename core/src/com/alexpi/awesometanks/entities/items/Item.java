@@ -2,7 +2,6 @@ package com.alexpi.awesometanks.entities.items;
 
 import com.alexpi.awesometanks.utils.Constants;
 import com.alexpi.awesometanks.world.GameModule;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -13,14 +12,13 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 /**
  * Created by Alex on 19/02/2016.
  */
 public abstract class Item extends Actor{
-    private Sprite sprite;
+    private final Sprite sprite;
     protected Body body;
     protected Fixture fixture;
     public float size;
@@ -44,9 +42,11 @@ public abstract class Item extends Actor{
         fixtureDef.filter.maskBits = Constants.CAT_PLAYER | Constants.CAT_BLOCK | Constants.CAT_ENEMY;
 
         body = GameModule.INSTANCE.getWorld().createBody(bodyDef);
+
         body.setLinearDamping(1f);
         body.setAngularDamping(.5f);
         fixture = body.createFixture(fixtureDef);
+        shape.dispose();
         fixture.setUserData(this);
 
         sprite = new Sprite(GameModule.INSTANCE.getAssetManager().get(fileName, Texture.class));
@@ -70,6 +70,7 @@ public abstract class Item extends Actor{
     }
 
     public void detach(){
+        fixture.setUserData(null);
         body.destroyFixture(fixture);
         body.getWorld().destroyBody(body);
         remove();

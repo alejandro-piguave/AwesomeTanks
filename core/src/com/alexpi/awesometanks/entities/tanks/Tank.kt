@@ -119,6 +119,7 @@ abstract class Tank(
 
     override fun detach() {
         super.detach()
+        fixture.userData = null
         body.destroyFixture(fixture)
         body.world.destroyBody(body)
         remove()
