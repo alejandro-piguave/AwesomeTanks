@@ -13,7 +13,6 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -32,13 +31,11 @@ import ktx.actors.onClick
  */
 class UpgradesScreen(game: MainGame) : BaseScreen(game) {
     private lateinit var stage: Stage
-    private lateinit var batch: SpriteBatch
     private lateinit var background: Texture
     private var currentWeapon = 0
     override fun show() {
         val purchaseSound = game.manager.get("sounds/purchase.ogg", Sound::class.java)
         stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
-        batch = SpriteBatch()
         background = game.manager.get("sprites/background.png")
         val table = Table()
         table.setFillParent(true)
@@ -248,22 +245,21 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
 
     override fun hide() {
         stage.dispose()
-        batch.dispose()
         Gdx.input.inputProcessor = null
     }
 
     override fun render(delta: Float) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
-        batch.begin()
-        batch.draw(
+        stage.batch.begin()
+        stage.batch.draw(
             background,
             0f,
             0f,
-            Gdx.graphics.width.toFloat(),
-            Gdx.graphics.height.toFloat()
+            stage.width,
+            stage.height
         )
-        batch.end()
+        stage.batch.end()
         stage.act(delta)
         stage.draw()
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {

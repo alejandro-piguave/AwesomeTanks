@@ -8,8 +8,6 @@ import com.alexpi.awesometanks.widget.GameButton
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
@@ -25,7 +23,6 @@ import ktx.actors.onClick
  */
 class MainScreen(game: MainGame) : BaseScreen(game) {
     private lateinit var stage: Stage
-    private lateinit var batch: Batch
     private lateinit var  background: Texture
     override fun show() {
         stage =  Stage(
@@ -34,7 +31,6 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
             Constants.SCREEN_HEIGHT
         )
         )
-        batch = SpriteBatch()
         background = game.manager.get("sprites/background.png")
         val table = Table()
         val title1 = Label("Awesome", Styles.getGameTitleStyle1(game.manager))
@@ -87,9 +83,9 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
     override fun render(delta: Float) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
-        batch.begin()
-        batch.draw(background, 0f, 0f, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        batch.end()
+        stage.batch.begin()
+        stage.batch.draw(background, 0f, 0f, stage.width, stage.height)
+        stage.batch.end()
         stage.act()
         stage.draw()
     }
@@ -101,6 +97,5 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
     override fun hide() {
         Gdx.input.inputProcessor = null
         stage.dispose()
-        batch.dispose()
     }
 }
