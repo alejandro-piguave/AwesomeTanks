@@ -33,7 +33,7 @@ class Shade(private val cell: Cell) : Image() {
 
     init {
         drawable = TextureRegionDrawable(
-            GameModule.getAssetManager().get(
+            GameModule.assetManager.get(
                 "sprites/shade.png",
                 Texture::class.java
             )
