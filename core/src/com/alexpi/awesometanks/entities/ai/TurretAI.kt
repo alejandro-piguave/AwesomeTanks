@@ -11,7 +11,7 @@ class TurretAI(private val position: Vector2,
                private val callback: TurretAICallback,
                visibilityRadius: Float = VISIBILITY_RADIUS) {
     private val visibilityRadius2 = visibilityRadius * visibilityRadius
-    private val target: PlayerTank = GameModule.getPlayer()
+    private val target: PlayerTank = GameModule.player
     private val world: World = GameModule.getWorld()
     private var isTargetVisible = false
 

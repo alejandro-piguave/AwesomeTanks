@@ -1,0 +1,9 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X   #  X       X                 X          X
+X S #  X 6   + X +  O          7 X # O #+#  X
+X   #  X       X        X        X          X
+XXXXX  X   X   XXXXXX   X   XXXXXX # # # #  X
+X      X   X            X                   X
+X *        X *          X *        7 # O+#  X
+X          X            X                   X
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

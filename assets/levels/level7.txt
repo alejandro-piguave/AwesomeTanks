@@ -1,0 +1,13 @@
+XXXXXXXXXXXXXX
+X   #        X
+X S # # O +  X
+X     #     *X
+XXXXXXXXXX###X
+X* + #   #   X
+X0 # # # #   X
+XO     O     X
+X##XXXXXXXXXXX
+X  ### O    *X
+X  #      +  X
+XO   ####   *X
+XXXXXXXXXXXXXX

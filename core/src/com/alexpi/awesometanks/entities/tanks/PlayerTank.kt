@@ -20,7 +20,7 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
     (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
     500f, false, Color.WHITE), RocketListener {
 
-    private val map: GameMap = GameModule.getGameMap()
+    private val map: GameMap = GameModule.gameMap
     private val visibilityRadius = 2 + GameModule.getGameValues().getInteger(UpgradeType.VISIBILITY.name)
     private val armor = GameModule.getGameValues().getInteger(UpgradeType.ARMOR.name)
     val position: Vector2

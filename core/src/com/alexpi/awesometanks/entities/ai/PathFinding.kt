@@ -2,14 +2,16 @@ package com.alexpi.awesometanks.entities.ai
 
 import com.alexpi.awesometanks.utils.Cell
 import com.alexpi.awesometanks.utils.GameMap
-import com.badlogic.gdx.ai.pfa.*
+import com.badlogic.gdx.ai.pfa.Connection
+import com.badlogic.gdx.ai.pfa.DefaultGraphPath
+import com.badlogic.gdx.ai.pfa.GraphPath
+import com.badlogic.gdx.ai.pfa.Heuristic
+import com.badlogic.gdx.ai.pfa.PathFinder
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder
-import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.utils.Array
 import kotlin.math.abs
 
-class AStartPathFinding(private val map: GameMap) {
+class PathFinding(private val map: GameMap) {
     private val pathfinder: PathFinder<Cell> = IndexedAStarPathFinder(GameMapGraph(map))
     private val heuristic: Heuristic<Cell> = Heuristic<Cell> { node, endNode -> // Manhattan distance
         abs(endNode.row - node.row) + abs(endNode.col - node.col).toFloat()
@@ -34,11 +36,3 @@ class AStartPathFinding(private val map: GameMap) {
     }
 }
 
-class GameMapGraph(private val map: GameMap) : IndexedGraph<Cell> {
-    override fun getIndex(cell: Cell): Int = map.getIndex(cell)
-
-    override fun getConnections(fromCell: Cell): Array<Connection<Cell>> = fromCell.connections
-
-    override fun getNodeCount(): Int = map.cellCount
-
-}

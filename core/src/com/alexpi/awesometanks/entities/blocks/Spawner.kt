@@ -5,7 +5,6 @@ import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.utils.TimeUtils
@@ -14,10 +13,10 @@ import kotlin.experimental.or
 /**
  * Created by Alex on 15/02/2016.
  */
-class Spawner(pos: Vector2) : Block(
+class Spawner(level: Int, pos: Vector2) : Block(
     "sprites/spawner.png",
     Shape.Type.Polygon,
-    getHealth(GameModule.level),
+    getHealth(level),
     pos,
     1f,
     true,
@@ -26,7 +25,7 @@ class Spawner(pos: Vector2) : Block(
     private var lastSpawn: Long
     private var interval: Long
     private var maxSpan = 15000
-    private var generatedTypes: List<Weapon.Type> = getEnemyTypes(GameModule.level)
+    private var generatedTypes: List<Weapon.Type> = getEnemyTypes(level)
     private val nuggetValue: Int
     override fun onAlive(delta: Float) {
         super.onAlive(delta)
@@ -98,6 +97,6 @@ class Spawner(pos: Vector2) : Block(
             (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ITEM)
         lastSpawn = TimeUtils.millis()
         interval = 1000
-        nuggetValue = getNuggetValue(GameModule.level)
+        nuggetValue = getNuggetValue(level)
     }
 }

@@ -38,7 +38,7 @@ class Shade(private val cell: Cell) : Image() {
                 Texture::class.java
             )
         )
-        val position = GameModule.getGameMap().toWorldPos(cell)
+        val position = GameModule.gameMap.toWorldPos(cell)
         setBounds(
             position.x * Constants.TILE_SIZE * SIZE,
             position.y * Constants.TILE_SIZE * SIZE,

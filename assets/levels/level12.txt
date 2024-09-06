@@ -1,0 +1,11 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXX       @    XXXXXXX
+X        *    @          X
+X      O   O  @    @@# # X
+X    X   #    XXX    #   X
+X S  X  ### + XXX2 +   # X
+X    X   #    XXX    #   X
+X      O   O  @ *  @@# # X
+X             @          X
+XXXXXXX       @    XXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXX

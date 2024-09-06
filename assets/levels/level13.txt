@@ -1,0 +1,19 @@
+XXXXXXXXXXXXXXXXXXX
+XXXXXX       XXXXXX
+XXXX    # +    XXXX
+XX* ##  O O  ##  XX
+XX  ##  XXX  ##  XX
+XX 2  XXXXXXX    XX
+XO   XXXXXXXXX 1 OX
+X   OXXXXXXXXX*   X
+X   XXXXXXXXXXX   X
+X+  XXXXXXXXXXX   X
+X   XXXXXXXXXXX 4 X
+X    XXX   XXX    X
+X    XXX S XXX    X
+XX +  XX   XX +  XX
+XX     #@@@#     XX
+XX  #  #   #  #  XX
+XXX    #   #    XXX
+XXXXXX*#   # XXXXXX
+XXXXXXXXXXXXXXXXXXX

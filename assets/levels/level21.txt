@@ -1,0 +1,22 @@
+XXXXXXXXXXXXXXX
+X   X     X   X
+X   @     @   X
+X + @  S  @ + X
+X   @     @   X
+X  OX     XO  X
+X  XX     XX  X
+X  X  ###  X  X
+X  XX     XX  X
+X   X # # X   X
+X 6 @ # # @ + X
+X   @ # # @   X
+X  OX # # XO  X
+X  XX     XX  X
+X  X  ###  X  X
+X  XX     XX  X
+X  *X     X*  X
+X   X     X   X
+X   XX@@@XX   X
+X 4         + X
+X   *  6  *   X
+XXXXXXXXXXXXXXX

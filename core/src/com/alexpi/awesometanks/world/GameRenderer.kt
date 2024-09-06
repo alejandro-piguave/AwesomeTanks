@@ -2,15 +2,31 @@ package com.alexpi.awesometanks.world
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.DamageListener
-import com.alexpi.awesometanks.entities.actors.*
-import com.alexpi.awesometanks.entities.ai.AStartPathFinding
-import com.alexpi.awesometanks.entities.blocks.*
+import com.alexpi.awesometanks.entities.actors.DamageableActor
+import com.alexpi.awesometanks.entities.actors.Floor
+import com.alexpi.awesometanks.entities.actors.HealthBar
+import com.alexpi.awesometanks.entities.actors.ParticleActor
+import com.alexpi.awesometanks.entities.actors.Shade
+import com.alexpi.awesometanks.entities.ai.PathFinding
+import com.alexpi.awesometanks.entities.blocks.Block
+import com.alexpi.awesometanks.entities.blocks.Box
+import com.alexpi.awesometanks.entities.blocks.Bricks
+import com.alexpi.awesometanks.entities.blocks.Gate
+import com.alexpi.awesometanks.entities.blocks.Mine
+import com.alexpi.awesometanks.entities.blocks.Spawner
+import com.alexpi.awesometanks.entities.blocks.Turret
+import com.alexpi.awesometanks.entities.blocks.Wall
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
-import com.alexpi.awesometanks.utils.*
+import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.utils.GameMap
+import com.alexpi.awesometanks.utils.MapLoader
+import com.alexpi.awesometanks.utils.Rumble
+import com.alexpi.awesometanks.utils.Settings
+import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Sound
@@ -29,8 +45,8 @@ class GameRenderer(private val game: MainGame,
                    private val gameListener: GameListener,
                    level: Int) : DamageListener {
 
-    private val gameMap = GameMap(level)
-    private val aStartPathFinding = AStartPathFinding(gameMap)
+    private val gameMap:GameMap
+    private val pathFinding: PathFinding
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
     private val healthBarGroup: Group = Group()
@@ -49,11 +65,21 @@ class GameRenderer(private val game: MainGame,
     val player: PlayerTank
 
     init {
-        GameModule.set(game.manager, world, gameMap, aStartPathFinding, game.gameValues, this)
-        GameModule.level = level
+        GameModule.set(game.manager, world, game.gameValues, this)
+
+        val mapLoader = MapLoader()
+        val map = mapLoader.load(level)
+        gameMap = GameMap(map)
+        GameModule.gameMap = gameMap
+
+        pathFinding = PathFinding(gameMap)
+        GameModule.pathFinding = pathFinding
+
         player = PlayerTank()
-        GameModule.setPlayer(player)
+        GameModule.player = player
+
         setWorldContactListener()
+
         val shadeGroup = Group()
         gameMap.forCell { cell ->
             if (!cell.isVisible)
@@ -70,8 +96,8 @@ class GameRenderer(private val game: MainGame,
 
                     GameMap.GATE -> blockGroup.addActor( Gate(gameMap.toWorldPos(cell)))
                     GameMap.BRICKS -> blockGroup.addActor(Bricks(gameMap.toWorldPos(cell)))
-                    GameMap.BOX -> entityGroup.addActor(Box(gameMap.toWorldPos(cell)))
-                    GameMap.SPAWNER -> entityGroup.addActor(Spawner(gameMap.toWorldPos(cell)))
+                    GameMap.BOX -> entityGroup.addActor(Box(level, gameMap.toWorldPos(cell)))
+                    GameMap.SPAWNER -> entityGroup.addActor(Spawner(level, gameMap.toWorldPos(cell)))
                     GameMap.BOMB -> blockGroup.addActor( Mine(gameMap.toWorldPos(cell)))
 
                     in GameMap.bosses -> {
@@ -175,12 +201,12 @@ class GameRenderer(private val game: MainGame,
         player.isMoving = true
         if(horizontalMovement.isEmpty() && verticalMovement.isEmpty()){
             player.isMoving = false
-        } else if(horizontalMovement.isEmpty() && verticalMovement.isNotEmpty()){
+        } else if(horizontalMovement.isEmpty()){
             when(verticalMovement.last()){
                 Movement.POSITIVE -> player.setOrientation(0f, 1f) //MOVING UP
                 Movement.NEGATIVE -> player.setOrientation(0f, -1f) // MOVING DOWN
             }
-        } else if(horizontalMovement.isNotEmpty() && verticalMovement.isEmpty()){
+        } else if(verticalMovement.isEmpty()){
             when(horizontalMovement.last()){
                 Movement.POSITIVE -> player.setOrientation(1f, 0f) //MOVING RIGHT
                 Movement.NEGATIVE -> player.setOrientation(-1f, 0f) // MOVING LEFT
@@ -315,9 +341,9 @@ class GameRenderer(private val game: MainGame,
 }
 
 
-enum class Movement{ POSITIVE, NEGATIVE}
+enum class Movement{ POSITIVE, NEGATIVE }
 
-interface GameListener{
+interface GameListener {
     fun onLevelFailed()
     fun onLevelCompleted()
 }

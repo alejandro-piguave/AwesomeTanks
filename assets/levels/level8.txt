@@ -1,0 +1,17 @@
+XXXXXXXXXXXXXXXXXXXX
+XXXXX*         XXXXX
+XXXXX      # + XXXXX
+XXXXX          XXXXX
+XXXXX     O     E  X
+XXXXX    XXX  @@@@ X
+XXXXX    XXX  ##   X
+X   @    XXX  #    X
+X S @    XXX  # ## X
+X   @    XXX     # X
+XXXXXX   XXX  ##   X
+XXXXXX   XXX      *X
+XXXXXX    O    XXXXX
+XXXXXX         XXXXX
+XXXXXX  @  @ + XXXXX
+XXXXXX*        XXXXX
+XXXXXXXXXXXXXXXXXXXX

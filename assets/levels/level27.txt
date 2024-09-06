@@ -1,0 +1,19 @@
+XXXXXXXXXXXXXXXXXXX
+X             X   X
+X 7 O O O O * X S X
+X             X   X
+X O XXX@@@@@XXX   X
+X   X         X   X
+X O X *##7 ## X   X
+X   X #    #  X   X
+X O X   ####  X   X
+X   X #####   X   X
+X + X 6 # # * X   X
+X   X #   # # X   X
+X   X + # # 4 X   X
+X   X     +   X   X
+X   XXXXXXXXXXX   X
+X                 X
+X      *     +    X
+X                 X
+XXXXXXXXXXXXXXXXXXX

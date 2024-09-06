@@ -1,0 +1,15 @@
+XXXXXXXXXXXXXXXXXXXX
+X      X     X     X
+X +    X  O  X +#  X
+X      @     X ### X
+X  O   @     X   4 X
+X      @  +  XO    X
+X      XO    XOO   X
+XXX@@@XXX@@@XXX@@@XX
+X      X1    XO    X
+X *    X     X  ## X
+X *    X     @  #* X
+X    ##X     @  ## X
+X    #OX +  O@  4  X
+X  S #OX     X     X
+XXXXXXXXXXXXXXXXXXXX

@@ -26,9 +26,9 @@ sealed class EnemyTankState: State<EnemyTank>{
         const val VISITED_CELL_COUNT_LIMIT = 3
     }
 
-    val target = GameModule.getPlayer()
-    val gameMap = GameModule.getGameMap()
-    val pathFinding = GameModule.getPathFinding()
+    val target = GameModule.player
+    val gameMap = GameModule.gameMap
+    val pathFinding = GameModule.pathFinding
 
     override fun update(entity: EnemyTank) {
         if(target.isAlive){

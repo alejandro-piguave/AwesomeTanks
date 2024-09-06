@@ -1,0 +1,24 @@
+XXXXXXXXXXXXXXX
+XXXXXX   XXXXXX
+XXXXXX S XXXXXX
+XXXXXX   XXXXXX
+X   XX   XX   X
+X + XX@@@XX + X
+X   XX   XX   X
+X 4         4 X
+X   ##   ##   X
+X   ##   ##   X
+XX  *#   ##  XX
+XX O       O XX
+XX           XX
+XX           XX
+XXXXXX@@@XXXXXX
+XXX         XXX
+XXX O## #O  XXX
+XXX   # #   XXX
+XXX #     # XXX
+XXX ### ### XXX
+XXX         XXX
+XXX **4# +O XXX
+XXX    #    XXX
+XXXXXXXXXXXXXXX

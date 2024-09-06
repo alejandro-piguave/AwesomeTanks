@@ -1,0 +1,22 @@
+XXXXXXXXXXXXXXXXXXXXX
+X##          # ##  OX
+X   @@@   +         X
+X  XXXX ##### XXXX  X
+X  XXXX      *XXXX@ X
+X  XXXXXX   XXXXXX@ X
+X  XXXXXX   XXXXXX  X
+X    XXXX@@@XXXX    X
+X    XXX*    XXX    X
+X  @ XXX     XXX #  X
+X+ @   @     @ O # +X
+X  @   @  S  @   #  X
+X  @ XXX     XXX #  X
+X    XXX    OXXX    X
+X   *XXXX@@@XXXX    X
+X  XXXXXX   XXXXXX #X
+X# XXXXXX   XXXXXX #X
+X# XXXX       XXXX  X
+X  XXXX # 7 # XXXX  X
+X   O@         @@   X
+X         +        *X
+XXXXXXXXXXXXXXXXXXXXX

@@ -1,0 +1,24 @@
+XXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXX        XXXX
+XXXXXXXXX     +   @   XXX
+XXXXXXX*  ####   @O@   XX
+XXXX      O  O    @     X
+XXX       ####      +   X
+XXX  3         7   @@@  X
+XXX O# XXXXXXXX         X
+XX     X*     X    ###  X
+XX     X      X      # *X
+XX     X   S  X@@      XX
+X  + @ X      X@O  +   XX
+X    @ X      X@@      XX
+X   @@ X@@@XXXX 2 #   XXX
+X              O  #   XXX
+XX   O #   ##  @ ##   XXX
+XXX    # #   + @     XXXX
+XXX  6 # ##          XXXX
+XXX    # *#          XXXX
+XXXX     O#         XXXXX
+XXXX               XXXXXX
+XXXXX           XXXXXXXXX
+XXXXXXXX    XXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXX

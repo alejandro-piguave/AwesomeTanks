@@ -1,0 +1,25 @@
+XXXXXXXXXXXXXXXXXXXXXXXXX
+X                *      X
+X    *X        @@@   +  X
+X  XXXX     O           X
+X       0   X  +        X
+X     # XXXXX     O ##  X
+X   O # X*     XXXX     X
+X   #    ####  *        X
+X   #                   X
+X   XX  # @@@@@ @       X
+X   XX3 # @   @ @   XXX X
+X   X   # @ S @ @   O*  X
+X  XX#### @   @ @       X
+X         @@@@@ @X      X
+X#  +            X      X
+X#     OXXX      X      X
+X#        X      XXXO   X
+X           XXXX  7 *  #X
+X  OXXX                #X
+X    *X    +        #   X
+X                   #   X
+X  4     X    O  XXXX   X
+X    @   XXXXXX         X
+X@@@@@                  X
+XXXXXXXXXXXXXXXXXXXXXXXXX

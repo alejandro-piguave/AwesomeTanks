@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.tanks
 
-import com.alexpi.awesometanks.entities.ai.EnemyAICallback
 import com.alexpi.awesometanks.entities.ai.EnemyTankState
 import com.alexpi.awesometanks.entities.ai.FrozenState
 import com.alexpi.awesometanks.entities.ai.WanderState
@@ -26,12 +25,11 @@ class EnemyTank(
     ROTATION_SPEED, MOVEMENT_SPEED,
     Constants.CAT_ENEMY,
     Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
-    getHealthByTierAndType(tier, type),true, getColorByTier(tier)),
-    EnemyAICallback, Telegraph {
+    getHealthByTierAndType(tier, type),true, getColorByTier(tier)), Telegraph {
 
     val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState(position.cpy()))
     private val nuggetValue: Int
-    private val weapon: Weapon
+    private val weapon: Weapon = Weapon.getWeaponAt(type, 1f, powerByTier(tier), false)
     override val currentWeapon: Weapon
         get() = weapon
 
@@ -121,26 +119,8 @@ class EnemyTank(
     }
 
     init {
-        weapon = Weapon.getWeaponAt(type, 1f, powerByTier(tier), false)
         weapon.unlimitedAmmo = true
         nuggetValue = getNuggetValue(tier, type)
-    }
-
-    override fun attack(angle: Float) {
-        weapon.desiredRotationAngle = angle
-        isShooting = true
-        isMoving = false
-    }
-
-    override fun move(angle: Float) {
-        setOrientation(angle)
-        isMoving = true
-        isShooting = false
-    }
-
-    override fun await() {
-        isShooting = false
-        isMoving = false
     }
 
     enum class Tier{

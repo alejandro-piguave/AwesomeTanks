@@ -1,49 +1,30 @@
 package com.alexpi.awesometanks.utils
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.pfa.Connection
 import com.badlogic.gdx.ai.pfa.DefaultConnection
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import java.io.BufferedReader
-import java.io.IOException
-import java.util.*
 
 
 /**
  * Created by Alex on 25/01/2016.
  */
 
-class GameMap(level: Int){
-    private val map: Array<Array<Cell>>
+class GameMap(charMap: Array<CharArray>) {
+    private var map: Array<Array<Cell>>
     private var playerCol: Int = -1
     private var playerRow: Int = -1
     var visualRange: Int = 3
     val cellCount: Int
 
     init {
-        val file = Gdx.files.internal("levels/levels.txt")
-        val reader = BufferedReader(file.reader())
-        var line: String
-        val ans = Vector<String>()
-        try {
-            line = reader.readLine()
-            while (!line.contains(level.toString())) line = reader.readLine()
-            while (reader.readLine().also { line = it } != null && !line.contains(".")) ans.add(
-                line
-            )
-            reader.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        require(!ans.isEmpty()) { "No such level" }
-        val cA = ans.firstElement()!!.length
-        val rA = ans.size
+        val cA = charMap.first().size
+        val rA = charMap.size
         cellCount = cA * rA
         map = Array(rA) { row ->
             Array(cA){ col ->
-                if(ans[row][col] == START) setPlayerCell(row, col)
-                Cell(row, col, ans[row][col], row == 0 || col == 0|| row == rA -1 || col == cA -1 ) // Make the map bounds visible
+                if(charMap[row][col] == START) setPlayerCell(row, col)
+                Cell(row, col, charMap[row][col], row == 0 || col == 0|| row == rA -1 || col == cA -1 ) // Make the map bounds visible
             }
         }
         updateVisibleArea()
