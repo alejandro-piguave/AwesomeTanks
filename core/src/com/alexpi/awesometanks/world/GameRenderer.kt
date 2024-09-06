@@ -25,25 +25,19 @@ import com.alexpi.awesometanks.map.GameMap
 import com.alexpi.awesometanks.map.MapLoader
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Rumble
-import com.alexpi.awesometanks.utils.Settings
-import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 
 class GameRenderer(private val game: MainGame,
                    private val gameListener: GameListener,
-                   level: Int) : DamageListener {
+                   level: Int) : DamageListener, ContactManager.ContactListener {
 
     private val gameMap: GameMap
     private val pathFinding: PathFinding
@@ -51,12 +45,8 @@ class GameRenderer(private val game: MainGame,
     private val blockGroup: Group = Group()
     private val healthBarGroup: Group = Group()
     private val gameStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
-    private val explosionSound: Sound = game.manager.get("sounds/explosion.ogg")
     private val world = World(Vector2(0f, 0f), true)
-
-    //Used for keys
-    private var horizontalMovement: MutableList<Movement> = mutableListOf()
-    private var verticalMovement: MutableList<Movement> = mutableListOf()
+    private val explosionManager = ExplosionManager(game.manager, gameStage, world)
 
     var isPaused = false
     private var alreadyExecuted = false
@@ -65,7 +55,9 @@ class GameRenderer(private val game: MainGame,
     val player: PlayerTank
 
     init {
-        GameModule.set(game.manager, world, game.gameValues, this)
+        GameModule.world = world
+        GameModule.assetManager = game.manager
+        GameModule.set(game.gameValues, this)
 
         val mapLoader = MapLoader()
         val map = mapLoader.load(level)
@@ -157,70 +149,16 @@ class GameRenderer(private val game: MainGame,
         player.setRotationInput(x,y)
     }
 
-    fun moveUp(){
-        verticalMovement.add(Movement.POSITIVE)
-        updateMovement()
+    fun onKeyDown(keycode: Int): Boolean {
+        return player.onKeyDown(keycode)
     }
 
-    fun moveDown(){
-        verticalMovement.add(Movement.NEGATIVE)
-        updateMovement()
+    fun onKeyUp(keycode: Int): Boolean {
+        return player.onKeyUp(keycode)
     }
 
-    fun moveLeft(){
-        horizontalMovement.add(Movement.NEGATIVE)
-        updateMovement()
-    }
-
-    fun moveRight(){
-        horizontalMovement.add(Movement.POSITIVE)
-        updateMovement()
-    }
-
-    fun stopUp(){
-        verticalMovement.remove(Movement.POSITIVE)
-        updateMovement()
-    }
-
-    fun stopDown(){
-        verticalMovement.remove(Movement.NEGATIVE)
-        updateMovement()
-    }
-
-    fun stopLeft(){
-        horizontalMovement.remove(Movement.NEGATIVE)
-        updateMovement()
-    }
-
-    fun stopRight(){
-        horizontalMovement.remove(Movement.POSITIVE)
-        updateMovement()
-    }
-
-    private fun updateMovement(){
-        player.isMoving = true
-        if(horizontalMovement.isEmpty() && verticalMovement.isEmpty()){
-            player.isMoving = false
-        } else if(horizontalMovement.isEmpty()){
-            when(verticalMovement.last()){
-                Movement.POSITIVE -> player.setOrientation(0f, 1f) //MOVING UP
-                Movement.NEGATIVE -> player.setOrientation(0f, -1f) // MOVING DOWN
-            }
-        } else if(verticalMovement.isEmpty()){
-            when(horizontalMovement.last()){
-                Movement.POSITIVE -> player.setOrientation(1f, 0f) //MOVING RIGHT
-                Movement.NEGATIVE -> player.setOrientation(-1f, 0f) // MOVING LEFT
-            }
-        } else {
-            if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.POSITIVE)
-                player.setOrientation(Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH EAST
-            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.POSITIVE)
-                player.setOrientation(-Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH WEST
-            else if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.NEGATIVE)
-                player.setOrientation(Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH EAST
-            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.NEGATIVE)
-                player.setOrientation(-Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH WEST
-        }
+    fun onKnobTouch(x: Float, y: Float): Boolean {
+        return player.onKnobTouch(x, y)
     }
 
     private fun updateRumble(delta: Float){
@@ -236,35 +174,7 @@ class GameRenderer(private val game: MainGame,
     }
 
     private fun setWorldContactListener(){
-        world.setContactListener(ContactManager(object: ContactManager.ContactListener{
-
-            override fun onGoldNuggetFound(goldNugget: GoldNugget) {
-                player.money += goldNugget.value
-            }
-
-            override fun onHealthPackFound(healthPack: HealthPack) {
-                player.heal(healthPack.health)
-            }
-
-            override fun onFreezingBallFound(freezingBall: FreezingBall) {
-                for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
-                    (a as DamageableActor).freeze()
-                }
-                for (a: Actor in blockGroup.children) if (a is Turret) a.freeze()
-            }
-
-            override fun onBulletCollision(x: Float, y: Float) {
-                gameStage.addActor(ParticleActor("particles/collision.party", x, y, false))
-            }
-
-            override fun onLandMineFound(x: Float, y: Float) {
-                createLandMineExplosion(x,y)
-            }
-
-            override fun onExplosiveProjectileCollided(x: Float, y: Float) {
-                createCanonBallExplosion(x,y)
-            }
-        }))
+        world.setContactListener(ContactManager(this))
     }
 
     fun dispose(){
@@ -284,66 +194,39 @@ class GameRenderer(private val game: MainGame,
         }
     }
 
-    private fun createLandMineExplosion(x: Float, y: Float){
-        createExplosion(x,y ,2.5f, 350f,1f, 40f, .65f)
+
+    override fun onGoldNuggetFound(goldNugget: GoldNugget) {
+        player.money += goldNugget.value
     }
 
-    private fun createCanonBallExplosion(x: Float, y: Float){
-        createExplosion(x,y ,.25f, 35f,.05f, 15f, .45f)
+    override fun onHealthPackFound(healthPack: HealthPack) {
+        player.heal(healthPack.health)
     }
 
-    private fun createExplosion(x: Float, y: Float, explosionRadius: Float, maxDamage: Float, volume: Float, rumblePower: Float, rumbleLength: Float){
-        val explosionSize = Constants.TILE_SIZE * explosionRadius * 2
-        val explosionX = Constants.TILE_SIZE * x
-        val explosionY = Constants.TILE_SIZE * y
-        gameStage.addActor(
-            ParticleActor(
-                "particles/big-explosion.party",
-                explosionX,
-                explosionY,
-                false
-            )
-        )
-        val explosionShine = Image(game.manager.get("sprites/explosion_shine.png", Texture::class.java))
-        explosionShine.setBounds(
-            explosionX - explosionSize * .5f,
-            explosionY - explosionSize * .5f,
-            explosionSize,
-            explosionSize
-        )
-        explosionShine.setOrigin(explosionSize * .5f, explosionSize * .5f)
-        explosionShine.addAction(
-            Actions.sequence(
-                Actions.parallel(
-                    Actions.scaleTo(.01f, .01f, .75f),
-                    Actions.alpha(0f, .75f)
-                ),
-                Actions.run { explosionShine.remove() }
-            )
-        )
-        gameStage.addActor(explosionShine)
+    override fun onFreezingBallFound(freezingBall: FreezingBall) {
+        for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
+            (a as DamageableActor).freeze()
+        }
+        for (a: Actor in blockGroup.children) if (a is Turret) a.freeze()
+    }
 
-        world.QueryAABB({
-            val distanceFromMine = Utils.fastHypot(
-                (it.body.position.x - x).toDouble(),
-                (it.body.position.y - y).toDouble()
-            ).toFloat()
-            if (it.userData is DamageableActor && (distanceFromMine < explosionRadius)) {
-                val damageableActor = (it.userData as DamageableActor)
-                damageableActor.takeDamage(maxDamage * (explosionRadius - distanceFromMine) / explosionRadius)
-            }
-                        true
-        },x-explosionRadius,y-explosionRadius,x+explosionRadius,y+explosionRadius)
+    override fun onBulletCollision(x: Float, y: Float) {
+        gameStage.addActor(ParticleActor("particles/collision.party", x, y, false))
+    }
 
-        if (Settings.soundsOn) explosionSound.play(volume)
-        Rumble.rumble(rumblePower, rumbleLength)
+    override fun onLandMineFound(x: Float, y: Float) {
+        explosionManager.createLandMineExplosion(x,y)
+    }
+
+    override fun onExplosiveProjectileCollided(x: Float, y: Float) {
+        explosionManager.createCanonBallExplosion(x,y)
+    }
+
+    interface GameListener {
+        fun onLevelFailed()
+        fun onLevelCompleted()
     }
 }
 
 
-enum class Movement{ POSITIVE, NEGATIVE }
 
-interface GameListener {
-    fun onLevelFailed()
-    fun onLevelCompleted()
-}
