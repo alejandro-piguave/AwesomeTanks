@@ -15,7 +15,7 @@ import com.badlogic.gdx.math.Vector2
 import kotlin.experimental.or
 import kotlin.math.abs
 
-class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
+class Player : Tank(Vector2(-1f,-1f), .75f,
     .07f + GameModule.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
     150 + GameModule.getGameValues().getInteger(UpgradeType.SPEED.name) * 10f,
     Constants.CAT_PLAYER,

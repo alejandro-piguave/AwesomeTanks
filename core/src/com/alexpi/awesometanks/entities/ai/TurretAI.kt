@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.ai
 
 import com.alexpi.awesometanks.entities.blocks.Block
-import com.alexpi.awesometanks.entities.tanks.PlayerTank
+import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
@@ -11,8 +11,8 @@ class TurretAI(private val position: Vector2,
                private val callback: TurretAICallback,
                visibilityRadius: Float = VISIBILITY_RADIUS) {
     private val visibilityRadius2 = visibilityRadius * visibilityRadius
-    private val target: PlayerTank = GameModule.player
-    private val world: World = GameModule.getWorld()
+    private val target: Player = GameModule.player
+    private val world: World = GameModule.world
     private var isTargetVisible = false
 
     fun update(){

@@ -12,7 +12,7 @@ import com.alexpi.awesometanks.entities.projectiles.Flame;
 import com.alexpi.awesometanks.entities.projectiles.Projectile;
 import com.alexpi.awesometanks.entities.projectiles.Rail;
 import com.alexpi.awesometanks.entities.projectiles.Rocket;
-import com.alexpi.awesometanks.entities.tanks.PlayerTank;
+import com.alexpi.awesometanks.entities.tanks.Player;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -69,8 +69,8 @@ public class ContactManager implements ContactListener {
             }
         }
 
-        if((fixtureA.getUserData()instanceof Item && fixtureB.getUserData()instanceof PlayerTank)
-                || (contact.getFixtureB().getUserData()instanceof Item && fixtureA.getUserData()instanceof PlayerTank)){
+        if((fixtureA.getUserData()instanceof Item && fixtureB.getUserData()instanceof Player)
+                || (contact.getFixtureB().getUserData()instanceof Item && fixtureA.getUserData()instanceof Player)){
 
             Item item = fixtureA.getUserData()instanceof Item?
                     (Item)fixtureA.getUserData(): (Item)fixtureB.getUserData();

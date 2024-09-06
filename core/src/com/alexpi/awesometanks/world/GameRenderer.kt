@@ -3,29 +3,22 @@ package com.alexpi.awesometanks.world
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.actors.DamageableActor
-import com.alexpi.awesometanks.entities.actors.Floor
 import com.alexpi.awesometanks.entities.actors.HealthBar
 import com.alexpi.awesometanks.entities.actors.ParticleActor
-import com.alexpi.awesometanks.entities.actors.Shade
 import com.alexpi.awesometanks.entities.ai.PathFinding
 import com.alexpi.awesometanks.entities.blocks.Block
-import com.alexpi.awesometanks.entities.blocks.Box
-import com.alexpi.awesometanks.entities.blocks.Bricks
-import com.alexpi.awesometanks.entities.blocks.Gate
-import com.alexpi.awesometanks.entities.blocks.Mine
 import com.alexpi.awesometanks.entities.blocks.Spawner
 import com.alexpi.awesometanks.entities.blocks.Turret
-import com.alexpi.awesometanks.entities.blocks.Wall
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
-import com.alexpi.awesometanks.entities.tanks.PlayerTank
+import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.map.GameMap
+import com.alexpi.awesometanks.map.MapInterpreter
 import com.alexpi.awesometanks.map.MapLoader
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Rumble
-import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.math.Vector2
@@ -35,9 +28,10 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 
-class GameRenderer(private val game: MainGame,
-                   private val gameListener: GameListener,
-                   level: Int) : DamageListener, ContactManager.ContactListener {
+class GameRenderer(
+    game: MainGame,
+    private val gameListener: GameListener,
+    level: Int) : DamageListener, ContactManager.ContactListener {
 
     private val gameMap: GameMap
     private val pathFinding: PathFinding
@@ -52,7 +46,7 @@ class GameRenderer(private val game: MainGame,
     private var alreadyExecuted = false
     var isLevelCompleted = false
         private set
-    val player: PlayerTank
+    val player: Player
 
     init {
         GameModule.world = world
@@ -67,49 +61,20 @@ class GameRenderer(private val game: MainGame,
         pathFinding = PathFinding(gameMap)
         GameModule.pathFinding = pathFinding
 
-        player = PlayerTank()
+        player = Player()
         GameModule.player = player
 
         setWorldContactListener()
 
         val shadeGroup = Group()
-        gameMap.forCell { cell ->
-            if (!cell.isVisible)
-                shadeGroup.addActor(Shade(cell))
+        val floorGroup = Group()
 
-            if (cell.value == GameMap.WALL)
-                blockGroup.addActor(Wall(gameMap.toWorldPos(cell)))
-            else {
-                when(cell.value){
-                    GameMap.START -> {
-                        player.setPos(cell)
-                        entityGroup.addActor(player)
-                    }
-
-                    GameMap.GATE -> blockGroup.addActor( Gate(gameMap.toWorldPos(cell)))
-                    GameMap.BRICKS -> blockGroup.addActor(Bricks(gameMap.toWorldPos(cell)))
-                    GameMap.BOX -> entityGroup.addActor(Box(level, gameMap.toWorldPos(cell)))
-                    GameMap.SPAWNER -> entityGroup.addActor(Spawner(level, gameMap.toWorldPos(cell)))
-                    GameMap.BOMB -> blockGroup.addActor( Mine(gameMap.toWorldPos(cell)))
-
-                    in GameMap.bosses -> {
-                        val type = cell.value.code - GameMap.MINIGUN_BOSS.code
-                        val weaponType = Weapon.Type.values()[type]
-                        entityGroup.addActor(EnemyTank( gameMap.toWorldPos(cell), EnemyTank.Tier.BOSS, weaponType))
-                    }
-
-                    in GameMap.turrets -> {
-                        val weaponType = Weapon.Type.values()[Character.getNumericValue(cell.value)]
-                        blockGroup.addActor(Turret(gameMap.toWorldPos(cell), weaponType))
-                    }
-
-                }
-
-                gameStage.addActor(Floor(game.manager, gameMap.toWorldPos(cell)))
-            }
-        }
+        val mapInterpreter = MapInterpreter()
+        mapInterpreter.interpret(gameMap, level, player, shadeGroup, blockGroup, entityGroup, floorGroup)
 
         healthBarGroup.addActor(HealthBar(player))
+
+        gameStage.addActor(floorGroup)
         gameStage.addActor(entityGroup)
         gameStage.addActor(blockGroup)
         gameStage.addActor(healthBarGroup)

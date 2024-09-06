@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.world
 
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.PathFinding
-import com.alexpi.awesometanks.entities.tanks.PlayerTank
+import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.map.GameMap
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
@@ -17,13 +17,13 @@ object GameModule {
     private var _pathFinding: PathFinding? = null
     private var gameValues: Preferences? = null
     private var damageListener: DamageListener? = null
-    private var _player: PlayerTank? = null
+    private var _player: Player? = null
 
     var gameMap: GameMap
         get() = _gameMap!!
         set(value) { _gameMap = value}
 
-    var player: PlayerTank get() = _player!!
+    var player: Player get() = _player!!
         set(value) { _player = value }
 
     var pathFinding: PathFinding get() = _pathFinding!!
