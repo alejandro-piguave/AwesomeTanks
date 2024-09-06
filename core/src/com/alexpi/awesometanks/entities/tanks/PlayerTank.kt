@@ -8,12 +8,12 @@ import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
-import com.alexpi.awesometanks.world.Movement
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import kotlin.experimental.or
+import kotlin.math.abs
 
 class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
     .07f + GameModule.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
@@ -37,14 +37,15 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
     }
 
     //Used for keys
-    private var horizontalMovement: MutableList<Movement> = mutableListOf()
-    private var verticalMovement: MutableList<Movement> = mutableListOf()
 
     val centerX: Float
         get() = if(isRocketActive) rocketPosition.x * Constants.TILE_SIZE else x + width*.5f
 
     val centerY: Float
         get() = if(isRocketActive) rocketPosition.y * Constants.TILE_SIZE else y + height*.5f
+
+    private var horizontalMovement = 0f
+    private var verticalMovement = 0f
 
     private var isRocketActive = false
     private var rocketPosition = Vector2()
@@ -123,85 +124,71 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
                 stopUp()
                 return true
             }
-            Input.Keys.A ->{
+            Input.Keys.A -> {
                 stopLeft()
                 return true
             }
-            Input.Keys.S ->{
+            Input.Keys.S -> {
                 stopDown()
                 return true
             }
-            Input.Keys.D ->{
+            Input.Keys.D -> {
                 stopRight()
                 return true
             }
         }
         return false
     }
+
+    fun onKnobTouch(x: Float, y: Float): Boolean {
+        if (abs(x) > .2f || abs(y) > .2f) {
+            setMovementDirection(x, y)
+        } else stopMovement()
+        return true
+    }
+
     private fun moveUp(){
-        verticalMovement.add(Movement.POSITIVE)
+        verticalMovement += 1f
         updateMovement()
     }
 
     private fun moveDown(){
-        verticalMovement.add(Movement.NEGATIVE)
+        verticalMovement -= 1f
         updateMovement()
     }
 
     private fun moveLeft(){
-        horizontalMovement.add(Movement.NEGATIVE)
+        horizontalMovement -= 1f
         updateMovement()
     }
 
     private fun moveRight(){
-        horizontalMovement.add(Movement.POSITIVE)
+        horizontalMovement += 1f
         updateMovement()
     }
 
     private fun stopUp(){
-        verticalMovement.remove(Movement.POSITIVE)
+        verticalMovement -= 1f
         updateMovement()
     }
 
     private fun stopDown(){
-        verticalMovement.remove(Movement.NEGATIVE)
+        verticalMovement += 1f
         updateMovement()
     }
 
     private fun stopLeft(){
-        horizontalMovement.remove(Movement.NEGATIVE)
+        horizontalMovement += 1f
         updateMovement()
     }
 
     private fun stopRight(){
-        horizontalMovement.remove(Movement.POSITIVE)
+        horizontalMovement -= 1f
         updateMovement()
     }
 
     private fun updateMovement(){
-        isMoving = true
-        if(horizontalMovement.isEmpty() && verticalMovement.isEmpty()){
-            isMoving = false
-        } else if(horizontalMovement.isEmpty()){
-            when(verticalMovement.last()){
-                Movement.POSITIVE -> setOrientation(0f, 1f) //MOVING UP
-                Movement.NEGATIVE -> setOrientation(0f, -1f) // MOVING DOWN
-            }
-        } else if(verticalMovement.isEmpty()){
-            when(horizontalMovement.last()){
-                Movement.POSITIVE -> setOrientation(1f, 0f) //MOVING RIGHT
-                Movement.NEGATIVE -> setOrientation(-1f, 0f) // MOVING LEFT
-            }
-        } else {
-            if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.POSITIVE)
-                setOrientation(Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH EAST
-            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.POSITIVE)
-                setOrientation(-Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH WEST
-            else if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.NEGATIVE)
-                setOrientation(Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH EAST
-            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.NEGATIVE)
-                setOrientation(-Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH WEST
-        }
+        setMovementDirection(horizontalMovement, verticalMovement)
     }
 
 }

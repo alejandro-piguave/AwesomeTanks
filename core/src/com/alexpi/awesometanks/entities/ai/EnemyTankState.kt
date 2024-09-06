@@ -54,7 +54,7 @@ sealed class EnemyTankState: State<EnemyTank>{
 
     protected fun checkTargetVisibility(position: Vector2): Boolean{
         var isVisible = true
-        GameModule.getWorld().rayCast({ fixture, _, _, _ ->
+        GameModule.world.rayCast({ fixture, _, _, _ ->
             if(fixture.userData is Block){
                 isVisible = false
                 0f
@@ -156,7 +156,6 @@ class WanderState(startingPosition: Vector2): EnemyTankState(){
 
         entity.currentWeapon.desiredRotationAngle = rotationAngle
         entity.setOrientation(rotationAngle)
-        entity.isMoving = true
     }
 
     private fun withinBounds(position: Vector2): Boolean{
@@ -165,17 +164,12 @@ class WanderState(startingPosition: Vector2): EnemyTankState(){
     }
 
     override fun exit(entity: EnemyTank) {
-        entity.isMoving = false
+        entity.stopMovement()
     }
 }
 class ChaseState: EnemyTankState(){
     private val playerLastSeen = TimeUtils.millis()
     private var lastPathFindingExecution = TimeUtils.millis()
-
-    override fun enter(entity: EnemyTank) {
-        super.enter(entity)
-        entity.isMoving = true
-    }
 
     override fun update(entity: EnemyTank) {
         if(!target.isAlive){
@@ -227,7 +221,7 @@ class ChaseState: EnemyTankState(){
     }
 
     override fun exit(entity: EnemyTank) {
-        entity.isMoving = false
+        entity.stopMovement()
     }
     //Ignore damage when chasing
     override fun onMessage(entity: EnemyTank, telegram: Telegram): Boolean = false

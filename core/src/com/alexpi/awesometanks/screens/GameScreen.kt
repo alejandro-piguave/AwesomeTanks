@@ -10,7 +10,6 @@ import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.widget.AmmoBar
 import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.ProfitLabel
-import com.alexpi.awesometanks.world.GameListener
 import com.alexpi.awesometanks.world.GameRenderer
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
@@ -44,7 +43,7 @@ import kotlin.math.abs
 /**
  * Created by Alex on 30/12/2015.
  */
-class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameListener {
+class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameRenderer.GameListener {
     private val uiStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
     private val weaponMenuTable: Table = Table()
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
@@ -93,13 +92,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         val movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
             alpha = .5f
             addListener {
-                val x = knobPercentX
-                val y = knobPercentY
-                if (isTouched && (abs(x) > .2f || abs(y) > .2f)) {
-                    gameRenderer.player.setOrientation(x, y)
-                    gameRenderer.player.isMoving = true
-                } else gameRenderer.player.isMoving = false
-                true
+                if(isTouched) gameRenderer.onKnobTouch(knobPercentX, knobPercentY) else false
+
             }
         }
         val aimTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {

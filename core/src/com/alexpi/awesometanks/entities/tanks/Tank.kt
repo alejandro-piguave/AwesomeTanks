@@ -39,16 +39,16 @@ abstract class Tank(
 
     val body: Body
     private val fixture: Fixture
-    var currentAngleRotation: Float = 0f
+    private var currentAngleRotation: Float = 0f
     private var desiredAngleRotation: Float = 0f
     set(value) {
         field = if (value < -MathUtils.PI) value + MathUtils.PI
         else if(value > MathUtils.PI) value - MathUtils.PI
         else value
     }
-    var isMoving: Boolean = false
+    val isMoving: Boolean get() = !movementVector.isZero
     var isShooting = false
-    private val movement: Vector2 = Vector2()
+    private val movementVector: Vector2 = Vector2()
 
     abstract val currentWeapon: Weapon
 
@@ -76,7 +76,7 @@ abstract class Tank(
     override fun onAlive(delta: Float) {
         if (isMoving) {
             updateAngleRotation()
-            body.setLinearVelocity(movement.x * delta, movement.y * delta)
+            body.setLinearVelocity(movementVector.x * movementSpeed * delta, movementVector.y * movementSpeed * delta)
             body.setTransform(body.position, currentAngleRotation)
         } else {
             body.setLinearVelocity(0f, 0f)
@@ -98,16 +98,19 @@ abstract class Tank(
         remove()
     }
 
-    //x and y values must be normalized
-    fun setOrientation(x: Float, y: Float) {
+    fun setMovementDirection(x: Float, y: Float) {
         desiredAngleRotation = MathUtils.atan2(y, x)
-        movement.set(x * movementSpeed, y * movementSpeed)
+        movementVector.set(Vector2(x,y).nor())
+    }
+
+    fun stopMovement() {
+        movementVector.set(0f, 0f)
     }
 
     //In radians
     fun setOrientation(rotationAngle: Float) {
         desiredAngleRotation = rotationAngle
-        movement.set(MathUtils.cos(rotationAngle) * movementSpeed, MathUtils.sin(rotationAngle) * movementSpeed)
+        movementVector.set(MathUtils.cos(rotationAngle), MathUtils.sin(rotationAngle))
     }
 
     private fun updateAngleRotation() {
