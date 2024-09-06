@@ -18,6 +18,7 @@ public class GameButton extends TextButton {
         final Sound clickSoundDown = assetManager.get("sounds/click_down.ogg",Sound.class);
         final Sound clickSoundUp = assetManager.get("sounds/click_down.ogg",Sound.class);
 
+
         addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

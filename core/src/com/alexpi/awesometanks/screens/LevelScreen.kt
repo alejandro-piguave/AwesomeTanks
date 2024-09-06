@@ -11,11 +11,11 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Timer
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 
 /**
@@ -39,22 +39,20 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
         lockedLevelLabel.addAction(Actions.alpha(0f))
         val levelTable = Table()
         for (i in 0 until Constants.LEVEL_COUNT) {
+            val isLevelUnlocked = game.gameValues.getBoolean("unlocked$i") || i == 0
             val levelButton = GameButton(game.manager, {
-                if (game.gameValues.getBoolean("unlocked$i") || i == 0) stage.addAction(
+                if (isLevelUnlocked) stage.addAction(
                     Actions.sequence(
                         Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run {
                             game.screen = GameScreen(game, i)
                         }
                     )
-                ) else {
-                    lockedLevelLabel.addAction(Actions.alpha(1f))
-                    Timer.schedule(object : Timer.Task() {
-                        override fun run() {
-                            lockedLevelLabel.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
-                        }
-                    }, 1f)
-                }
+                )
             }, (i + 1).toString())
+            if(!isLevelUnlocked){
+                levelButton.color = Color.GRAY
+                levelButton.touchable = Touchable.disabled
+            }
             val gameButtonCell = levelTable.add(levelButton).size(80f).pad(16f)
             if ((i + 1) % LEVEL_TABLE_COLUMN_COUNT == 0) gameButtonCell.row()
         }
