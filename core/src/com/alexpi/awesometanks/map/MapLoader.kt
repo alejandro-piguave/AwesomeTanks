@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.utils
+package com.alexpi.awesometanks.map
 
 import com.badlogic.gdx.Gdx
 import java.io.BufferedReader

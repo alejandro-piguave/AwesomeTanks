@@ -1,6 +1,5 @@
-package com.alexpi.awesometanks.utils
+package com.alexpi.awesometanks.map
 
-import com.badlogic.gdx.ai.pfa.Connection
 import com.badlogic.gdx.ai.pfa.DefaultConnection
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
@@ -71,12 +70,13 @@ class GameMap(charMap: Array<CharArray>) {
                 predicate(map[row][col])
     }
 
-    fun getRandomEmptyAdjacentCell(cell: Cell, radius: Int = 1) : Cell{
+    fun getRandomEmptyAdjacentCell(cell: Cell, radius: Int = 1) : Cell {
         var col: Int = -1
         var row: Int = -1
         while (row < 0 || row >= map.size || col < 0 || col >= map[0].size
             || (col == cell.col && row == cell.row)
-            || map[row][col].value in solidBlocks){
+            || map[row][col].value in solidBlocks
+        ){
             val colOffset = MathUtils.randomSign() * MathUtils.random(radius)
             val rowOffset = MathUtils.randomSign() * MathUtils.random(radius)
             col = cell.col + colOffset
@@ -170,7 +170,3 @@ class GameMap(charMap: Array<CharArray>) {
 
 }
 
-class Cell(val row: Int, val col: Int, var value: Char, var isVisible: Boolean){
-    val connections: com.badlogic.gdx.utils.Array<Connection<Cell>> = com.badlogic.gdx.utils.Array()
-    override fun toString(): String = "($row, $col)"
-}

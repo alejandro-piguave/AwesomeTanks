@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.actors
 
-import com.alexpi.awesometanks.utils.Cell
+import com.alexpi.awesometanks.map.Cell
 import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture

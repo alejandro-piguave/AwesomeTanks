@@ -3,7 +3,7 @@ package com.alexpi.awesometanks.world
 import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.ai.PathFinding
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
-import com.alexpi.awesometanks.utils.GameMap
+import com.alexpi.awesometanks.map.GameMap
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.physics.box2d.World
@@ -19,7 +19,8 @@ object GameModule {
     private var damageListener: DamageListener? = null
     private var _player: PlayerTank? = null
 
-    var gameMap: GameMap get() = _gameMap!!
+    var gameMap: GameMap
+        get() = _gameMap!!
         set(value) { _gameMap = value}
 
     var player: PlayerTank get() = _player!!

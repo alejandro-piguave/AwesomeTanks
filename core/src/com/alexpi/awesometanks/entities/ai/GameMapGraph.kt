@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.ai
 
-import com.alexpi.awesometanks.utils.Cell
-import com.alexpi.awesometanks.utils.GameMap
+import com.alexpi.awesometanks.map.Cell
+import com.alexpi.awesometanks.map.GameMap
 import com.badlogic.gdx.ai.pfa.Connection
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph
 import com.badlogic.gdx.utils.Array

@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.entities.ai
 
 import com.alexpi.awesometanks.entities.blocks.Block
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
-import com.alexpi.awesometanks.utils.Cell
+import com.alexpi.awesometanks.map.Cell
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.ai.fsm.State
 import com.badlogic.gdx.ai.msg.Telegram

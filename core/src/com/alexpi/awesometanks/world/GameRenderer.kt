@@ -21,9 +21,9 @@ import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.PlayerTank
+import com.alexpi.awesometanks.map.GameMap
+import com.alexpi.awesometanks.map.MapLoader
 import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.GameMap
-import com.alexpi.awesometanks.utils.MapLoader
 import com.alexpi.awesometanks.utils.Rumble
 import com.alexpi.awesometanks.utils.Settings
 import com.alexpi.awesometanks.utils.Utils
@@ -45,7 +45,7 @@ class GameRenderer(private val game: MainGame,
                    private val gameListener: GameListener,
                    level: Int) : DamageListener {
 
-    private val gameMap:GameMap
+    private val gameMap: GameMap
     private val pathFinding: PathFinding
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
