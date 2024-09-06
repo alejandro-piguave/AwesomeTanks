@@ -12,7 +12,7 @@ class HealthBar(private val damageableActor: DamageableActor,
                 //Duration zero means inifinity
                 private val duration: Int = 0): Actor() {
     private val firstAct = TimeUtils.millis()
-    private val healthBarSprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/health_bar.png", Texture::class.java))
+    private val healthBarSprite: Sprite = Sprite(GameModule.assetManager.get("sprites/health_bar.png", Texture::class.java))
 
     init {
         setSize(Constants.TILE_SIZE, Constants.TILE_SIZE * .125f)

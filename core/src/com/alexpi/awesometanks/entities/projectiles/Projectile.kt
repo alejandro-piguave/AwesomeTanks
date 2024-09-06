@@ -106,7 +106,7 @@ abstract class Projectile private constructor(
             if (isPlayer) Constants.CAT_PLAYER_BULLET else Constants.CAT_ENEMY_BULLET
         fixtureDef.filter.maskBits =
             if (isPlayer) Constants.PLAYER_BULLET_MASK else Constants.ENEMY_BULLET_MASK
-        body = GameModule.getWorld().createBody(bodyDef)
+        body = GameModule.world.createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         shape.dispose()
         fixture.userData = this

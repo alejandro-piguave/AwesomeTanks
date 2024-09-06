@@ -30,7 +30,7 @@ class LaserGun(
     .05f,
     .2f
 ) {
-    private val laserRay = Image(GameModule.getAssetManager().get<Texture>("sprites/laser_ray.png"))
+    private val laserRay = Image(GameModule.assetManager.get<Texture>("sprites/laser_ray.png"))
     private var playSound = false
     private var minFraction = 1f
 
@@ -62,7 +62,7 @@ class LaserGun(
 
             createProjectile(group, position)
 
-            GameModule.getWorld().rayCast({ fixture, point, _, fraction ->
+            GameModule.world.rayCast({ fixture, point, _, fraction ->
                 if(fixture.userData is DamageableActor){
                     if(fraction < minFraction){
                         minFraction = fraction

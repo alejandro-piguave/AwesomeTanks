@@ -11,8 +11,8 @@ import com.badlogic.gdx.physics.box2d.World
 
 //Object that holds references to common game objects to avoid passing them in the constructor every time we need them.
 object GameModule {
-    private var assetManager: AssetManager? = null
-    private var world: World? = null
+    private var _assetManager: AssetManager? = null
+    private var _world: World? = null
     private var _gameMap: GameMap? = null
     private var _pathFinding: PathFinding? = null
     private var gameValues: Preferences? = null
@@ -29,22 +29,24 @@ object GameModule {
     var pathFinding: PathFinding get() = _pathFinding!!
         set(value) { _pathFinding = value }
 
-    fun getAssetManager(): AssetManager = assetManager!!
-    fun getWorld(): World = world!!
+    var assetManager: AssetManager get() = _assetManager!!
+        set(value) { _assetManager = value }
+
+    var world: World get() = _world!!
+        set(value) { _world = value }
+
     fun getGameValues(): Preferences = gameValues!!
     fun getDamageListener(): DamageListener? = damageListener
 
-    fun set(assetManager: AssetManager, world: World, gameValues: Preferences, damageListener: DamageListener){
-        this.assetManager = assetManager
-        this.world = world
+    fun set(gameValues: Preferences, damageListener: DamageListener){
         this.gameValues = gameValues
         this.damageListener = damageListener
     }
 
     //Calling this method when disposing the GameRenderer is very important to avoid memory leaks
     fun dispose(){
-        assetManager = null
-        world = null
+        _assetManager = null
+        _world = null
         _gameMap = null
         _pathFinding = null
         gameValues = null

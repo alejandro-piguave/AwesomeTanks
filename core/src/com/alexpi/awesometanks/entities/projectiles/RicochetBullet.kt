@@ -46,7 +46,7 @@ class RicochetBullet(
     }
 
     init {
-        sprite = Sprite(GameModule.getAssetManager().get("sprites/ricochet_bullet.png", Texture::class.java))
+        sprite = Sprite(GameModule.assetManager.get("sprites/ricochet_bullet.png", Texture::class.java))
         particleActor = ParticleActor("particles/ricochets.party", x + bodyWidth / 2, y + bodyHeight / 2, true)
     }
 }

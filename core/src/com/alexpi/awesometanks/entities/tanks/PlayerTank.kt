@@ -1,13 +1,15 @@
 package com.alexpi.awesometanks.entities.tanks
 
-import com.alexpi.awesometanks.screens.UpgradeType
 import com.alexpi.awesometanks.map.Cell
-import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.map.GameMap
+import com.alexpi.awesometanks.screens.UpgradeType
+import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.world.Movement
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
@@ -33,6 +35,10 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
         val weaponPower = GameModule.getGameValues().getInteger("power${it.ordinal}")
         Weapon.getWeaponAt(it,weaponAmmo, weaponPower, true, this)
     }
+
+    //Used for keys
+    private var horizontalMovement: MutableList<Movement> = mutableListOf()
+    private var verticalMovement: MutableList<Movement> = mutableListOf()
 
     val centerX: Float
         get() = if(isRocketActive) rocketPosition.x * Constants.TILE_SIZE else x + width*.5f
@@ -88,4 +94,114 @@ class PlayerTank : Tank(Vector2(-1f,-1f), .75f,
     override fun onRocketCollided() {
         isRocketActive = false
     }
+
+    fun onKeyDown(keycode: Int): Boolean {
+        when (keycode) {
+            Input.Keys.W -> {
+                moveUp()
+                return true
+            }
+            Input.Keys.A -> {
+                moveLeft()
+                return true
+            }
+            Input.Keys.S -> {
+                moveDown()
+                return true
+            }
+            Input.Keys.D -> {
+                moveRight()
+                return true
+            }
+            else -> return false
+        }
+    }
+
+    fun onKeyUp(keycode: Int): Boolean {
+        when (keycode) {
+            Input.Keys.W ->{
+                stopUp()
+                return true
+            }
+            Input.Keys.A ->{
+                stopLeft()
+                return true
+            }
+            Input.Keys.S ->{
+                stopDown()
+                return true
+            }
+            Input.Keys.D ->{
+                stopRight()
+                return true
+            }
+        }
+        return false
+    }
+    private fun moveUp(){
+        verticalMovement.add(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    private fun moveDown(){
+        verticalMovement.add(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    private fun moveLeft(){
+        horizontalMovement.add(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    private fun moveRight(){
+        horizontalMovement.add(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    private fun stopUp(){
+        verticalMovement.remove(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    private fun stopDown(){
+        verticalMovement.remove(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    private fun stopLeft(){
+        horizontalMovement.remove(Movement.NEGATIVE)
+        updateMovement()
+    }
+
+    private fun stopRight(){
+        horizontalMovement.remove(Movement.POSITIVE)
+        updateMovement()
+    }
+
+    private fun updateMovement(){
+        isMoving = true
+        if(horizontalMovement.isEmpty() && verticalMovement.isEmpty()){
+            isMoving = false
+        } else if(horizontalMovement.isEmpty()){
+            when(verticalMovement.last()){
+                Movement.POSITIVE -> setOrientation(0f, 1f) //MOVING UP
+                Movement.NEGATIVE -> setOrientation(0f, -1f) // MOVING DOWN
+            }
+        } else if(verticalMovement.isEmpty()){
+            when(horizontalMovement.last()){
+                Movement.POSITIVE -> setOrientation(1f, 0f) //MOVING RIGHT
+                Movement.NEGATIVE -> setOrientation(-1f, 0f) // MOVING LEFT
+            }
+        } else {
+            if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.POSITIVE)
+                setOrientation(Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH EAST
+            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.POSITIVE)
+                setOrientation(-Constants.SQRT2_2, Constants.SQRT2_2) // MOVING NORTH WEST
+            else if(horizontalMovement.last() == Movement.POSITIVE && verticalMovement.last() == Movement.NEGATIVE)
+                setOrientation(Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH EAST
+            else if(horizontalMovement.last() == Movement.NEGATIVE && verticalMovement.last() == Movement.NEGATIVE)
+                setOrientation(-Constants.SQRT2_2, -Constants.SQRT2_2) // MOVING SOUTH WEST
+        }
+    }
+
 }

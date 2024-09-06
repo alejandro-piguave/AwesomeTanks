@@ -122,8 +122,8 @@ abstract class Weapon(
     }
 
     init {
-        sprite = Sprite(GameModule.getAssetManager().get(texturePath, Texture::class.java))
-        shotSound = GameModule.getAssetManager().get(shotSoundPath, Sound::class.java)
+        sprite = Sprite(GameModule.assetManager.get(texturePath, Texture::class.java))
+        shotSound = GameModule.assetManager.get(shotSoundPath, Sound::class.java)
         this.ammo = ammo
     }
 

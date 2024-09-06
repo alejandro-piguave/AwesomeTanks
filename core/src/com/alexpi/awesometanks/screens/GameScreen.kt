@@ -12,7 +12,11 @@ import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.ProfitLabel
 import com.alexpi.awesometanks.world.GameListener
 import com.alexpi.awesometanks.world.GameRenderer
-import com.badlogic.gdx.*
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.InputMultiplexer
+import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
@@ -20,9 +24,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
@@ -35,7 +44,7 @@ import kotlin.math.abs
 /**
  * Created by Alex on 30/12/2015.
  */
-class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor {
+class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameListener {
     private val uiStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
     private val weaponMenuTable: Table = Table()
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
@@ -53,16 +62,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun show() {
-        gameRenderer = GameRenderer(game, object: GameListener{
-            override fun onLevelFailed() {
-                showLevelFailedButton()
-            }
-
-            override fun onLevelCompleted() {
-                showLevelCompletedButton()
-            }
-
-        }, level)
+        gameRenderer = GameRenderer(game, this, level)
         ammoBar = AmmoBar(game.manager,gameRenderer.player)
         createUIScene()
     }
@@ -306,22 +306,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 return true
             }
             //EVENTS FOR DESKTOP
-            Input.Keys.W -> {
-                gameRenderer.moveUp()
-                return true
-            }
-            Input.Keys.A -> {
-                gameRenderer.moveLeft()
-                return true
-            }
-            Input.Keys.S -> {
-                gameRenderer.moveDown()
-                return true
-            }
-            Input.Keys.D -> {
-                gameRenderer.moveRight()
-                return true
-            }
             Input.Keys.NUM_1 -> {
                 changeGun(0)
                 return true
@@ -354,8 +338,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 changeGun(7)
                 return true
             }
+             else -> return gameRenderer.onKeyDown(keycode)
         }
-        return false
     }
 
     override fun hide() {
@@ -393,25 +377,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun keyUp(keycode: Int): Boolean {
-        when (keycode) {
-            Input.Keys.W ->{
-                gameRenderer.stopUp()
-                return true
-            }
-            Input.Keys.A ->{
-                gameRenderer.stopLeft()
-                return true
-            }
-            Input.Keys.S ->{
-                gameRenderer.stopDown()
-                return true
-            }
-            Input.Keys.D ->{
-                gameRenderer.stopRight()
-                return true
-            }
-        }
-        return false
+        return gameRenderer.onKeyUp(keycode)
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
@@ -425,5 +391,12 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     override fun keyTyped(character: Char): Boolean = false
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean = false
+    override fun onLevelFailed() {
+        showLevelFailedButton()
+    }
+
+    override fun onLevelCompleted() {
+        showLevelCompletedButton()
+    }
 
 }

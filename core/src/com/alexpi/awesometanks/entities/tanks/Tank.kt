@@ -10,7 +10,11 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.BodyDef
+import com.badlogic.gdx.physics.box2d.Fixture
+import com.badlogic.gdx.physics.box2d.FixtureDef
+import com.badlogic.gdx.physics.box2d.PolygonShape
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -30,8 +34,8 @@ abstract class Tank(
     tankColor: Color
     ) : DamageableActor( maxHealth, true, isFreezable, true){
 
-    private val bodySprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/tank_body.png", Texture::class.java))
-    private val wheelsSprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/tank_wheels.png", Texture::class.java))
+    private val bodySprite: Sprite = Sprite(GameModule.assetManager.get("sprites/tank_body.png", Texture::class.java))
+    private val wheelsSprite: Sprite = Sprite(GameModule.assetManager.get("sprites/tank_wheels.png", Texture::class.java))
 
     val body: Body
     private val fixture: Fixture
@@ -136,7 +140,7 @@ abstract class Tank(
         fixtureDef.shape = shape
         fixtureDef.filter.categoryBits = categoryBits
         fixtureDef.filter.maskBits = maskBits
-        body = GameModule.getWorld().createBody(bodyDef)
+        body = GameModule.world.createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         fixture.userData = this
         body.userData = this

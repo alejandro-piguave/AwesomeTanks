@@ -27,7 +27,7 @@ abstract class DamageableActor(
     private var lastFreezingTime = 0L
     private var lastHit: Long = System.currentTimeMillis()
     private val flameSprite: ParticleActor = ParticleActor( "particles/flame.party", x, y, true)
-    private val frozenSprite: Sprite = Sprite(GameModule.getAssetManager().get("sprites/frozen.png", Texture::class.java))
+    private val frozenSprite: Sprite = Sprite(GameModule.assetManager.get("sprites/frozen.png", Texture::class.java))
 
     open fun takeDamage(damage: Float) {
         if(isImmortal) return

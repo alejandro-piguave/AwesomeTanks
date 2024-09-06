@@ -23,7 +23,7 @@ abstract class Block private constructor(
     isFlammable: Boolean, isFreezable: Boolean,
     rumble: Boolean,
 ) : DamageableActor(health, isFlammable, isFreezable, rumble, isIndestructible) {
-    private val sprite: Sprite = Sprite(GameModule.getAssetManager().get(texturePath, Texture::class.java))
+    private val sprite: Sprite = Sprite(GameModule.assetManager.get(texturePath, Texture::class.java))
     val body: Body
     val fixture: Fixture
     protected var size = 0f
@@ -77,7 +77,7 @@ abstract class Block private constructor(
         fixtureDef.filter.categoryBits = Constants.CAT_BLOCK
         fixtureDef.filter.maskBits =
             (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY_BULLET or Constants.CAT_ITEM or Constants.CAT_ENEMY).toShort()
-        body = GameModule.getWorld().createBody(bodyDef)
+        body = GameModule.world.createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         fixture.userData = this
         body.userData = this

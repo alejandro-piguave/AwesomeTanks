@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles
 
-import com.alexpi.awesometanks.world.GameModule.getAssetManager
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
@@ -17,6 +17,6 @@ open class Bullet(
     isPlayer: Boolean
 ) : Projectile(pos, angle, speed, radius, damage, isPlayer) {
     init {
-        sprite = Sprite(getAssetManager().get("sprites/bullet.png", Texture::class.java))
+        sprite = Sprite(GameModule.assetManager.get("sprites/bullet.png", Texture::class.java))
     }
 }

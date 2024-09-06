@@ -1,14 +1,17 @@
 package com.alexpi.awesometanks.entities.items
 
 import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.world.GameModule.getAssetManager
-import com.alexpi.awesometanks.world.GameModule.getWorld
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.BodyDef
+import com.badlogic.gdx.physics.box2d.CircleShape
+import com.badlogic.gdx.physics.box2d.Fixture
+import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.scenes.scene2d.Actor
 import kotlin.experimental.or
 
@@ -59,13 +62,13 @@ abstract class Item(fileName: String, position: Vector2, private val size: Float
         fixtureDef.shape = shape
         fixtureDef.filter.categoryBits = Constants.CAT_ITEM
         fixtureDef.filter.maskBits = (Constants.CAT_PLAYER or Constants.CAT_BLOCK or Constants.CAT_ENEMY)
-        body = getWorld().createBody(bodyDef)
+        body = GameModule.world.createBody(bodyDef)
         body.linearDamping = 1f
         body.angularDamping = .5f
         fixture = body.createFixture(fixtureDef)
         shape.dispose()
         fixture.userData = this
-        sprite = Sprite(getAssetManager().get(fileName, Texture::class.java))
+        sprite = Sprite(GameModule.assetManager.get(fileName, Texture::class.java))
         setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE)
         setOrigin(originX + width / 2, originY + height / 2)
         setPosition(

@@ -29,8 +29,8 @@ class RailGun(ammo: Float, power: Int, filter: Boolean) :
         1f
     ) {
 
-    private val world: World = GameModule.getWorld()
-    private val laserRay = Image(GameModule.getAssetManager().get<Texture>("sprites/railgun_laser.png"))
+    private val world: World = GameModule.world
+    private val laserRay = Image(GameModule.assetManager.get<Texture>("sprites/railgun_laser.png"))
     private var drawLaser = false
     private var minFraction = 1f
 

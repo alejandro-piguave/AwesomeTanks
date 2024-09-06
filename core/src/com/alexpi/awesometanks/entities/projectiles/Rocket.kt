@@ -36,8 +36,8 @@ class Rocket(
         forceY = speed * sin(angle)
         body.linearDamping = .5f
         body.applyForceToCenter(forceX, forceY, true)
-        sprite = Sprite(GameModule.getAssetManager().get<Texture>("sprites/rocket.png"))
-        flameSprite = Sprite(GameModule.getAssetManager().get<Texture>("sprites/rocket_flame.png"))
+        sprite = Sprite(GameModule.assetManager.get<Texture>("sprites/rocket.png"))
+        flameSprite = Sprite(GameModule.assetManager.get<Texture>("sprites/rocket_flame.png"))
     }
 
 

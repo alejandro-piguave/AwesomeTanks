@@ -56,7 +56,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
                 if (isLevelUnlocked) stage.addAction(
                     Actions.sequence(
                         Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run {
-                            game.screen = GameScreen(game, i)
+                            game.screen = GameScreen(game, i + 1)
                         }
                     )
                 )
