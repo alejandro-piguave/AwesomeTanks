@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.actors
 
+import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.world.GameModule
 import com.alexpi.awesometanks.world.Rumble
 import com.badlogic.gdx.graphics.Texture
@@ -28,25 +29,25 @@ abstract class DamageableActor(
     private var lastHit: Long = System.currentTimeMillis()
     private val flameSprite: ParticleActor = ParticleActor( "particles/flame.party", x, y, true)
     private val frozenSprite: Sprite = Sprite(GameModule.assetManager.get("sprites/frozen.png", Texture::class.java))
-
+    var damageListener: DamageListener? = null
     open fun takeDamage(damage: Float) {
         if(isImmortal) return
         if (health - damage > 0) {
             health -= damage
             if(lastHit + HEALTH_BAR_DURATION < TimeUtils.millis()){
-                GameModule.getDamageListener()?.onDamage(this)
+                damageListener?.onDamage(this)
                 lastHit = TimeUtils.millis()
             }
         }
         else {
             health = 0f
-            GameModule.getDamageListener()?.onDeath(this)
+            damageListener?.onDeath(this)
         }
     }
 
     open fun killInstantly(){
         health = 0f
-        GameModule.getDamageListener()?.onDeath(this)
+        damageListener?.onDeath(this)
     }
 
     open fun freeze() {

@@ -43,7 +43,7 @@ class Spawner(level: Int, pos: Vector2) : Block(
                     body.position,
                     EnemyTank.Tier.NORMAL,
                     generatedTypes.random()
-                )
+                ).also { it.damageListener = damageListener }
             )
         }
     }

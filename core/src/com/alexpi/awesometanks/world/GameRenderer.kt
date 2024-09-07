@@ -14,9 +14,9 @@ import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.listener.DamageListener
-import com.alexpi.awesometanks.map.GameMap
-import com.alexpi.awesometanks.map.MapInterpreter
+import com.alexpi.awesometanks.map.MapEntityCreator
 import com.alexpi.awesometanks.map.MapLoader
+import com.alexpi.awesometanks.map.MapTable
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
 import com.alexpi.awesometanks.world.collision.ContactManager
@@ -34,7 +34,7 @@ class GameRenderer(
     private val gameListener: GameListener,
     level: Int) : DamageListener, ContactManager.ContactListener {
 
-    private val gameMap: GameMap
+    private val mapTable: MapTable
     private val pathFinding: PathFinding
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
@@ -44,7 +44,6 @@ class GameRenderer(
     private val explosionManager = ExplosionManager(game.manager, gameStage, world)
 
     var isPaused = false
-    private var alreadyExecuted = false
     var isLevelCompleted = false
         private set
     val player: Player
@@ -52,14 +51,14 @@ class GameRenderer(
     init {
         GameModule.world = world
         GameModule.assetManager = game.manager
-        GameModule.set(game.gameValues, this)
+        GameModule.set(game.gameValues)
 
         val mapLoader = MapLoader()
         val map = mapLoader.load(level)
-        gameMap = GameMap(map)
-        GameModule.gameMap = gameMap
+        mapTable = MapTable(map)
+        GameModule.mapTable = mapTable
 
-        pathFinding = PathFinding(gameMap)
+        pathFinding = PathFinding(mapTable)
         GameModule.pathFinding = pathFinding
 
         player = Player()
@@ -70,8 +69,8 @@ class GameRenderer(
         val shadeGroup = Group()
         val floorGroup = Group()
 
-        val mapInterpreter = MapInterpreter()
-        mapInterpreter.interpret(gameMap, level, player, shadeGroup, blockGroup, entityGroup, floorGroup)
+        val mapEntityCreator = MapEntityCreator()
+        mapEntityCreator.create(mapTable, level, player, shadeGroup, blockGroup, entityGroup, floorGroup, this)
 
         healthBarGroup.addActor(HealthBar(player))
 
@@ -88,23 +87,11 @@ class GameRenderer(
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         if (!isPaused) {
             gameStage.act(delta)
-            checkLevelState()
             gameStage.camera.position.set(player.centerX, player.centerY, 0f)
             updateRumble(delta)
         }
         gameStage.draw()
         if(!isPaused) world.step(1 / 60f, 6, 2)
-    }
-
-    private fun checkLevelState() {
-        isLevelCompleted = isLevelCleared()
-        if (!player.isAlive && !alreadyExecuted) {
-            alreadyExecuted = true
-            gameListener.onLevelFailed()
-        } else if (isLevelCompleted && !alreadyExecuted) {
-            alreadyExecuted = true
-            gameListener.onLevelCompleted()
-        }
     }
 
     fun updateViewport(width: Int, height: Int){
@@ -134,8 +121,8 @@ class GameRenderer(
         }
     }
     private fun isLevelCleared(): Boolean {
-        for (actor: Actor in blockGroup.children) if (actor is Turret) return false
-        for (actor: Actor in entityGroup.children) if (actor is EnemyTank || actor is Spawner) return false
+        for (actor: Actor in blockGroup.children) if (actor is Turret && actor.isAlive) return false
+        for (actor: Actor in entityGroup.children) if (actor is EnemyTank || actor is Spawner && actor.isAlive) return false
         return true
     }
 
@@ -159,8 +146,14 @@ class GameRenderer(
 
     override fun onDeath(actor: DamageableActor) {
         if(actor is Block){
-            val cell = gameMap.toCell(actor.body.position)
-            gameMap.clear(cell)
+            val cell = mapTable.toCell(actor.body.position)
+            mapTable.clear(cell)
+        } else if(actor is Player) {
+            gameListener.onLevelFailed()
+        }
+
+        if((actor is EnemyTank || actor is Turret || actor is Spawner) && isLevelCleared().also { isLevelCompleted = it }) {
+            gameListener.onLevelCompleted()
         }
     }
 

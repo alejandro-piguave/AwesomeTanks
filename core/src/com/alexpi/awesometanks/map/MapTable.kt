@@ -9,12 +9,16 @@ import com.badlogic.gdx.math.Vector2
  * Created by Alex on 25/01/2016.
  */
 
-class GameMap(charMap: Array<CharArray>) {
-    private var map: Array<Array<Cell>>
+class MapTable(charMap: Array<CharArray>) {
+    private val map: Array<Array<Cell>>
     private var playerCol: Int = -1
     private var playerRow: Int = -1
     var visualRange: Int = 3
     val cellCount: Int
+
+
+    val rows: Int get() = map.size
+    val columns: Int get() = map.first().size
 
     init {
         val cA = charMap.first().size
@@ -93,10 +97,6 @@ class GameMap(charMap: Array<CharArray>) {
                 predicate( map[neighborRow][neighborCol])
             }
         }
-    }
-
-    fun toWorldPos(cell: Cell): Vector2 {
-        return Vector2( cell.col.toFloat(), (map.size - cell.row).toFloat())
     }
 
     fun toCell(pos: Vector2): Cell {

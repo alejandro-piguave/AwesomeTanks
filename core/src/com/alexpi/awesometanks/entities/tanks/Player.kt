@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.entities.tanks
 
-import com.alexpi.awesometanks.map.Cell
-import com.alexpi.awesometanks.map.GameMap
+import com.alexpi.awesometanks.map.MapTable
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.UpgradeType
 import com.alexpi.awesometanks.weapons.RocketLauncher
@@ -27,7 +26,7 @@ class Player : Tank(Vector2(-1f,-1f), .75f,
     (CAT_BLOCK or CAT_ITEM or CAT_ENEMY or CAT_ENEMY_BULLET),
     500f, false, Color.WHITE), RocketListener {
 
-    private val map: GameMap = GameModule.gameMap
+    private val map: MapTable = GameModule.mapTable
     private val visibilityRadius = 2 + GameModule.getGameValues().getInteger(UpgradeType.VISIBILITY.name)
     private val armor = GameModule.getGameValues().getInteger(UpgradeType.ARMOR.name)
     val position: Vector2
@@ -77,8 +76,8 @@ class Player : Tank(Vector2(-1f,-1f), .75f,
         } else currentWeapon.setDesiredRotationAngleFrom(x,y)
     }
 
-    fun setPos(cell: Cell){
-        body.setTransform(map.toWorldPos(cell).add(.5f,.5f), body.angle)
+    fun setPosition(position: Vector2) {
+        body.setTransform(position.add(.5f,.5f), body.angle)
     }
 
     fun saveProgress(gameValues: Preferences) {

@@ -1,9 +1,8 @@
 package com.alexpi.awesometanks.world
 
-import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.entities.ai.PathFinding
 import com.alexpi.awesometanks.entities.tanks.Player
-import com.alexpi.awesometanks.map.GameMap
+import com.alexpi.awesometanks.map.MapTable
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.physics.box2d.World
@@ -13,15 +12,14 @@ import com.badlogic.gdx.physics.box2d.World
 object GameModule {
     private var _assetManager: AssetManager? = null
     private var _world: World? = null
-    private var _gameMap: GameMap? = null
+    private var _mapTable: MapTable? = null
     private var _pathFinding: PathFinding? = null
     private var gameValues: Preferences? = null
-    private var damageListener: DamageListener? = null
     private var _player: Player? = null
 
-    var gameMap: GameMap
-        get() = _gameMap!!
-        set(value) { _gameMap = value}
+    var mapTable: MapTable
+        get() = _mapTable!!
+        set(value) { _mapTable = value}
 
     var player: Player get() = _player!!
         set(value) { _player = value }
@@ -36,21 +34,18 @@ object GameModule {
         set(value) { _world = value }
 
     fun getGameValues(): Preferences = gameValues!!
-    fun getDamageListener(): DamageListener? = damageListener
 
-    fun set(gameValues: Preferences, damageListener: DamageListener){
+    fun set(gameValues: Preferences){
         this.gameValues = gameValues
-        this.damageListener = damageListener
     }
 
     //Calling this method when disposing the GameRenderer is very important to avoid memory leaks
     fun dispose(){
         _assetManager = null
         _world = null
-        _gameMap = null
+        _mapTable = null
         _pathFinding = null
         gameValues = null
-        damageListener = null
         _player = null
     }
 }

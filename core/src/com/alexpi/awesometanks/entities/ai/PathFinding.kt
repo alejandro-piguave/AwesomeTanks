@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.ai
 
 import com.alexpi.awesometanks.map.Cell
-import com.alexpi.awesometanks.map.GameMap
+import com.alexpi.awesometanks.map.MapTable
 import com.badlogic.gdx.ai.pfa.Connection
 import com.badlogic.gdx.ai.pfa.DefaultGraphPath
 import com.badlogic.gdx.ai.pfa.GraphPath
@@ -11,7 +11,7 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder
 import com.badlogic.gdx.math.Vector2
 import kotlin.math.abs
 
-class PathFinding(private val map: GameMap) {
+class PathFinding(private val map: MapTable) {
     private val pathfinder: PathFinder<Cell> = IndexedAStarPathFinder(GameMapGraph(map))
     private val heuristic: Heuristic<Cell> = Heuristic<Cell> { node, endNode -> // Manhattan distance
         abs(endNode.row - node.row) + abs(endNode.col - node.col).toFloat()
@@ -24,7 +24,7 @@ class PathFinding(private val map: GameMap) {
 
         pathfinder.searchConnectionPath(sourceCell, targetCell, heuristic, connectionPath)
 
-        return if (connectionPath.count == 0) null else map.toWorldPos(connectionPath[0].toNode).add(.5f, .5f)
+        return if (connectionPath.count == 0) null else connectionPath[0].toNode.toWorldPosition(map).add(.5f, .5f)
     }
 
     fun findPath(source: Cell, target: Cell): GraphPath<Connection<Cell>> {

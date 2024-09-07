@@ -27,7 +27,7 @@ sealed class EnemyTankState: State<EnemyTank>{
     }
 
     val target = GameModule.player
-    val gameMap = GameModule.gameMap
+    val gameMap = GameModule.mapTable
     val pathFinding = GameModule.pathFinding
 
     override fun update(entity: EnemyTank) {
@@ -131,7 +131,7 @@ class WanderState(startingPosition: Vector2): EnemyTankState(){
         val randomCell = gameMap.getRandomEmptyAdjacentCell(currentCell, 2)
         path = pathFinding.findPath(currentCell, randomCell)
         val nextCell = if (path.count > 0 ) path[0].toNode else null
-        nextPosition = nextCell?.let { gameMap.toWorldPos(it).add(.5f,.5f) } ?: startingPosition
+        nextPosition = nextCell?.let { it.toWorldPosition(gameMap).add(.5f,.5f) } ?: startingPosition
     }
 
     override fun update(entity: EnemyTank) {
@@ -147,7 +147,7 @@ class WanderState(startingPosition: Vector2): EnemyTankState(){
                 entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
                 return
             } else {
-                nextPosition = gameMap.toWorldPos(nextCell).add(.5f,.5f)
+                nextPosition = nextCell.toWorldPosition(gameMap).add(.5f,.5f)
             }
         }
 
