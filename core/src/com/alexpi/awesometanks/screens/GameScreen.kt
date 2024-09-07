@@ -8,6 +8,7 @@ import com.alexpi.awesometanks.widget.AmmoBar
 import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.ProfitLabel
 import com.alexpi.awesometanks.widget.Styles
+import com.alexpi.awesometanks.widget.WeaponMenu
 import com.alexpi.awesometanks.world.GameRenderer
 import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
@@ -18,15 +19,11 @@ import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad
@@ -44,20 +41,12 @@ import kotlin.math.abs
  */
 class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameRenderer.GameListener {
     private val uiStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
-    private val weaponMenuTable: Table = Table()
+    private val weaponMenu = WeaponMenu(game.manager, Weapon.Type.values().indices.map { game.gameValues.getBoolean("isWeaponAvailable$it",false) })
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
     private lateinit var gameRenderer: GameRenderer
     private lateinit var ammoBar: AmmoBar
     private lateinit var pauseButton: GameButton
     private val gunName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyle(game.manager, (TILE_SIZE / 4).toInt()))
-    private val buttons: List<ImageButton> = (0 until Weapon.Type.values().size).map {
-        val texture = game.manager.get<Texture>("icons/icon_$it.png")
-        val disabled = game.manager.get<Texture>("icons/icon_disabled_$it.png")
-        val style = ImageButtonStyle(game.manager.get<Skin>("uiskin/uiskin.json").get(ButtonStyle::class.java))
-        style.imageUp = TextureRegionDrawable(TextureRegion(texture))
-        style.imageDisabled = TextureRegionDrawable(TextureRegion(disabled))
-        ImageButton(style)
-    }
 
     override fun show() {
         gameRenderer = GameRenderer(game, this, level)
@@ -113,10 +102,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             alpha = .5f
             onClick {
                 gameRenderer.isPaused = if(!gameRenderer.isPaused){
-                    uiStage.addActor(weaponMenuTable)
+                    uiStage.addActor(weaponMenu)
                     true
                 } else {
-                    weaponMenuTable.remove()
+                    weaponMenu.remove()
                     false
                 }
             }
@@ -126,21 +115,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 showPauseMenu()
         }, "Pause")
 
-
-        buttons.forEach { button ->
-            val index = buttons.indexOf(button)
-
-            if(index > 0) {
-                button.isDisabled = game.gameValues.getBoolean("weapon$index",true)
-                button.setColor(button.color.r,button.color.g,button.color.b,.5f)
-            }
-            if(!button.isDisabled) {
-                button.onClick {
-                   changeGun(index)
-                }
-            }
-            weaponMenuTable.add(button).width(96f).height(96f)
-        }
+        weaponMenu.onWeaponClick = this::onWeaponUpdated
 
 
         val uiTopTable = Table()
@@ -168,9 +143,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                     padRight(Gdx.graphics.safeInsetRight.toFloat())
             }.row()
 
-            weaponMenuTable.setFillParent(true)
+            weaponMenuButton.setFillParent(true)
         } else {
-            uiBottomTable.add(weaponMenuTable).expandX().center().row()
+            uiBottomTable.add(weaponMenu).expandX().center().row()
         }
         uiTable.add(uiBottomTable).growX().row()
         uiStage.addActor(uiTable)
@@ -185,15 +160,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         }, 2f)
     }
 
-    private fun changeGun(index: Int){
-        if(index == gameRenderer.player.currentWeaponIndex || buttons[index].isDisabled) return
-
+    private fun onWeaponUpdated(index: Int){
         if (Settings.soundsOn) gunChangeSound.play()
         gameRenderer.player.currentWeaponIndex = index
-        buttons.forEach { ib ->
-            ib.setColor(ib.color.r, ib.color.g, ib.color.b,
-                if(gameRenderer.player.currentWeaponIndex == buttons.indexOf(ib)) 1f else .5f)
-        }
 
         ammoBar.isVisible = index != 0
 
@@ -204,7 +173,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             override fun run() {
                 gunName.addAction(Actions.fadeOut(TRANSITION_DURATION))
             }
-
         }, 2f)
     }
 
@@ -290,8 +258,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.BACK, Input.Keys.ESCAPE -> {
-                if(Gdx.app.type != Application.ApplicationType.Desktop && weaponMenuTable.parent != null){
-                    weaponMenuTable.remove()
+                if(Gdx.app.type != Application.ApplicationType.Desktop && weaponMenu.parent != null){
+                    weaponMenu.remove()
                     gameRenderer.isPaused = false
                 } else if(!gameRenderer.isLevelCompleted){
                     showPauseMenu()
@@ -300,35 +268,35 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
             //EVENTS FOR DESKTOP
             Input.Keys.NUM_1 -> {
-                changeGun(0)
+                weaponMenu.selectWeapon(0)
                 return true
             }
             Input.Keys.NUM_2 -> {
-                changeGun(1)
+                weaponMenu.selectWeapon(1)
                 return true
             }
             Input.Keys.NUM_3 -> {
-                changeGun(2)
+                weaponMenu.selectWeapon(2)
                 return true
             }
             Input.Keys.NUM_4 -> {
-                changeGun(3)
+                weaponMenu.selectWeapon(3)
                 return true
             }
             Input.Keys.NUM_5 -> {
-                changeGun(4)
+                weaponMenu.selectWeapon(4)
                 return true
             }
             Input.Keys.NUM_6 -> {
-                changeGun(5)
+                weaponMenu.selectWeapon(5)
                 return true
             }
             Input.Keys.NUM_7 -> {
-                changeGun(6)
+                weaponMenu.selectWeapon(6)
                 return true
             }
             Input.Keys.NUM_8 -> {
-                changeGun(7)
+                weaponMenu.selectWeapon(7)
                 return true
             }
              else -> return gameRenderer.onKeyDown(keycode)

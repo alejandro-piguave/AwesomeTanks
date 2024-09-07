@@ -51,7 +51,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         val weaponValues = Weapon.Type.values().map { weapon ->
             val weaponPower = game.gameValues.getInteger("power${weapon.ordinal}", 0)
             val weaponAmmo = game.gameValues.getFloat("ammo${weapon.ordinal}", 100f)
-            val isWeaponAvailable = game.gameValues.getBoolean("weapon${weapon.ordinal}", true)
+            val isWeaponAvailable = game.gameValues.getBoolean("isWeaponAvailable${weapon.ordinal}", true)
             WeaponValues(weaponPower, weaponAmmo, isWeaponAvailable)
         }
 
@@ -92,7 +92,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             weaponValues.forEachIndexed { index, values ->
                 game.gameValues.putInteger("power$index", values.power)
                 game.gameValues.putFloat("ammo$index", values.ammo)
-                game.gameValues.putBoolean("weapon$index", values.isDisabled)
+                game.gameValues.putBoolean("isWeaponAvailable$index", values.isAvailable)
             }
             game.gameValues.putInteger("money", moneyValue.money)
             game.gameValues.flush()
@@ -145,7 +145,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         val weaponButtons =  Weapon.Type.values().map { weapon ->
             val weaponButton = ImageButton(getWeaponButtonStyle(weapon.ordinal)).apply {
                 //Sets the availability of all the weapon buttons except for the minigun which is always available
-                if(weapon.ordinal > 0 ) isDisabled = weaponValues[weapon.ordinal].isDisabled
+                if(weapon.ordinal > 0 ) isDisabled = !weaponValues[weapon.ordinal].isAvailable
                 onClick {
                     currentWeapon = weapon.ordinal
                     weaponPower.setValue(weaponValues[currentWeapon].power.toFloat())
@@ -170,7 +170,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
                     if (currentWeapon == 0) {
                         weaponAmmo.isVisible = false
                     } else {
-                        currentWeaponImage.isDisabled = weaponValues[currentWeapon].isDisabled
+                        currentWeaponImage.isDisabled = !weaponValues[currentWeapon].isAvailable
                     }
                 }
             }
@@ -186,7 +186,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             if (weaponButtons[currentWeapon].isDisabled && (moneyValue.money - currentGunPrice) > 0) {
                 if (soundsOn) purchaseSound.play()
                 moneyValue.money -= currentGunPrice
-                weaponValues[currentWeapon].isDisabled = false
+                weaponValues[currentWeapon].isAvailable = true
                 weaponButtons[currentWeapon].isDisabled = false
                 currentWeaponImage.isDisabled = false
                 weaponAmmo.isVisible = true
@@ -272,7 +272,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
 
 class MoneyValue(var money: Int)
 
-class WeaponValues(var power: Int, var ammo: Float, var isDisabled: Boolean)
+class WeaponValues(var power: Int, var ammo: Float, var isAvailable: Boolean)
 
 enum class UpgradeType(val prices: List<Int>){
     ARMOR(listOf(2000, 4000, 8000, 16000, 32000)),
