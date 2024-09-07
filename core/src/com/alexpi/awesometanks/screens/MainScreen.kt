@@ -1,10 +1,9 @@
 package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.Settings
-import com.alexpi.awesometanks.utils.Styles
 import com.alexpi.awesometanks.widget.GameButton
+import com.alexpi.awesometanks.widget.Styles
+import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
@@ -27,8 +26,8 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
     override fun show() {
         stage =  Stage(
             ExtendViewport(
-            Constants.SCREEN_WIDTH,
-            Constants.SCREEN_HEIGHT
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT
         )
         )
         background = game.manager.get("sprites/background.png")
@@ -40,14 +39,14 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
         val playButton = GameButton(game.manager, {
             stage.addAction(
                 Actions.sequence(
-                    Actions.fadeOut(Constants.TRANSITION_DURATION),
+                    Actions.fadeOut(TRANSITION_DURATION),
                     Actions.run { game.screen = game.upgradesScreen }
                 )
             )
         }, "Play")
         val soundButton = ImageButton(TextureRegionDrawable(game.manager.get<Texture>(
             if(Settings.soundsOn)"sprites/sound_on.png" else "sprites/sound_off.png")))
-        soundButton.setPosition(Constants.SCREEN_WIDTH - 92f, Constants.SCREEN_HEIGHT - 92f)
+        soundButton.setPosition(SCREEN_WIDTH - 92f, SCREEN_HEIGHT - 92f)
         soundButton.onClick {
             Gdx.app.log("MainScreen", "Sound button clicked")
             if (Settings.soundsOn){
@@ -62,10 +61,12 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
         }
         table.setFillParent(true)
         table.center()
-        table.add(title1).width(Constants.TILE_SIZE * 8).row()
-        table.add(title2).width(Constants.TILE_SIZE * 8).padBottom(Constants.TILE_SIZE / 3).row()
-        table.add(playButton).width(Constants.TILE_SIZE * 4f).height(Constants.TILE_SIZE*1.25f).pad(
-            Constants.TILE_SIZE / 3
+        table.add(title1).width(TILE_SIZE * 8).row()
+        table.add(title2).width(TILE_SIZE * 8).padBottom(
+            TILE_SIZE / 3).row()
+        table.add(playButton).width(TILE_SIZE * 4f).height(
+            TILE_SIZE*1.25f).pad(
+            TILE_SIZE / 3
         )
         table.row()
         stage.addActor(table)
@@ -74,7 +75,7 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
         stage.addAction(
             Actions.sequence(
                 Actions.alpha(0f),
-                Actions.fadeIn(Constants.TRANSITION_DURATION)
+                Actions.fadeIn(TRANSITION_DURATION)
             )
         )
         Gdx.input.isCatchBackKey = false

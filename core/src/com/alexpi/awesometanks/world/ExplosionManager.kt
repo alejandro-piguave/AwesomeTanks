@@ -2,9 +2,7 @@ package com.alexpi.awesometanks.world
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.ParticleActor
-import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.Rumble
-import com.alexpi.awesometanks.utils.Settings
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.utils.Utils
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Sound
@@ -27,9 +25,9 @@ class ExplosionManager(assetManager: AssetManager, private val stage: Stage, pri
     }
 
     private fun createExplosion(x: Float, y: Float, explosionRadius: Float, maxDamage: Float, volume: Float, rumblePower: Float, rumbleLength: Float){
-        val explosionSize = Constants.TILE_SIZE * explosionRadius * 2
-        val explosionX = Constants.TILE_SIZE * x
-        val explosionY = Constants.TILE_SIZE * y
+        val explosionSize = TILE_SIZE * explosionRadius * 2
+        val explosionX = TILE_SIZE * x
+        val explosionY = TILE_SIZE * y
         stage.addActor(
             ParticleActor(
                 "particles/big-explosion.party",

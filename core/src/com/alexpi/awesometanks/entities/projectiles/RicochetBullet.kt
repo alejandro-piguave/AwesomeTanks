@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.entities.actors.ParticleActor
-import com.alexpi.awesometanks.utils.Settings.soundsOn
+import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture

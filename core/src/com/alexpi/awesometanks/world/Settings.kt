@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.utils
+package com.alexpi.awesometanks.world
 
 object Settings {
     var soundsOn = false

@@ -2,12 +2,17 @@ package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.map.Cell
 import com.alexpi.awesometanks.map.GameMap
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.UpgradeType
-import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.world.collision.CAT_BLOCK
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY_BULLET
+import com.alexpi.awesometanks.world.collision.CAT_ITEM
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.Color
@@ -18,8 +23,8 @@ import kotlin.math.abs
 class Player : Tank(Vector2(-1f,-1f), .75f,
     .07f + GameModule.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
     150 + GameModule.getGameValues().getInteger(UpgradeType.SPEED.name) * 10f,
-    Constants.CAT_PLAYER,
-    (Constants.CAT_BLOCK or Constants.CAT_ITEM or Constants.CAT_ENEMY or Constants.CAT_ENEMY_BULLET),
+    CAT_PLAYER,
+    (CAT_BLOCK or CAT_ITEM or CAT_ENEMY or CAT_ENEMY_BULLET),
     500f, false, Color.WHITE), RocketListener {
 
     private val map: GameMap = GameModule.gameMap
@@ -39,10 +44,10 @@ class Player : Tank(Vector2(-1f,-1f), .75f,
     //Used for keys
 
     val centerX: Float
-        get() = if(isRocketActive) rocketPosition.x * Constants.TILE_SIZE else x + width*.5f
+        get() = if(isRocketActive) rocketPosition.x * TILE_SIZE else x + width*.5f
 
     val centerY: Float
-        get() = if(isRocketActive) rocketPosition.y * Constants.TILE_SIZE else y + height*.5f
+        get() = if(isRocketActive) rocketPosition.y * TILE_SIZE else y + height*.5f
 
     private var horizontalMovement = 0f
     private var verticalMovement = 0f

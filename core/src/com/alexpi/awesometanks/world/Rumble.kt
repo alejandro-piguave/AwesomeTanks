@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.utils
+package com.alexpi.awesometanks.world
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.MathUtils

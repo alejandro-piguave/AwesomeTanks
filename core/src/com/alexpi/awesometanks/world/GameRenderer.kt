@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.world
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.entities.DamageListener
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.HealthBar
 import com.alexpi.awesometanks.entities.actors.ParticleActor
@@ -14,11 +13,13 @@ import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.Player
+import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.map.GameMap
 import com.alexpi.awesometanks.map.MapInterpreter
 import com.alexpi.awesometanks.map.MapLoader
-import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.Rumble
+import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
+import com.alexpi.awesometanks.screens.SCREEN_WIDTH
+import com.alexpi.awesometanks.world.collision.ContactManager
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.math.Vector2
@@ -38,7 +39,7 @@ class GameRenderer(
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
     private val healthBarGroup: Group = Group()
-    private val gameStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+    private val gameStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
     private val world = World(Vector2(0f, 0f), true)
     private val explosionManager = ExplosionManager(game.manager, gameStage, world)
 
@@ -139,7 +140,11 @@ class GameRenderer(
     }
 
     private fun setWorldContactListener(){
-        world.setContactListener(ContactManager(this))
+        world.setContactListener(
+            ContactManager(
+                this
+            )
+        )
     }
 
     fun dispose(){

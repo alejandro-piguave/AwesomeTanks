@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.weapons
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.projectiles.Laser
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Color
@@ -40,7 +40,7 @@ class LaserGun(
 
     override fun shoot(group: Group, position: Vector2) {
         laserRay.rotation = currentRotationAngle * MathUtils.radiansToDegrees
-        laserRay.setPosition(position.x * Constants.TILE_SIZE, position.y * Constants.TILE_SIZE - laserRay.height/2)
+        laserRay.setPosition(position.x * TILE_SIZE, position.y * TILE_SIZE - laserRay.height/2)
         if(canShoot()){
             val dX = MathUtils.cos(currentRotationAngle) * MAXIMUM_REACH
             val dY = MathUtils.sin(currentRotationAngle) * MAXIMUM_REACH
@@ -66,7 +66,7 @@ class LaserGun(
                 if(fixture.userData is DamageableActor){
                     if(fraction < minFraction){
                         minFraction = fraction
-                        val distance = Utils.fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * Constants.TILE_SIZE
+                        val distance = Utils.fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * TILE_SIZE
                         laserRay.width = distance.toFloat()
                     }
                     fraction

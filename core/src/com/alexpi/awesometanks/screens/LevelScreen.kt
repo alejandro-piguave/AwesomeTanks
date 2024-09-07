@@ -1,9 +1,8 @@
 package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.Styles
 import com.alexpi.awesometanks.widget.GameButton
+import com.alexpi.awesometanks.widget.Styles
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -23,7 +22,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
     private lateinit var stage: Stage
     private lateinit var background: Texture
     override fun show() {
-        stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+        stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
         background = game.manager.get("sprites/background.png", Texture::class.java)
         val table = Table()
         table.pad(32f)
@@ -37,25 +36,25 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
         }, "Back")
         table.add(Label("Select level", Styles.getLabelStyleBackground(game.manager))).row()
         table.add(levelTable).expand().fillX().row()
-        table.add(backButton).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).row()
+        table.add(backButton).size(TILE_SIZE * 3, TILE_SIZE).row()
         stage.addActor(table)
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
         stage.addAction(
             Actions.sequence(
                 Actions.alpha(0f),
-                Actions.fadeIn(Constants.TRANSITION_DURATION)
+                Actions.fadeIn(TRANSITION_DURATION)
             )
         )
     }
 
     private fun addLevelButtons(table: Table) {
-        for (i in 0 until Constants.LEVEL_COUNT) {
+        for (i in 0 until LEVEL_COUNT) {
             val isLevelUnlocked = game.gameValues.getBoolean("unlocked$i") || i == 0
             val levelButton = GameButton(game.manager, {
                 if (isLevelUnlocked) stage.addAction(
                     Actions.sequence(
-                        Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run {
+                        Actions.fadeOut(TRANSITION_DURATION), Actions.run {
                             game.screen = GameScreen(game, i + 1)
                         }
                     )

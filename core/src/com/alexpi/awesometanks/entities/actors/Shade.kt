@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.actors
 
 import com.alexpi.awesometanks.map.Cell
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -40,10 +40,10 @@ class Shade(private val cell: Cell) : Image() {
         )
         val position = GameModule.gameMap.toWorldPos(cell)
         setBounds(
-            position.x * Constants.TILE_SIZE * SIZE,
-            position.y * Constants.TILE_SIZE * SIZE,
-            Constants.TILE_SIZE * SIZE,
-            Constants.TILE_SIZE * SIZE
+            position.x * TILE_SIZE * SIZE,
+            position.y * TILE_SIZE * SIZE,
+            TILE_SIZE * SIZE,
+            TILE_SIZE * SIZE
         )
     }
 }

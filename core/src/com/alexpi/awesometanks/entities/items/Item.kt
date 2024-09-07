@@ -1,7 +1,11 @@
 package com.alexpi.awesometanks.entities.items
 
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.world.collision.CAT_BLOCK
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY
+import com.alexpi.awesometanks.world.collision.CAT_ITEM
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -30,8 +34,8 @@ abstract class Item(fileName: String, position: Vector2, private val size: Float
             return
         }
         setPosition(
-            (body.position.x - size / 2) * Constants.TILE_SIZE,
-            (body.position.y - size / 2) * Constants.TILE_SIZE
+            (body.position.x - size / 2) * TILE_SIZE,
+            (body.position.y - size / 2) * TILE_SIZE
         )
         rotation = body.angle * MathUtils.radiansToDegrees
     }
@@ -60,8 +64,8 @@ abstract class Item(fileName: String, position: Vector2, private val size: Float
         fixtureDef.density = 2f
         fixtureDef.restitution = .1f
         fixtureDef.shape = shape
-        fixtureDef.filter.categoryBits = Constants.CAT_ITEM
-        fixtureDef.filter.maskBits = (Constants.CAT_PLAYER or Constants.CAT_BLOCK or Constants.CAT_ENEMY)
+        fixtureDef.filter.categoryBits = CAT_ITEM
+        fixtureDef.filter.maskBits = (CAT_PLAYER or CAT_BLOCK or CAT_ENEMY)
         body = GameModule.world.createBody(bodyDef)
         body.linearDamping = 1f
         body.angularDamping = .5f
@@ -69,11 +73,11 @@ abstract class Item(fileName: String, position: Vector2, private val size: Float
         shape.dispose()
         fixture.userData = this
         sprite = Sprite(GameModule.assetManager.get(fileName, Texture::class.java))
-        setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE)
+        setSize(size * TILE_SIZE, size * TILE_SIZE)
         setOrigin(originX + width / 2, originY + height / 2)
         setPosition(
-            (body.position.x - size / 2) * Constants.TILE_SIZE,
-            (body.position.y - size / 2) * Constants.TILE_SIZE
+            (body.position.x - size / 2) * TILE_SIZE,
+            (body.position.y - size / 2) * TILE_SIZE
         )
     }
 }

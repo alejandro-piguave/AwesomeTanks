@@ -3,9 +3,9 @@ package com.alexpi.awesometanks.entities.blocks
 import com.alexpi.awesometanks.entities.ai.TurretAI
 import com.alexpi.awesometanks.entities.ai.TurretAICallback
 import com.alexpi.awesometanks.entities.items.GoldNugget
-import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Filter
@@ -86,7 +86,7 @@ class Turret(
 
     init {
         val filter = Filter()
-        filter.categoryBits = Constants.CAT_ENEMY
+        filter.categoryBits = CAT_ENEMY
         fixture.filterData = filter
         nuggetValue = getNuggetValue(type)
         weapon = Weapon.getWeaponAt(type, 1f, 2, false)

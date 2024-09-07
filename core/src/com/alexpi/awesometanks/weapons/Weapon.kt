@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.weapons
 
-import com.alexpi.awesometanks.utils.Settings.soundsOn
+import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color

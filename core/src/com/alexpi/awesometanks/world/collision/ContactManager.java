@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.world;
+package com.alexpi.awesometanks.world.collision;
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor;
 import com.alexpi.awesometanks.entities.blocks.Mine;

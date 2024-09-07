@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.widget;
 
-import com.alexpi.awesometanks.utils.Settings;
-import com.alexpi.awesometanks.utils.Styles;
+import com.alexpi.awesometanks.world.Settings;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;

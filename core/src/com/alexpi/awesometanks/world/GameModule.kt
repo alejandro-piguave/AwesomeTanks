@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.world
 
-import com.alexpi.awesometanks.entities.DamageListener
+import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.entities.ai.PathFinding
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.map.GameMap

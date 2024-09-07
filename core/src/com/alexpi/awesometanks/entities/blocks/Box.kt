@@ -4,7 +4,7 @@ import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.LEVEL_COUNT
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.math.Vector2
@@ -50,7 +50,7 @@ class Box(level: Int, pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygo
 
     companion object {
         private fun getNuggetValue(level: Int): Int {
-            return (20 + level.toFloat() / (Constants.LEVEL_COUNT - 1) * 50).toInt()
+            return (20 + level.toFloat() / (LEVEL_COUNT - 1) * 50).toInt()
         }
 
         private fun getMaxType(level: Int): Int {

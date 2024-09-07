@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Color
@@ -87,8 +87,8 @@ abstract class Tank(
             currentWeapon.shoot(parent, body.position)
         } else currentWeapon.await()
         setPosition(
-            (body.position.x - bodySize*.5f) * Constants.TILE_SIZE,
-            (body.position.y - bodySize*.5f) * Constants.TILE_SIZE
+            (body.position.x - bodySize*.5f) * TILE_SIZE,
+            (body.position.y - bodySize*.5f) * TILE_SIZE
         )
         rotation = body.angle * MathUtils.radiansToDegrees
     }
@@ -149,8 +149,8 @@ abstract class Tank(
         body.userData = this
         shape.dispose()
         color = tankColor
-        setSize(bodySize * Constants.TILE_SIZE, bodySize * Constants.TILE_SIZE)
+        setSize(bodySize * TILE_SIZE, bodySize * TILE_SIZE)
         setOrigin(width / 2, height / 2)
-        setPosition((body.position.x - bodySize / 2) * Constants.TILE_SIZE, (body.position.y - bodySize / 2) * Constants.TILE_SIZE)
+        setPosition((body.position.x - bodySize / 2) * TILE_SIZE, (body.position.y - bodySize / 2) * TILE_SIZE)
     }
 }

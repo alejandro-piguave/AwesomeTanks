@@ -1,12 +1,22 @@
 package com.alexpi.awesometanks.entities.projectiles
 
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY_BULLET
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER_BULLET
+import com.alexpi.awesometanks.world.collision.ENEMY_BULLET_MASK
+import com.alexpi.awesometanks.world.collision.PLAYER_BULLET_MASK
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.BodyDef
+import com.badlogic.gdx.physics.box2d.CircleShape
+import com.badlogic.gdx.physics.box2d.Fixture
+import com.badlogic.gdx.physics.box2d.FixtureDef
+import com.badlogic.gdx.physics.box2d.PolygonShape
+import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.scenes.scene2d.Actor
 
 /**
@@ -29,7 +39,7 @@ abstract class Projectile private constructor(
     var hasCollided = false
         private set
     val isEnemy: Boolean
-        get() = fixture.filterData.maskBits == Constants.ENEMY_BULLET_MASK
+        get() = fixture.filterData.maskBits == ENEMY_BULLET_MASK
 
     private fun destroy() {
         body.world.destroyBody(body)
@@ -46,8 +56,8 @@ abstract class Projectile private constructor(
             return
         }
         setPosition(
-            (body.position.x - bodyWidth / 2) * Constants.TILE_SIZE,
-            (body.position.y - bodyHeight / 2) * Constants.TILE_SIZE
+            (body.position.x - bodyWidth / 2) * TILE_SIZE,
+            (body.position.y - bodyHeight / 2) * TILE_SIZE
         )
 
         rotation = body.angle * MathUtils.radiansToDegrees
@@ -103,9 +113,9 @@ abstract class Projectile private constructor(
         fixtureDef.shape = shape
         fixtureDef.restitution = .9f
         fixtureDef.filter.categoryBits =
-            if (isPlayer) Constants.CAT_PLAYER_BULLET else Constants.CAT_ENEMY_BULLET
+            if (isPlayer) CAT_PLAYER_BULLET else CAT_ENEMY_BULLET
         fixtureDef.filter.maskBits =
-            if (isPlayer) Constants.PLAYER_BULLET_MASK else Constants.ENEMY_BULLET_MASK
+            if (isPlayer) PLAYER_BULLET_MASK else ENEMY_BULLET_MASK
         body = GameModule.world.createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         shape.dispose()
@@ -113,11 +123,11 @@ abstract class Projectile private constructor(
         body.isBullet = true
         body.setLinearVelocity(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed)
         body.setTransform(body.position, angle)
-        setSize(Constants.TILE_SIZE * bodyWidth, Constants.TILE_SIZE * bodyHeight)
+        setSize(TILE_SIZE * bodyWidth, TILE_SIZE * bodyHeight)
         setOrigin(originX + width / 2, originY + height / 2)
         setPosition(
-            (body.position.x - bodyWidth / 2) * Constants.TILE_SIZE,
-            (body.position.y - bodyHeight / 2) * Constants.TILE_SIZE
+            (body.position.x - bodyWidth / 2) * TILE_SIZE,
+            (body.position.y - bodyHeight / 2) * TILE_SIZE
         )
         rotation = body.angle * MathUtils.radiansToDegrees
     }

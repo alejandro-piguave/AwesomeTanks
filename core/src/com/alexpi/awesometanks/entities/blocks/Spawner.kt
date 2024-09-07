@@ -2,9 +2,12 @@ package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.LEVEL_COUNT
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.collision.CAT_ITEM
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER_BULLET
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.utils.TimeUtils
@@ -47,11 +50,11 @@ class Spawner(level: Int, pos: Vector2) : Block(
 
     companion object {
         private fun getHealth(level: Int): Float {
-            return 400f + level.toFloat() / (Constants.LEVEL_COUNT - 1) * 1000f
+            return 400f + level.toFloat() / (LEVEL_COUNT - 1) * 1000f
         }
 
         private fun getNuggetValue(level: Int): Int {
-            return 60 + (level.toFloat() / (Constants.LEVEL_COUNT - 1) * 80).toInt()
+            return 60 + (level.toFloat() / (LEVEL_COUNT - 1) * 80).toInt()
         }
 
         private fun getMaxType(level: Int): Int {
@@ -94,7 +97,7 @@ class Spawner(level: Int, pos: Vector2) : Block(
 
     init {
         fixture.filterData.maskBits =
-            (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ITEM)
+            (CAT_PLAYER or CAT_PLAYER_BULLET or CAT_ITEM)
         lastSpawn = TimeUtils.millis()
         interval = 1000
         nuggetValue = getNuggetValue(level)

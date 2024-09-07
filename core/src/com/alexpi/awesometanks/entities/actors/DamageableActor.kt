@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.entities.actors
 
-import com.alexpi.awesometanks.utils.Rumble
 import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.world.Rumble
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -96,7 +96,7 @@ abstract class DamageableActor(
     }
 
     private fun destroy() {
-        if(rumble)Rumble.rumble(15f, .3f)
+        if(rumble) Rumble.rumble(15f, .3f)
         parent.addActor(ParticleActor(
             "particles/explosion.party",
             x + width / 2,

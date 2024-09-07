@@ -1,13 +1,12 @@
 package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.Settings.soundsOn
-import com.alexpi.awesometanks.utils.Styles
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.MoneyLabel
+import com.alexpi.awesometanks.widget.Styles
 import com.alexpi.awesometanks.widget.UpgradeTable
+import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Sound
@@ -35,7 +34,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
     private var currentWeapon = 0
     override fun show() {
         val purchaseSound = game.manager.get("sounds/purchase.ogg", Sound::class.java)
-        stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+        stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
         background = game.manager.get("sprites/background.png")
         val table = Table()
         table.setFillParent(true)
@@ -99,7 +98,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             game.gameValues.flush()
             stage.addAction(
                 Actions.sequence(
-                    Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run {
+                    Actions.fadeOut(TRANSITION_DURATION), Actions.run {
                         game.screen = game.levelScreen
                     }
                 )
@@ -176,7 +175,8 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
                 }
             }
 
-            buttons.add(weaponButton).size(Constants.TILE_SIZE, Constants.TILE_SIZE).pad(Constants.TILE_SIZE / 5)
+            buttons.add(weaponButton).size(TILE_SIZE, TILE_SIZE).pad(
+                TILE_SIZE / 5)
             weaponButton
         }
 
@@ -195,35 +195,35 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         }
 
         //Adds all buttons and tables to the UI
-        performance.add(upgradeTables[0]).size(Constants.TILE_SIZE * 2f, Constants.TILE_SIZE * 1.5f).pad(8f)
-        performance.add(upgradeTables[1]).size(Constants.TILE_SIZE * 2f, Constants.TILE_SIZE * 1.5f).pad(8f).row()
-        performance.add(upgradeTables[2]).size(Constants.TILE_SIZE * 2f, Constants.TILE_SIZE * 1.5f).pad(8f)
-        performance.add(upgradeTables[3]).size(Constants.TILE_SIZE * 2f, Constants.TILE_SIZE * 1.5f).pad(8f).row()
+        performance.add(upgradeTables[0]).size(TILE_SIZE * 2f, TILE_SIZE * 1.5f).pad(8f)
+        performance.add(upgradeTables[1]).size(TILE_SIZE * 2f, TILE_SIZE * 1.5f).pad(8f).row()
+        performance.add(upgradeTables[2]).size(TILE_SIZE * 2f, TILE_SIZE * 1.5f).pad(8f)
+        performance.add(upgradeTables[3]).size(TILE_SIZE * 2f, TILE_SIZE * 1.5f).pad(8f).row()
         val currentWeaponUpgradeTable = Table()
         val currentWeaponInfoTable = Table()
         currentWeaponInfoTable.add(currentWeaponImage)
-            .size(Constants.TILE_SIZE * 1.5f, Constants.TILE_SIZE * 1.5f).row()
+            .size(TILE_SIZE * 1.5f, TILE_SIZE * 1.5f).row()
         currentWeaponInfoTable.add(currentWeaponName).padTop(8f).row()
         currentWeaponUpgradeTable.add(weaponPower)
-            .size(Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 1.5f).pad(8f).row()
+            .size(TILE_SIZE * 2, TILE_SIZE * 1.5f).pad(8f).row()
         currentWeaponUpgradeTable.add(weaponAmmo)
-            .size(Constants.TILE_SIZE * 2, Constants.TILE_SIZE * 1.5f).pad(8f).row()
+            .size(TILE_SIZE * 2, TILE_SIZE * 1.5f).pad(8f).row()
         currentWeaponTable.add(currentWeaponInfoTable)
         currentWeaponTable.add(currentWeaponUpgradeTable)
         table.add(moneyLabel).colspan(2).padTop(16f).row()
         table.add(performance)
         table.add(currentWeaponTable).row()
         table.add(buttons).colspan(2).row()
-        table.add(backButton).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).padBottom(16f).right()
+        table.add(backButton).size(TILE_SIZE * 3, TILE_SIZE).padBottom(16f).right()
             .spaceRight(40f)
-        table.add(nextButton).size(Constants.TILE_SIZE * 3, Constants.TILE_SIZE).padBottom(16f).left()
+        table.add(nextButton).size(TILE_SIZE * 3, TILE_SIZE).padBottom(16f).left()
         stage.addActor(table)
         Gdx.input.inputProcessor = stage
         Gdx.input.isCatchBackKey = true
         stage.addAction(
             Actions.sequence(
                 Actions.alpha(0f),
-                Actions.fadeIn(Constants.TRANSITION_DURATION)
+                Actions.fadeIn(TRANSITION_DURATION)
             )
         )
     }

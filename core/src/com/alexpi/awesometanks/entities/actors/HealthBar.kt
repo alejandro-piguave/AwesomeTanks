@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.actors
 
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -15,7 +15,7 @@ class HealthBar(private val damageableActor: DamageableActor,
     private val healthBarSprite: Sprite = Sprite(GameModule.assetManager.get("sprites/health_bar.png", Texture::class.java))
 
     init {
-        setSize(Constants.TILE_SIZE, Constants.TILE_SIZE * .125f)
+        setSize(TILE_SIZE, TILE_SIZE * .125f)
     }
 
     override fun act(delta: Float) {

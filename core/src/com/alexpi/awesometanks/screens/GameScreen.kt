@@ -2,15 +2,14 @@ package com.alexpi.awesometanks.screens
 
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.utils.Constants
-import com.alexpi.awesometanks.utils.Settings
-import com.alexpi.awesometanks.utils.Styles
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.widget.AmmoBar
 import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.ProfitLabel
+import com.alexpi.awesometanks.widget.Styles
 import com.alexpi.awesometanks.world.GameRenderer
+import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -44,13 +43,13 @@ import kotlin.math.abs
  * Created by Alex on 30/12/2015.
  */
 class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameRenderer.GameListener {
-    private val uiStage: Stage = Stage(ExtendViewport(Constants.SCREEN_WIDTH, Constants.SCREEN_HEIGHT))
+    private val uiStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
     private val weaponMenuTable: Table = Table()
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
     private lateinit var gameRenderer: GameRenderer
     private lateinit var ammoBar: AmmoBar
     private lateinit var pauseButton: GameButton
-    private val gunName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyle(game.manager, (Constants.TILE_SIZE / 4).toInt()))
+    private val gunName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyle(game.manager, (TILE_SIZE / 4).toInt()))
     private val buttons: List<ImageButton> = (0 until Weapon.Type.values().size).map {
         val texture = game.manager.get<Texture>("icons/icon_$it.png")
         val disabled = game.manager.get<Texture>("icons/icon_disabled_$it.png")
@@ -88,7 +87,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
         val money = ProfitLabel(game.manager, gameRenderer.player)
 
-        val joystickSize = Constants.SCREEN_HEIGHT / 2.25f
+        val joystickSize = SCREEN_HEIGHT / 2.25f
         val movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
             alpha = .5f
             addListener {
@@ -181,7 +180,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
         Timer.schedule(object : Timer.Task() {
             override fun run() {
-                gunName.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                gunName.addAction(Actions.fadeOut(TRANSITION_DURATION))
             }
         }, 2f)
     }
@@ -203,7 +202,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         gunName.addAction(Actions.alpha(1f))
         Timer.schedule(object : Timer.Task() {
             override fun run() {
-                gunName.addAction(Actions.fadeOut(Constants.TRANSITION_DURATION))
+                gunName.addAction(Actions.fadeOut(TRANSITION_DURATION))
             }
 
         }, 2f)
@@ -235,7 +234,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 saveProgress()
-                uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.upgradesScreen }))
+                uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.upgradesScreen }))
             }
         })
         table.add(continueButton).expand().top().right().pad(24f)
@@ -254,7 +253,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         )
         continueButton.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
-                uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+                uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
             }
         })
         table.add(continueButton).expand().top().right().pad(24f)
@@ -272,7 +271,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         val back = TextButton("Back", Styles.getTextButtonStyle1(game.manager))
         back.onClick {
             gameRenderer.isPaused = false
-            uiStage.addAction(Actions.sequence(Actions.fadeOut(Constants.TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+            uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
         }
         val resume = TextButton("Resume", Styles.getTextButtonStyle1(game.manager))
         resume.onClick {

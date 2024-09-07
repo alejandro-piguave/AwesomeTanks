@@ -4,9 +4,12 @@ import com.alexpi.awesometanks.entities.ai.EnemyTankState
 import com.alexpi.awesometanks.entities.ai.FrozenState
 import com.alexpi.awesometanks.entities.ai.WanderState
 import com.alexpi.awesometanks.entities.items.GoldNugget
-import com.alexpi.awesometanks.utils.Constants
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.collision.CAT_BLOCK
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER_BULLET
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
@@ -23,8 +26,8 @@ class EnemyTank(
     tier: Tier,
     type: Weapon.Type) : Tank(position, getSizeByTier(tier),
     ROTATION_SPEED, MOVEMENT_SPEED,
-    Constants.CAT_ENEMY,
-    Constants.CAT_BLOCK or Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY,
+    CAT_ENEMY,
+    CAT_BLOCK or CAT_PLAYER or CAT_PLAYER_BULLET or CAT_ENEMY,
     getHealthByTierAndType(tier, type),true, getColorByTier(tier)), Telegraph {
 
     val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState(position.cpy()))

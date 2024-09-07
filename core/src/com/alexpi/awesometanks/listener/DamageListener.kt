@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.entities
+package com.alexpi.awesometanks.listener
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 

@@ -1,13 +1,25 @@
 package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
-import com.alexpi.awesometanks.utils.Constants
+import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.world.collision.CAT_BLOCK
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY
+import com.alexpi.awesometanks.world.collision.CAT_ENEMY_BULLET
+import com.alexpi.awesometanks.world.collision.CAT_ITEM
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER
+import com.alexpi.awesometanks.world.collision.CAT_PLAYER_BULLET
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.*
+import com.badlogic.gdx.physics.box2d.Body
+import com.badlogic.gdx.physics.box2d.BodyDef
+import com.badlogic.gdx.physics.box2d.CircleShape
+import com.badlogic.gdx.physics.box2d.Fixture
+import com.badlogic.gdx.physics.box2d.FixtureDef
+import com.badlogic.gdx.physics.box2d.PolygonShape
+import com.badlogic.gdx.physics.box2d.Shape
 import kotlin.experimental.or
 
 /**
@@ -74,18 +86,17 @@ abstract class Block private constructor(
         }
         fixtureDef.density = 50f
         fixtureDef.shape = shape
-        fixtureDef.filter.categoryBits = Constants.CAT_BLOCK
-        fixtureDef.filter.maskBits =
-            (Constants.CAT_PLAYER or Constants.CAT_PLAYER_BULLET or Constants.CAT_ENEMY_BULLET or Constants.CAT_ITEM or Constants.CAT_ENEMY).toShort()
+        fixtureDef.filter.categoryBits = CAT_BLOCK
+        fixtureDef.filter.maskBits = (CAT_PLAYER or CAT_PLAYER_BULLET or CAT_ENEMY_BULLET or CAT_ITEM or CAT_ENEMY)
         body = GameModule.world.createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         fixture.userData = this
         body.userData = this
         shape.dispose()
-        setSize(size * Constants.TILE_SIZE, size * Constants.TILE_SIZE)
+        setSize(size * TILE_SIZE, size * TILE_SIZE)
         setPosition(
-            (body.position.x - size / 2) * Constants.TILE_SIZE,
-            (body.position.y - size / 2) * Constants.TILE_SIZE
+            (body.position.x - size / 2) * TILE_SIZE,
+            (body.position.y - size / 2) * TILE_SIZE
         )
     }
 }
