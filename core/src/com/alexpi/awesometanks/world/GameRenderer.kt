@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.HealthBar
 import com.alexpi.awesometanks.entities.actors.ParticleActor
+import com.alexpi.awesometanks.entities.actors.RumbleController
 import com.alexpi.awesometanks.entities.ai.PathFinding
 import com.alexpi.awesometanks.entities.blocks.Block
 import com.alexpi.awesometanks.entities.blocks.Spawner
@@ -41,7 +42,8 @@ class GameRenderer(
     private val healthBarGroup: Group = Group()
     private val gameStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
     private val world = World(Vector2(0f, 0f), true)
-    private val explosionManager = ExplosionManager(game.manager, gameStage, world)
+    private val rumbleController = RumbleController()
+    private val explosionManager = ExplosionManager(game.manager, gameStage, world, rumbleController)
 
     var isPaused = false
     var isLevelCompleted = false
@@ -79,6 +81,7 @@ class GameRenderer(
         gameStage.addActor(blockGroup)
         gameStage.addActor(healthBarGroup)
         gameStage.addActor(shadeGroup)
+        gameStage.addActor(rumbleController)
     }
 
 
@@ -86,9 +89,8 @@ class GameRenderer(
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         if (!isPaused) {
-            gameStage.act(delta)
             gameStage.camera.position.set(player.centerX, player.centerY, 0f)
-            updateRumble(delta)
+            gameStage.act(delta)
         }
         gameStage.draw()
         if(!isPaused) world.step(1 / 60f, 6, 2)
@@ -114,15 +116,9 @@ class GameRenderer(
         return player.onKnobTouch(x, y)
     }
 
-    private fun updateRumble(delta: Float){
-        if (Rumble.rumbleTimeLeft > 0){
-            Rumble.tick(delta)
-            gameStage.camera.translate(Rumble.pos.x, Rumble.pos.y,0f)
-        }
-    }
     private fun isLevelCleared(): Boolean {
         for (actor: Actor in blockGroup.children) if (actor is Turret && actor.isAlive) return false
-        for (actor: Actor in entityGroup.children) if (actor is EnemyTank || actor is Spawner && actor.isAlive) return false
+        for (actor: Actor in entityGroup.children) if (actor is EnemyTank && actor.isAlive || actor is Spawner && actor.isAlive) return false
         return true
     }
 
@@ -145,6 +141,17 @@ class GameRenderer(
     }
 
     override fun onDeath(actor: DamageableActor) {
+        gameStage.addActor(ParticleActor(
+            "particles/explosion.party",
+            actor.x + actor.width / 2,
+            actor.y + actor.height / 2,
+            false
+        ))
+
+        if(actor.rumble) {
+            rumbleController.rumble(15f, .3f)
+        }
+
         if(actor is Block){
             val cell = mapTable.toCell(actor.body.position)
             mapTable.clear(cell)

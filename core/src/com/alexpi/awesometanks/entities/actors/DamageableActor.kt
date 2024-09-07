@@ -2,7 +2,6 @@ package com.alexpi.awesometanks.entities.actors
 
 import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.world.GameModule
-import com.alexpi.awesometanks.world.Rumble
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -17,7 +16,7 @@ abstract class DamageableActor(
                                val maxHealth: Float,
                                private val isFlammable: Boolean,
                                private val isFreezable: Boolean,
-                               private val rumble: Boolean,
+                               val rumble: Boolean,
                                private val isImmortal: Boolean = false) :
     Actor() {
     var health: Float = maxHealth
@@ -41,13 +40,12 @@ abstract class DamageableActor(
         }
         else {
             health = 0f
-            damageListener?.onDeath(this)
+
         }
     }
 
     open fun killInstantly(){
         health = 0f
-        damageListener?.onDeath(this)
     }
 
     open fun freeze() {
@@ -58,7 +56,8 @@ abstract class DamageableActor(
     final override fun act(delta: Float) {
         super.act(delta)
         if (!isAlive) {
-            destroy()
+            damageListener?.onDeath(this)
+            onDestroy()
         } else {
             if (isBurning && isFlammable) {
                 flameSprite.setPosition(x + width / 2, y + height / 2)
@@ -94,17 +93,6 @@ abstract class DamageableActor(
                 if (isBurning) isBurning = false
             }
         }, duration)
-    }
-
-    private fun destroy() {
-        if(rumble) Rumble.rumble(15f, .3f)
-        parent.addActor(ParticleActor(
-            "particles/explosion.party",
-            x + width / 2,
-            y + height / 2,
-            false
-        ))
-        onDestroy()
     }
 
     open fun onDestroy() {}
