@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.entities.tanks
 
 import com.alexpi.awesometanks.map.MapTable
 import com.alexpi.awesometanks.screens.TILE_SIZE
-import com.alexpi.awesometanks.screens.UpgradeType
+import com.alexpi.awesometanks.screens.upgrades.UpgradeType
 import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon

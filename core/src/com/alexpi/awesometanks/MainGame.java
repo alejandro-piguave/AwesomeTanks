@@ -2,7 +2,7 @@ package com.alexpi.awesometanks;
 
 import com.alexpi.awesometanks.screens.LevelScreen;
 import com.alexpi.awesometanks.screens.MainScreen;
-import com.alexpi.awesometanks.screens.UpgradesScreen;
+import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen;
 import com.alexpi.awesometanks.world.Settings;
 import com.alexpi.awesometanks.weapons.Weapon;
 import com.badlogic.gdx.Game;

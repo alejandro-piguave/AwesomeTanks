@@ -1,11 +1,14 @@
-package com.alexpi.awesometanks.screens
+package com.alexpi.awesometanks.screens.upgrades
 
 import com.alexpi.awesometanks.MainGame
+import com.alexpi.awesometanks.screens.BaseScreen
+import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
+import com.alexpi.awesometanks.screens.SCREEN_WIDTH
+import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.screens.TRANSITION_DURATION
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.widget.GameButton
-import com.alexpi.awesometanks.widget.MoneyLabel
 import com.alexpi.awesometanks.widget.Styles
-import com.alexpi.awesometanks.widget.UpgradeTable
 import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -58,13 +61,14 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         //Creates the sections for upgrading the tanks armor, rotation speed, movement speed and visibility
         val upgradeTables = UpgradeType.values().map { upgradeType ->
             val value = game.gameValues.getInteger(upgradeType.name)
-            val upgradeTable =  UpgradeTable(
-                game.manager,
-                upgradeType.name,
-                value.toFloat(),
-                5f,
-                if (value == 5) 1000 else upgradeType.prices[value]
-            )
+            val upgradeTable =
+                UpgradeTable(
+                    game.manager,
+                    upgradeType.name,
+                    value.toFloat(),
+                    5f,
+                    if (value == 5) 1000 else upgradeType.prices[value]
+                )
             upgradeTable.buyButton.onClick {
                 if (upgradeTable.canBuy(moneyValue.money)) {
                     if (soundsOn) purchaseSound.play()
@@ -110,8 +114,10 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         val currentWeaponName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyleSmall(game.manager))
 
         //Creates the button for upgrading the selected weapon power
-        val weaponPower = UpgradeTable(game.manager, "Power", weaponValues[0].power.toFloat(), 5f,
-            if (weaponValues[0].power >= 5) 5 else Weapon.Type.MINIGUN.upgradePrices[weaponValues[0].power]).apply {
+        val weaponPower = UpgradeTable(
+            game.manager, "Power", weaponValues[0].power.toFloat(), 5f,
+            if (weaponValues[0].power >= 5) 5 else Weapon.Type.MINIGUN.upgradePrices[weaponValues[0].power]
+        ).apply {
             if(isMaxValue) buyButton.isVisible = false
             buyButton.onClick {
                 if (canBuy(moneyValue.money) && !currentWeaponImage.isDisabled) {
@@ -129,7 +135,13 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         }
 
         //Creates the button for buying more ammo
-        val weaponAmmo = UpgradeTable(game.manager, "Ammo", weaponValues[0].ammo, 100f, 100).apply {
+        val weaponAmmo = UpgradeTable(
+            game.manager,
+            "Ammo",
+            weaponValues[0].ammo,
+            100f,
+            100
+        ).apply {
             isVisible = false
             buyButton.onClick {
                 if (canBuy(moneyValue.money) && !currentWeaponImage.isDisabled) {
@@ -270,13 +282,3 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
     }
 }
 
-class MoneyValue(var money: Int)
-
-class WeaponValues(var power: Int, var ammo: Float, var isAvailable: Boolean)
-
-enum class UpgradeType(val prices: List<Int>){
-    ARMOR(listOf(2000, 4000, 8000, 16000, 32000)),
-    SPEED(listOf(500, 600, 700, 800, 900)),
-    ROTATION(listOf(500, 600, 700, 800, 900)),
-    VISIBILITY(listOf(500, 600, 700, 800, 900))
-}

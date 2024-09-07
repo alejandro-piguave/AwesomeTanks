@@ -1,14 +1,19 @@
-package com.alexpi.awesometanks.screens
+package com.alexpi.awesometanks.screens.game
 
 
 import com.alexpi.awesometanks.MainGame
+import com.alexpi.awesometanks.screens.BaseScreen
+import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
+import com.alexpi.awesometanks.screens.SCREEN_WIDTH
+import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.screens.TRANSITION_DURATION
+import com.alexpi.awesometanks.screens.game.menu.LevelCompletedMenu
+import com.alexpi.awesometanks.screens.game.menu.LevelFailedMenu
+import com.alexpi.awesometanks.screens.game.menu.PauseMenu
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.widget.AmmoBar
 import com.alexpi.awesometanks.widget.GameButton
-import com.alexpi.awesometanks.widget.ProfitLabel
 import com.alexpi.awesometanks.widget.Styles
-import com.alexpi.awesometanks.widget.WeaponMenu
 import com.alexpi.awesometanks.world.GameRenderer
 import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
@@ -19,15 +24,12 @@ import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
@@ -47,6 +49,23 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private lateinit var ammoBar: AmmoBar
     private lateinit var pauseButton: GameButton
     private val gunName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyle(game.manager, (TILE_SIZE / 4).toInt()))
+
+    private val pauseMenu: Table = PauseMenu(game.manager, {
+        gameRenderer.isPaused = false
+        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+    }, {
+        gameRenderer.isPaused = false
+        pauseButton.isVisible = true
+    })
+
+    private val levelFailedMenu = LevelFailedMenu(game.manager) {
+        saveProgress()
+        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.upgradesScreen }))
+    }
+
+    private val levelCompletedMenu = LevelCompletedMenu(game.manager) {
+        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+    }
 
     override fun show() {
         gameRenderer = GameRenderer(game, this, level)
@@ -192,65 +211,20 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         game.gameValues.flush()
     }
 
-    private fun showLevelFailedButton() {
-        val table = Table()
-        table.setFillParent(true)
-        val continueButton = TextButton(
-            "Menu",
-            Styles.getTextButtonStyle1(game.manager)
-        )
-        continueButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent, x: Float, y: Float) {
-                saveProgress()
-                uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.upgradesScreen }))
-            }
-        })
-        table.add(continueButton).expand().top().right().pad(24f)
-        uiStage.addActor(table)
-
+    private fun showLevelFailedMenu() {
+        uiStage.addActor(levelFailedMenu)
         pauseButton.isVisible = false
-
     }
 
-    private fun showLevelCompletedButton() {
-        val table = Table()
-        table.setFillParent(true)
-        val continueButton = TextButton(
-            "Continue",
-            Styles.getTextButtonStyle1(game.manager)
-        )
-        continueButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent, x: Float, y: Float) {
-                uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
-            }
-        })
-        table.add(continueButton).expand().top().right().pad(24f)
-        uiStage.addActor(table)
+    private fun showLevelCompletedMenu() {
+        uiStage.addActor(levelCompletedMenu)
         saveProgress(true)
-
         pauseButton.isVisible = false
     }
 
     private fun showPauseMenu(){
         gameRenderer.isPaused = true
-
-        val table = Table()
-        table.setFillParent(true)
-        val back = TextButton("Back", Styles.getTextButtonStyle1(game.manager))
-        back.onClick {
-            gameRenderer.isPaused = false
-            uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
-        }
-        val resume = TextButton("Resume", Styles.getTextButtonStyle1(game.manager))
-        resume.onClick {
-            gameRenderer.isPaused = false
-            table.remove()
-            pauseButton.isVisible = true
-        }
-        table.add(back).top().right().pad(24f)
-        table.add(resume).top().right().pad(24f)
-
-        uiStage.addActor(table)
+        uiStage.addActor(pauseMenu)
         pauseButton.isVisible = false
 
     }
@@ -337,9 +311,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         return false
     }
 
-    override fun keyUp(keycode: Int): Boolean {
-        return gameRenderer.onKeyUp(keycode)
-    }
+    override fun keyUp(keycode: Int): Boolean = gameRenderer.onKeyUp(keycode)
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
         gameRenderer.setRotationInput(
@@ -353,11 +325,11 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean = false
     override fun onLevelFailed() {
-        showLevelFailedButton()
+        showLevelFailedMenu()
     }
 
     override fun onLevelCompleted() {
-        showLevelCompletedButton()
+        showLevelCompletedMenu()
     }
 
 }

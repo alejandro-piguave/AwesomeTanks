@@ -1,7 +1,8 @@
-package com.alexpi.awesometanks.widget
+package com.alexpi.awesometanks.screens.game
 
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.widget.Styles
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 

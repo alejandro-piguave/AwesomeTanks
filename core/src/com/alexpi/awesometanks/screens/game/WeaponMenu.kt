@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.widget
+package com.alexpi.awesometanks.screens.game
 
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.assets.AssetManager
