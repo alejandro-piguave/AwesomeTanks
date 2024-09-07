@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 
+// Must be added to the stage after the player since the player also positions the camera
 class RumbleController: Actor() {
 
     private var rumbleTimeLeft = 0f

@@ -62,7 +62,10 @@ class Player : Tank(Vector2(-1f,-1f), .75f,
 
     override fun onAlive(delta: Float) {
         super.onAlive(delta)
-        if(isMoving || isRocketActive) updateVisibleArea()
+        stage.camera.position.set(centerX, centerY, 0f)
+        if(isMoving || isRocketActive) {
+            updateVisibleArea()
+        }
     }
 
     override fun takeDamage(damage: Float) {

@@ -21,8 +21,6 @@ import com.alexpi.awesometanks.map.MapTable
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
 import com.alexpi.awesometanks.world.collision.ContactManager
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -86,10 +84,7 @@ class GameRenderer(
 
 
     fun render(delta: Float){
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         if (!isPaused) {
-            gameStage.camera.position.set(player.centerX, player.centerY, 0f)
             gameStage.act(delta)
         }
         gameStage.draw()
