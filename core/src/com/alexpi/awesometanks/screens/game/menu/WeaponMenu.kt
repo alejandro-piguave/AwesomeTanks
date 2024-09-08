@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
+import ktx.actors.alpha
 import ktx.actors.onClick
 
 class WeaponMenu(assetManager: AssetManager): Table() {
@@ -64,7 +65,7 @@ class WeaponMenu(assetManager: AssetManager): Table() {
     }
 
     private fun ImageButton.setTransparency(selected: Boolean) {
-        setColor(color.r, color.g, color.b, if(selected) 1f else .5f)
+        alpha =  if(selected) 1f else .5f
     }
 
     private fun ImageButton.setEnabled(enabled: Boolean, index: Int) {
