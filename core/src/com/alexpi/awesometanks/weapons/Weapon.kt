@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.weapons
 
-import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -25,19 +25,28 @@ abstract class Weapon(
     val coolingDownTime: Float,
     private val ammoConsumption: Float = 1f
 ) {
-    var ammo: Float
-        protected set
+    var onAmmoUpdated: ((Float) -> Unit)? = null
+    var ammo: Float = ammo
+        protected set(value) {
+            field = value
+            onAmmoUpdated?.invoke(value)
+        }
     var sprite: Sprite
     protected var shotSound: Sound
+
     var desiredRotationAngle = 0f
         set(value) {
             field = value
             if (field < 0) field += (Math.PI * 2).toFloat()
         }
+
     var currentRotationAngle = 0f
         protected set
+
     protected var isCoolingDown = false
+
     var unlimitedAmmo = false
+
     protected fun decreaseAmmo() {
         if (ammo - ammoConsumption > 0) ammo -= ammoConsumption else ammo = 0f
     }

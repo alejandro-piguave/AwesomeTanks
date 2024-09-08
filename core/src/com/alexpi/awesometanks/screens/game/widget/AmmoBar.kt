@@ -1,13 +1,6 @@
 package com.alexpi.awesometanks.screens.game.widget
 
-import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.widget.GameProgressBar
 import com.badlogic.gdx.assets.AssetManager
 
-class AmmoBar(assetManager: AssetManager, private val tank: Player): GameProgressBar(assetManager, 100f, tank.currentWeapon.ammo) {
-
-    override fun act(delta: Float) {
-        super.act(delta)
-        value = tank.currentWeapon.ammo
-    }
-}
+class AmmoBar(assetManager: AssetManager, initialValue: Float = 100f): GameProgressBar(assetManager, 100f, initialValue)

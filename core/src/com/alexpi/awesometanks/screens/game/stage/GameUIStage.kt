@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.screens.game.stage
 
-import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.game.menu.WeaponMenu
 import com.alexpi.awesometanks.screens.game.widget.AmmoBar
@@ -20,9 +19,9 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import ktx.actors.alpha
 import ktx.actors.onClick
 
-class GameUIStage(viewport: Viewport, assetManager: AssetManager, player: Player): Stage(viewport) {
-    val ammoBar: AmmoBar = AmmoBar(assetManager, player)
-    val money = ProfitLabel(assetManager, player)
+class GameUIStage(viewport: Viewport, assetManager: AssetManager): Stage(viewport) {
+    val ammoBar: AmmoBar = AmmoBar(assetManager)
+    val money = ProfitLabel(assetManager)
     val weaponMenu = WeaponMenu(assetManager,)
     val pauseButton: GameButton = GameButton(assetManager, "Pause")
 

@@ -29,11 +29,25 @@ class Player : Tank(Vector2(-1f,-1f), .75f,
     private val map: MapTable = GameModule.mapTable
     private val visibilityRadius = 2 + GameModule.getGameValues().getInteger(UpgradeType.VISIBILITY.name)
     private val armor = GameModule.getGameValues().getInteger(UpgradeType.ARMOR.name)
+
     val position: Vector2
         get() = body.position
 
+    var onMoneyUpdated: ((Int) -> Unit)? = null
     var money: Int = 0
+        set(value) {
+            field = value
+            onMoneyUpdated?.invoke(value)
+        }
+
+    var onWeaponAmmoUpdated: ((Float) -> Unit)? = null
     var currentWeaponIndex = 0
+        set(value) {
+            field = value
+            onWeaponAmmoUpdated?.invoke(currentWeapon.ammo)
+            currentWeapon.onAmmoUpdated = onWeaponAmmoUpdated
+        }
+
     private val weapons: List<Weapon> = Weapon.Type.values().map {
         val weaponAmmo =  GameModule.getGameValues().getFloat("ammo${it.ordinal}")
         val weaponPower = GameModule.getGameValues().getInteger("power${it.ordinal}")
@@ -42,10 +56,10 @@ class Player : Tank(Vector2(-1f,-1f), .75f,
 
     //Used for keys
 
-    val centerX: Float
+    private val centerX: Float
         get() = if(isRocketActive) rocketPosition.x * TILE_SIZE else x + width*.5f
 
-    val centerY: Float
+    private val centerY: Float
         get() = if(isRocketActive) rocketPosition.y * TILE_SIZE else y + height*.5f
 
     private var horizontalMovement = 0f

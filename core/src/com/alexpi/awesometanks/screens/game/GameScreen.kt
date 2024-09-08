@@ -53,13 +53,19 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun show() {
         gameRenderer = GameRenderer(game, this, level)
+        gameRenderer.player.onMoneyUpdated = { money ->
+            uiStage.money.profit = money
+        }
+        gameRenderer.player.onWeaponAmmoUpdated = { ammo ->
+            uiStage.ammoBar.value = ammo
+        }
         createUIStage()
         Gdx.input.inputProcessor = createInputProcessor()
         Gdx.input.isCatchBackKey = true
     }
 
     private fun createUIStage() {
-        uiStage = GameUIStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), game.manager, gameRenderer.player)
+        uiStage = GameUIStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), game.manager)
         uiStage.pauseButton.onClickListener = { showPauseMenu() }
         uiStage.weaponMenu.buttonsEnabled =  Weapon.Type.values().indices.map { it == 0 || game.gameValues.getBoolean("isWeaponAvailable$it",false) }
         uiStage.weaponMenu.onWeaponClick = this::onWeaponUpdated
