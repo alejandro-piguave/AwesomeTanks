@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.screens.game
+package com.alexpi.awesometanks.screens.game.widget
 
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.widget.GameProgressBar

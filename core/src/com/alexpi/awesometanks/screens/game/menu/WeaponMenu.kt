@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.screens.game
+package com.alexpi.awesometanks.screens.game.menu
 
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.assets.AssetManager
@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import ktx.actors.onClick
 
-class WeaponMenu(manager: AssetManager, weaponsEnabled: List<Boolean>): Table() {
+class WeaponMenu(manager: AssetManager): Table() {
     private val buttons: List<ImageButton> = (0 until Weapon.Type.values().size).map {
         val texture = manager.get<Texture>("icons/icon_$it.png")
         val disabled = manager.get<Texture>("icons/icon_disabled_$it.png")
@@ -22,37 +22,25 @@ class WeaponMenu(manager: AssetManager, weaponsEnabled: List<Boolean>): Table() 
         style.imageDisabled = TextureRegionDrawable(TextureRegion(disabled))
         ImageButton(style)
     }
+    var buttonsEnabled: List<Boolean> = buttons.map { true }
+        set(value) {
+            field = value
+            buttons.forEachIndexed { index, button ->
+                button.setEnabled(buttonsEnabled[index], index)
+            }
+        }
+
 
     private var currentWeaponIndex = 0
     var onWeaponClick: ((Int) -> Unit)? = null
 
     init {
-        buttons.forEach { button ->
-            val index = buttons.indexOf(button)
-
-            if(index > 0) {
-                button.isDisabled = !weaponsEnabled[index]
-                button.setColor(button.color.r,button.color.g,button.color.b,.5f)
-            }
-            if(!button.isDisabled) {
-                button.onClick {
-                    currentWeaponIndex = index
-                    updateButtons()
-                    onWeaponClick?.invoke(index)
-                }
-            }
+        buttons.forEachIndexed { index, button ->
+            button.setEnabled(buttonsEnabled[index], index)
+            button.setTransparency(currentWeaponIndex == index)
             add(button).width(96f).height(96f)
         }
-
     }
-
-    private fun updateButtons() {
-        buttons.forEach { ib ->
-            ib.setColor(ib.color.r, ib.color.g, ib.color.b,
-                if(currentWeaponIndex == buttons.indexOf(ib)) 1f else .5f)
-        }
-    }
-
 
     fun selectWeapon(index: Int) {
         if(index == currentWeaponIndex || buttons[index].isDisabled) return
@@ -60,4 +48,26 @@ class WeaponMenu(manager: AssetManager, weaponsEnabled: List<Boolean>): Table() 
         updateButtons()
         onWeaponClick?.invoke(index)
     }
+
+    private fun ImageButton.setTransparency(selected: Boolean) {
+        setColor(color.r, color.g, color.b, if(selected) 1f else .5f)
+    }
+
+    private fun ImageButton.setEnabled(enabled: Boolean, index: Int) {
+        isDisabled = !enabled
+        if(enabled){
+            onClick {
+                currentWeaponIndex = index
+                updateButtons()
+                onWeaponClick?.invoke(index)
+            }
+        } else clearListeners()
+    }
+
+    private fun updateButtons() {
+        buttons.forEachIndexed { index, button ->
+            button.setTransparency(currentWeaponIndex == index)
+        }
+    }
+
 }

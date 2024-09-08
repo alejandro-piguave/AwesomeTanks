@@ -83,15 +83,15 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             upgradeTable
         }
         //Creates the back button
-        val backButton = GameButton(game.manager, {
+        val backButton = GameButton(game.manager, "Back", {
             stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run {
                 game.screen = game.mainScreen
             }))
-        }, "Back")
+        })
 
 
         //Creates the next button
-        val nextButton = GameButton(game.manager, {
+        val nextButton = GameButton(game.manager, "Next", {
             for (p: UpgradeTable in upgradeTables) game.gameValues.putInteger(p.name, p.value)
             weaponValues.forEachIndexed { index, values ->
                 game.gameValues.putInteger("power$index", values.power)
@@ -107,7 +107,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
                     }
                 )
             )
-        }, "Next")
+        })
 
 
         val currentWeaponImage = ImageButton(getWeaponButtonStyle(0))

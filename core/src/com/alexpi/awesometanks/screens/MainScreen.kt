@@ -36,14 +36,14 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
         val title2 = Label("Tanks", Styles.getGameTitleStyle2(game.manager))
         title1.setAlignment(Align.center)
         title2.setAlignment(Align.center)
-        val playButton = GameButton(game.manager, {
+        val playButton = GameButton(game.manager, "Play", {
             stage.addAction(
                 Actions.sequence(
                     Actions.fadeOut(TRANSITION_DURATION),
                     Actions.run { game.screen = game.upgradesScreen }
                 )
             )
-        }, "Play")
+        })
         val soundButton = ImageButton(TextureRegionDrawable(game.manager.get<Texture>(
             if(Settings.soundsOn)"sprites/sound_on.png" else "sprites/sound_off.png")))
         soundButton.setPosition(SCREEN_WIDTH - 92f, SCREEN_HEIGHT - 92f)

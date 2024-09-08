@@ -30,11 +30,11 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
         table.setFillParent(true)
         val levelTable = Table()
         addLevelButtons(levelTable)
-        val backButton = GameButton(game.manager, {
+        val backButton = GameButton(game.manager, "Back", {
             stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run {
                 game.screen = game.upgradesScreen
             }))
-        }, "Back")
+        })
         table.add(Label("Select level", Styles.getLabelStyleBackground(game.manager))).row()
         table.add(levelTable).expand().fillX().row()
         table.add(backButton).size(TILE_SIZE * 3, TILE_SIZE).row()
@@ -52,7 +52,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
     private fun addLevelButtons(table: Table) {
         for (i in 0 until LEVEL_COUNT) {
             val isLevelUnlocked = game.gameValues.getBoolean("unlocked$i") || i == 0
-            val levelButton = GameButton(game.manager, {
+            val levelButton = GameButton(game.manager, (i + 1).toString(), {
                 if (isLevelUnlocked) stage.addAction(
                     Actions.sequence(
                         Actions.fadeOut(TRANSITION_DURATION), Actions.run {
@@ -60,7 +60,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
                         }
                     )
                 )
-            }, (i + 1).toString())
+            })
             if(!isLevelUnlocked){
                 levelButton.color = Color.GRAY
                 levelButton.touchable = Touchable.disabled

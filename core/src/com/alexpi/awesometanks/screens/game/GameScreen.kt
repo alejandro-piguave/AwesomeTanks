@@ -9,10 +9,9 @@ import com.alexpi.awesometanks.screens.TRANSITION_DURATION
 import com.alexpi.awesometanks.screens.game.menu.LevelCompletedMenu
 import com.alexpi.awesometanks.screens.game.menu.LevelFailedMenu
 import com.alexpi.awesometanks.screens.game.menu.PauseMenu
+import com.alexpi.awesometanks.screens.game.stage.GameUIStage
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.widget.GameButton
-import com.alexpi.awesometanks.widget.Styles
 import com.alexpi.awesometanks.world.GameRenderer
 import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
@@ -22,38 +21,25 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import ktx.actors.alpha
-import ktx.actors.onClick
 import kotlin.math.abs
 
 /**
  * Created by Alex on 30/12/2015.
  */
 class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameRenderer.GameListener {
-    private val uiStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
-    private val weaponMenu = WeaponMenu(game.manager, Weapon.Type.values().indices.map { game.gameValues.getBoolean("isWeaponAvailable$it",false) })
-    private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
+    private lateinit var uiStage: GameUIStage
     private lateinit var gameRenderer: GameRenderer
-    private lateinit var ammoBar: AmmoBar
-    private val pauseButton: GameButton = GameButton(game.manager, {
-        showPauseMenu()
-    }, "Pause")
-
+    private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
 
     private val pauseMenu: Table = PauseMenu(game.manager, {
         gameRenderer.isPaused = false
         uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
     }, {
         gameRenderer.isPaused = false
-        pauseButton.isVisible = true
+        uiStage.pauseButton.isVisible = true
     })
 
     private val levelFailedMenu = LevelFailedMenu(game.manager) {
@@ -67,8 +53,28 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun show() {
         gameRenderer = GameRenderer(game, this, level)
-        ammoBar = AmmoBar(game.manager,gameRenderer.player)
-        createUIScene()
+        createUIStage()
+        Gdx.input.inputProcessor = createInputProcessor()
+        Gdx.input.isCatchBackKey = true
+    }
+
+    private fun createUIStage() {
+        uiStage = GameUIStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), game.manager, gameRenderer.player)
+        uiStage.pauseButton.onClickListener = { showPauseMenu() }
+        uiStage.weaponMenu.buttonsEnabled =  Weapon.Type.values().indices.map { it == 0 || game.gameValues.getBoolean("isWeaponAvailable$it",false) }
+        uiStage.weaponMenu.onWeaponClick = this::onWeaponUpdated
+        uiStage.onWeaponMenuButtonClick = { gameRenderer.isPaused = !gameRenderer.isPaused }
+        uiStage.onMovementKnobTouch = { isTouched, knobPercentX, knobPercentY ->
+            if(isTouched) gameRenderer.onKnobTouch(knobPercentX, knobPercentY) else false
+        }
+        uiStage.onAimKnobTouch = { isTouched, knobPercentX, knobPercentY ->
+            if (isTouched && (abs(knobPercentX) > .2f || abs(knobPercentY) > .2f)) {
+                gameRenderer.setRotationInput(knobPercentY,knobPercentY)
+                val distanceFromCenter = Utils.fastHypot(knobPercentY.toDouble(), knobPercentY.toDouble()).toFloat()
+                gameRenderer.player.isShooting = distanceFromCenter > 0.95f && !gameRenderer.isLevelCompleted
+            } else gameRenderer.player.isShooting = false
+            true
+        }
     }
 
     override fun resize(width: Int, height: Int) {
@@ -84,92 +90,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         uiStage.draw()
     }
 
-    private fun createUIScene() {
-        val uiTable = Table()
-        uiTable.setFillParent(true)
-        ammoBar.setSize(300f, 30f)
-        ammoBar.isVisible = false
-
-        val money = ProfitLabel(game.manager, gameRenderer.player)
-
-        val joystickSize = SCREEN_HEIGHT / 2.25f
-        val movementTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
-            alpha = .5f
-            addListener {
-                if(isTouched) gameRenderer.onKnobTouch(knobPercentX, knobPercentY) else false
-
-            }
-        }
-        val aimTouchpad = Touchpad(0f, Styles.getTouchPadStyle(game.manager)).apply {
-            alpha = .5f
-            addListener {
-                val x = knobPercentX
-                val y = knobPercentY
-                if (isTouched && (abs(x) > .2f || abs(y) > .2f)) {
-                    gameRenderer.setRotationInput(x,y)
-                    val distanceFromCenter = Utils.fastHypot(x.toDouble(), y.toDouble()).toFloat()
-                    gameRenderer.player.isShooting = distanceFromCenter > 0.95f && !gameRenderer.isLevelCompleted
-                } else gameRenderer.player.isShooting = false
-                true
-            }
-        }
-
-        val weaponMenuButton = ImageButton(TextureRegionDrawable(game.manager.get("sprites/gun_menu_icon.png",Texture::class.java))).apply {
-            alpha = .5f
-            onClick {
-                gameRenderer.isPaused = if(!gameRenderer.isPaused){
-                    uiStage.addActor(weaponMenu)
-                    true
-                } else {
-                    weaponMenu.remove()
-                    false
-                }
-            }
-        }
-
-        weaponMenu.onWeaponClick = this::onWeaponUpdated
-
-        val uiTopTable = Table()
-        val uiBottomTable = Table()
-        uiTopTable.add(ammoBar).expandX().uniformX().pad(10f).apply {
-            if(Gdx.graphics.safeInsetLeft > 0)
-                padLeft(Gdx.graphics.safeInsetLeft.toFloat())
-        }
-
-        uiTopTable.add(money).expandX().uniformX().pad(10f)
-        uiTopTable.add(pauseButton).size(140f, 64f).expandX().uniformX().right().pad(10f).apply {
-            if(Gdx.graphics.safeInsetRight > 0)
-                padRight(Gdx.graphics.safeInsetRight.toFloat())
-        }.row()
-        uiTable.add(uiTopTable).growX().row()
-        uiTable.add().expand().row()
-        if(Gdx.app.type != Application.ApplicationType.Desktop){
-            uiBottomTable.add(movementTouchpad).size(joystickSize).left().pad(10f).apply {
-                if(Gdx.graphics.safeInsetLeft > 0)
-                    padLeft(Gdx.graphics.safeInsetLeft.toFloat())
-            }
-            uiBottomTable.add(weaponMenuButton).expandX().right()
-            uiBottomTable.add(aimTouchpad).size(joystickSize).right().apply {
-                if(Gdx.graphics.safeInsetRight > 0)
-                    padRight(Gdx.graphics.safeInsetRight.toFloat())
-            }.row()
-
-            weaponMenuButton.setFillParent(true)
-        } else {
-            uiBottomTable.add(weaponMenu).expandX().center().row()
-        }
-        uiTable.add(uiBottomTable).growX().row()
-        uiStage.addActor(uiTable)
-
-        Gdx.input.inputProcessor = createInputProcessor()
-        Gdx.input.isCatchBackKey = true
-    }
-
     private fun onWeaponUpdated(index: Int){
         if (Settings.soundsOn) gunChangeSound.play()
         gameRenderer.player.currentWeaponIndex = index
-
-        ammoBar.isVisible = index != 0
+        uiStage.ammoBar.isVisible = index != 0
     }
 
     private fun createInputProcessor(): InputProcessor {
@@ -189,27 +113,27 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private fun showLevelFailedMenu() {
         uiStage.addActor(levelFailedMenu)
-        pauseButton.isVisible = false
+        uiStage.pauseButton.isVisible = false
     }
 
     private fun showLevelCompletedMenu() {
         uiStage.addActor(levelCompletedMenu)
         saveProgress(true)
-        pauseButton.isVisible = false
+        uiStage.pauseButton.isVisible = false
     }
 
     private fun showPauseMenu(){
         gameRenderer.isPaused = true
         uiStage.addActor(pauseMenu)
-        pauseButton.isVisible = false
+        uiStage.pauseButton.isVisible = false
 
     }
 
     override fun keyDown(keycode: Int): Boolean {
         when (keycode) {
             Input.Keys.BACK, Input.Keys.ESCAPE -> {
-                if(Gdx.app.type != Application.ApplicationType.Desktop && weaponMenu.parent != null){
-                    weaponMenu.remove()
+                if(Gdx.app.type != Application.ApplicationType.Desktop && uiStage.weaponMenu.parent != null){
+                    uiStage.weaponMenu.remove()
                     gameRenderer.isPaused = false
                 } else if(!gameRenderer.isLevelCompleted){
                     showPauseMenu()
@@ -218,35 +142,35 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
             //EVENTS FOR DESKTOP
             Input.Keys.NUM_1 -> {
-                weaponMenu.selectWeapon(0)
+                uiStage.weaponMenu.selectWeapon(0)
                 return true
             }
             Input.Keys.NUM_2 -> {
-                weaponMenu.selectWeapon(1)
+                uiStage.weaponMenu.selectWeapon(1)
                 return true
             }
             Input.Keys.NUM_3 -> {
-                weaponMenu.selectWeapon(2)
+                uiStage.weaponMenu.selectWeapon(2)
                 return true
             }
             Input.Keys.NUM_4 -> {
-                weaponMenu.selectWeapon(3)
+                uiStage.weaponMenu.selectWeapon(3)
                 return true
             }
             Input.Keys.NUM_5 -> {
-                weaponMenu.selectWeapon(4)
+                uiStage.weaponMenu.selectWeapon(4)
                 return true
             }
             Input.Keys.NUM_6 -> {
-                weaponMenu.selectWeapon(5)
+                uiStage.weaponMenu.selectWeapon(5)
                 return true
             }
             Input.Keys.NUM_7 -> {
-                weaponMenu.selectWeapon(6)
+                uiStage.weaponMenu.selectWeapon(6)
                 return true
             }
             Input.Keys.NUM_8 -> {
-                weaponMenu.selectWeapon(7)
+                uiStage.weaponMenu.selectWeapon(7)
                 return true
             }
              else -> return gameRenderer.onKeyDown(keycode)
@@ -298,10 +222,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun keyTyped(character: Char): Boolean = false
-
     override fun scrolled(amountX: Float, amountY: Float): Boolean = false
     override fun onLevelFailed() { showLevelFailedMenu() }
-
     override fun onLevelCompleted() { showLevelCompletedMenu() }
 
 }
