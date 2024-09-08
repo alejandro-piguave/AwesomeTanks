@@ -2,6 +2,7 @@ package com.alexpi.awesometanks.screens.game.menu
 
 import com.alexpi.awesometanks.widget.Styles
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import ktx.actors.onClick
@@ -19,5 +20,7 @@ class PauseMenu(assetManager: AssetManager, onBackClick: () -> Unit, onResumeCli
         add(back).fillX().spaceBottom(10f).row()
         add(resume).fillX()
 
+        touchable = Touchable.enabled
+        onClick { }
     }
 }
