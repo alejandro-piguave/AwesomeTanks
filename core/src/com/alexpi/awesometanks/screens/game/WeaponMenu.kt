@@ -36,6 +36,7 @@ class WeaponMenu(manager: AssetManager, weaponsEnabled: List<Boolean>): Table() 
             }
             if(!button.isDisabled) {
                 button.onClick {
+                    currentWeaponIndex = index
                     updateButtons()
                     onWeaponClick?.invoke(index)
                 }

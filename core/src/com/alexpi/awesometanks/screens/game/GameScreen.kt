@@ -5,7 +5,6 @@ import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
-import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.TRANSITION_DURATION
 import com.alexpi.awesometanks.screens.game.menu.LevelCompletedMenu
 import com.alexpi.awesometanks.screens.game.menu.LevelFailedMenu
@@ -27,12 +26,9 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
-import com.badlogic.gdx.utils.Align
-import com.badlogic.gdx.utils.Timer
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import ktx.actors.alpha
 import ktx.actors.onClick
@@ -47,8 +43,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
     private lateinit var gameRenderer: GameRenderer
     private lateinit var ammoBar: AmmoBar
-    private lateinit var pauseButton: GameButton
-    private val gunName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyle(game.manager, (TILE_SIZE / 4).toInt()))
+    private val pauseButton: GameButton = GameButton(game.manager, {
+        showPauseMenu()
+    }, "Pause")
+
 
     private val pauseMenu: Table = PauseMenu(game.manager, {
         gameRenderer.isPaused = false
@@ -89,7 +87,6 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private fun createUIScene() {
         val uiTable = Table()
         uiTable.setFillParent(true)
-        gunName.setAlignment(Align.center)
         ammoBar.setSize(300f, 30f)
         ammoBar.isVisible = false
 
@@ -130,12 +127,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             }
         }
 
-        pauseButton = GameButton(game.manager, {
-                showPauseMenu()
-        }, "Pause")
-
         weaponMenu.onWeaponClick = this::onWeaponUpdated
-
 
         val uiTopTable = Table()
         val uiBottomTable = Table()
@@ -169,14 +161,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         uiTable.add(uiBottomTable).growX().row()
         uiStage.addActor(uiTable)
 
-        Gdx.input.inputProcessor = inputProcessor
+        Gdx.input.inputProcessor = createInputProcessor()
         Gdx.input.isCatchBackKey = true
-
-        Timer.schedule(object : Timer.Task() {
-            override fun run() {
-                gunName.addAction(Actions.fadeOut(TRANSITION_DURATION))
-            }
-        }, 2f)
     }
 
     private fun onWeaponUpdated(index: Int){
@@ -184,24 +170,14 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         gameRenderer.player.currentWeaponIndex = index
 
         ammoBar.isVisible = index != 0
-
-        val gunNameText = Weapon.Type.values()[gameRenderer.player.currentWeaponIndex].name
-        gunName.setText(gunNameText)
-        gunName.addAction(Actions.alpha(1f))
-        Timer.schedule(object : Timer.Task() {
-            override fun run() {
-                gunName.addAction(Actions.fadeOut(TRANSITION_DURATION))
-            }
-        }, 2f)
     }
 
-    private val inputProcessor: InputProcessor
-        get() {
-            val multiplexer = InputMultiplexer()
-            multiplexer.addProcessor(uiStage)
-            multiplexer.addProcessor(this)
-            return multiplexer
-        }
+    private fun createInputProcessor(): InputProcessor {
+        val multiplexer = InputMultiplexer()
+        multiplexer.addProcessor(uiStage)
+        multiplexer.addProcessor(this)
+        return multiplexer
+    }
 
     private fun saveProgress(unlockNextLevel: Boolean = false) {
         if (unlockNextLevel) game.gameValues.putBoolean("unlocked" + (level+1), true)
@@ -324,12 +300,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     override fun keyTyped(character: Char): Boolean = false
 
     override fun scrolled(amountX: Float, amountY: Float): Boolean = false
-    override fun onLevelFailed() {
-        showLevelFailedMenu()
-    }
+    override fun onLevelFailed() { showLevelFailedMenu() }
 
-    override fun onLevelCompleted() {
-        showLevelCompletedMenu()
-    }
+    override fun onLevelCompleted() { showLevelCompletedMenu() }
 
 }
