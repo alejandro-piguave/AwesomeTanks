@@ -16,7 +16,8 @@ class PauseMenu(assetManager: AssetManager, onBackClick: () -> Unit, onResumeCli
             remove()
             onResumeClick()
         }
-        add(back).top().right().pad(24f)
-        add(resume).top().right().pad(24f)
+        add(back).fillX().spaceBottom(10f).row()
+        add(resume).fillX()
+
     }
 }
