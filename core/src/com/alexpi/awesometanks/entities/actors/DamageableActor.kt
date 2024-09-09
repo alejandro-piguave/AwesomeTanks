@@ -40,7 +40,6 @@ abstract class DamageableActor(
         }
         else {
             health = 0f
-
         }
     }
 

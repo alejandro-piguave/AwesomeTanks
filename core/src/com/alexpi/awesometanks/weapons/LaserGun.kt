@@ -63,7 +63,7 @@ class LaserGun(
             createProjectile(group, position)
 
             GameModule.world.rayCast({ fixture, point, _, fraction ->
-                if(fixture.userData is DamageableActor){
+                if(fixture.userData is  DamageableActor){
                     if(fraction < minFraction){
                         minFraction = fraction
                         val distance = Utils.fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * TILE_SIZE
