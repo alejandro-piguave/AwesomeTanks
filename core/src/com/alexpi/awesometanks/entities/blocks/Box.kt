@@ -13,7 +13,7 @@ import com.badlogic.gdx.physics.box2d.Shape
 /**
  * Created by Alex on 19/01/2016.
  */
-class Box(level: Int, pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false) {
+class Box(level: Int, pos: Vector2) : BaseBlock("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false) {
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(level)
     private val nuggetValue: Int = getNuggetValue(level)
     private fun dropLoot() {

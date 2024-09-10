@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.ai
 
-import com.alexpi.awesometanks.entities.blocks.Block
+import com.alexpi.awesometanks.entities.blocks.BaseBlock
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.math.Vector2
@@ -27,7 +27,7 @@ class TurretAI(private val position: Vector2,
         if(distanceFromTarget2 < visibilityRadius2){
             isTargetVisible = true
             world.rayCast({ fixture, _, _, _ ->
-                if(fixture.userData is Block){
+                if(fixture.userData is BaseBlock){
                     isTargetVisible = false
                     0f
                 }

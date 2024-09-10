@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.ai
 
-import com.alexpi.awesometanks.entities.blocks.Block
+import com.alexpi.awesometanks.entities.blocks.BaseBlock
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.map.Cell
 import com.alexpi.awesometanks.world.GameModule
@@ -55,7 +55,7 @@ sealed class EnemyTankState: State<EnemyTank>{
     protected fun checkTargetVisibility(position: Vector2): Boolean{
         var isVisible = true
         GameModule.world.rayCast({ fixture, _, _, _ ->
-            if(fixture.userData is Block){
+            if(fixture.userData is BaseBlock){
                 isVisible = false
                 0f
             }

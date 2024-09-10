@@ -14,14 +14,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 class BodyComponent(
     parent: Actor,
     world: World,
-    bodyShape: BodyShape,
+    private val bodyShape: BodyShape,
     bodyType: BodyType,
     fixtureFilter: FixtureFilter,
     position: Vector2 = Vector2.Zero,
     density: Float = 0f
 ) {
-    val body: Body
-    val fixture: Fixture
+    private val body: Body
+    private val fixture: Fixture
 
     init {
         val bodyDef = BodyDef()
@@ -49,8 +49,13 @@ class BodyComponent(
         shape.dispose()
     }
 
+    fun getLeft(): Float = body.position.x - bodyShape.getWidth() /2
+
+    fun getBottom(): Float = body.position.y - bodyShape.getHeight() / 2
+
 
     fun destroy() {
+        body.destroyFixture(fixture)
         body.world.destroyBody(body)
     }
 }

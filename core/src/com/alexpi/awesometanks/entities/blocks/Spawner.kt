@@ -16,7 +16,7 @@ import kotlin.experimental.or
 /**
  * Created by Alex on 15/02/2016.
  */
-class Spawner(level: Int, pos: Vector2) : Block(
+class Spawner(level: Int, pos: Vector2) : BaseBlock(
     "sprites/spawner.png",
     Shape.Type.Polygon,
     getHealth(level),

@@ -17,7 +17,7 @@ import com.badlogic.gdx.physics.box2d.Shape
 class Turret(
     pos: Vector2,
     type: Weapon.Type
-) : Block( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, true), TurretAICallback {
+) : BaseBlock( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, true), TurretAICallback {
     private val weapon: Weapon
     private val enemyAI = TurretAI(body.position, this)
     private val nuggetValue: Int

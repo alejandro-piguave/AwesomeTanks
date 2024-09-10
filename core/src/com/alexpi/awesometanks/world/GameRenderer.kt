@@ -6,7 +6,7 @@ import com.alexpi.awesometanks.entities.actors.HealthBar
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.actors.RumbleController
 import com.alexpi.awesometanks.entities.ai.PathFinding
-import com.alexpi.awesometanks.entities.blocks.Block
+import com.alexpi.awesometanks.entities.blocks.BaseBlock
 import com.alexpi.awesometanks.entities.blocks.Spawner
 import com.alexpi.awesometanks.entities.blocks.Turret
 import com.alexpi.awesometanks.entities.items.FreezingBall
@@ -147,7 +147,7 @@ class GameRenderer(
             rumbleController.rumble(15f, .3f)
         }
 
-        if(actor is Block){
+        if(actor is BaseBlock){
             val cell = mapTable.toCell(actor.body.position)
             mapTable.clear(cell)
         } else if(actor is Player) {
