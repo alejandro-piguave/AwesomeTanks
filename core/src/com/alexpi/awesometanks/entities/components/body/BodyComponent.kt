@@ -48,4 +48,9 @@ class BodyComponent(
 
         shape.dispose()
     }
+
+
+    fun destroy() {
+        body.world.destroyBody(body)
+    }
 }
