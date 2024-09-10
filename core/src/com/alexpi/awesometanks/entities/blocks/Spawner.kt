@@ -1,13 +1,13 @@
 package com.alexpi.awesometanks.entities.blocks
 
+import com.alexpi.awesometanks.entities.components.body.CAT_ITEM
+import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
+import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.collision.CAT_ITEM
-import com.alexpi.awesometanks.world.collision.CAT_PLAYER
-import com.alexpi.awesometanks.world.collision.CAT_PLAYER_BULLET
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.utils.TimeUtils

@@ -2,10 +2,10 @@ package com.alexpi.awesometanks.entities.items
 
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.world.GameModule
-import com.alexpi.awesometanks.world.collision.CAT_BLOCK
-import com.alexpi.awesometanks.world.collision.CAT_ENEMY
-import com.alexpi.awesometanks.world.collision.CAT_ITEM
-import com.alexpi.awesometanks.world.collision.CAT_PLAYER
+import com.alexpi.awesometanks.entities.components.body.CAT_BLOCK
+import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
+import com.alexpi.awesometanks.entities.components.body.CAT_ITEM
+import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite

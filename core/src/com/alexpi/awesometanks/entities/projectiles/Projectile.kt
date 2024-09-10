@@ -1,11 +1,11 @@
 package com.alexpi.awesometanks.entities.projectiles
 
+import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY_BULLET
+import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
+import com.alexpi.awesometanks.entities.components.body.ENEMY_BULLET_MASK
+import com.alexpi.awesometanks.entities.components.body.PLAYER_BULLET_MASK
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.world.GameModule
-import com.alexpi.awesometanks.world.collision.CAT_ENEMY_BULLET
-import com.alexpi.awesometanks.world.collision.CAT_PLAYER_BULLET
-import com.alexpi.awesometanks.world.collision.ENEMY_BULLET_MASK
-import com.alexpi.awesometanks.world.collision.PLAYER_BULLET_MASK
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils

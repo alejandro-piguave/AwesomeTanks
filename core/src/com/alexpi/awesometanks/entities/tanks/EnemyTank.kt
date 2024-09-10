@@ -6,10 +6,10 @@ import com.alexpi.awesometanks.entities.ai.WanderState
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.Utils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.collision.CAT_BLOCK
-import com.alexpi.awesometanks.world.collision.CAT_ENEMY
-import com.alexpi.awesometanks.world.collision.CAT_PLAYER
-import com.alexpi.awesometanks.world.collision.CAT_PLAYER_BULLET
+import com.alexpi.awesometanks.entities.components.body.CAT_BLOCK
+import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
+import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
+import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
