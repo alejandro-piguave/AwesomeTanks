@@ -6,7 +6,7 @@ import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
-import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
@@ -36,7 +36,7 @@ class Spawner(level: Int, pos: Vector2) : Block(
         if (lastSpawn + interval < TimeUtils.millis() && !isFrozen) {
             lastSpawn = TimeUtils.millis()
             //It increments the spawn interval by 5 seconds each time to prevent excessive enemy generation
-            interval = Utils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
+            interval = RandomUtils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
             maxSpan += 5000
             parent.addActor(
                 EnemyTank(
@@ -85,12 +85,12 @@ class Spawner(level: Int, pos: Vector2) : Block(
     }
 
     private fun dropLoot() {
-        val num1 = Utils.getRandomInt(10, 15)
+        val num1 = RandomUtils.getRandomInt(10, 15)
         for (i in 0 until num1)
             parent.addActor(
                 GoldNugget(
                     body.position,
-                    Utils.getRandomInt(nuggetValue - 10, nuggetValue + 10)
+                    RandomUtils.getRandomInt(nuggetValue - 10, nuggetValue + 10)
                 )
             )
     }

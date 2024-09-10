@@ -4,7 +4,7 @@ import com.alexpi.awesometanks.entities.ai.TurretAI
 import com.alexpi.awesometanks.entities.ai.TurretAICallback
 import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
 import com.alexpi.awesometanks.entities.items.GoldNugget
-import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
@@ -77,9 +77,9 @@ class Turret(
     }
 
     private fun dropLoot() {
-        val count = Utils.getRandomInt(10, 15)
+        val count = RandomUtils.getRandomInt(10, 15)
         repeat(count){
-            parent.addActor(GoldNugget(body.position, Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+            parent.addActor(GoldNugget(body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
 
         }
     }

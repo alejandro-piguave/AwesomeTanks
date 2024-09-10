@@ -3,7 +3,7 @@ package com.alexpi.awesometanks.weapons
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.projectiles.Rail
 import com.alexpi.awesometanks.screens.TILE_SIZE
-import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.utils.fastHypot
 import com.alexpi.awesometanks.world.GameModule
 import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.graphics.Color
@@ -51,7 +51,7 @@ class RailGun(ammo: Float, power: Int, filter: Boolean) :
                 if(fixture.userData is DamageableActor){
                     if(fraction < minFraction){
                         minFraction = fraction
-                        val distance = Utils.fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * TILE_SIZE
+                        val distance = fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * TILE_SIZE
                         laserRay.width = distance.toFloat()
                     }
                     fraction

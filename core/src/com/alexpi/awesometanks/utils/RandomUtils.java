@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.utils;
 
-public class Utils {
+public class RandomUtils {
     public static int getRandomInt(int min, int max){
         return (int)Math.floor(Math.random()*(max-min)+min);
     }
@@ -25,7 +25,4 @@ public class Utils {
         return (float)Math.floor(Math.random()*(max));
     }
 
-    public static double fastHypot(double x, double y) {
-        return Math.sqrt(x*x+y*y);
-    }
 }

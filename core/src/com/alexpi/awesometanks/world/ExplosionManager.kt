@@ -4,7 +4,7 @@ import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.actors.RumbleController
 import com.alexpi.awesometanks.screens.TILE_SIZE
-import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.utils.fastHypot
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
@@ -57,7 +57,7 @@ class ExplosionManager(assetManager: AssetManager, private val stage: Stage, pri
         stage.addActor(explosionShine)
 
         world.QueryAABB({
-            val distanceFromMine = Utils.fastHypot(
+            val distanceFromMine = fastHypot(
                 (it.body.position.x - x).toDouble(),
                 (it.body.position.y - y).toDouble()
             ).toFloat()

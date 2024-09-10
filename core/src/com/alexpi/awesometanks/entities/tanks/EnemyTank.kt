@@ -4,7 +4,7 @@ import com.alexpi.awesometanks.entities.ai.EnemyTankState
 import com.alexpi.awesometanks.entities.ai.FrozenState
 import com.alexpi.awesometanks.entities.ai.WanderState
 import com.alexpi.awesometanks.entities.items.GoldNugget
-import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.entities.components.body.CAT_BLOCK
 import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
@@ -57,9 +57,9 @@ class EnemyTank(
     }
 
     private fun dropLoot() {
-        val count = Utils.getRandomInt(5, 15)
+        val count = RandomUtils.getRandomInt(5, 15)
         repeat(count){
-            parent.addActor(GoldNugget(body.position, Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+            parent.addActor(GoldNugget(body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
         }
     }
 

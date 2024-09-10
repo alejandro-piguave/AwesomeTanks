@@ -10,7 +10,7 @@ import com.alexpi.awesometanks.screens.game.menu.LevelCompletedMenu
 import com.alexpi.awesometanks.screens.game.menu.LevelFailedMenu
 import com.alexpi.awesometanks.screens.game.menu.PauseMenu
 import com.alexpi.awesometanks.screens.game.stage.GameUIStage
-import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.utils.fastHypot
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameRenderer
 import com.alexpi.awesometanks.world.Settings
@@ -76,7 +76,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         uiStage.onAimKnobTouch = { isTouched, knobPercentX, knobPercentY ->
             if (isTouched && (abs(knobPercentX) > .2f || abs(knobPercentY) > .2f)) {
                 gameRenderer.setRotationInput(knobPercentY,knobPercentY)
-                val distanceFromCenter = Utils.fastHypot(knobPercentY.toDouble(), knobPercentY.toDouble()).toFloat()
+                val distanceFromCenter = fastHypot(knobPercentY.toDouble(), knobPercentY.toDouble()).toFloat()
                 gameRenderer.player.isShooting = distanceFromCenter > 0.95f && !gameRenderer.isLevelCompleted
             } else gameRenderer.player.isShooting = false
             true

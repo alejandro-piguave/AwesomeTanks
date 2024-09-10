@@ -5,7 +5,7 @@ import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
-import com.alexpi.awesometanks.utils.Utils
+import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
@@ -17,15 +17,15 @@ class Box(level: Int, pos: Vector2) : Block("sprites/box.png", Shape.Type.Polygo
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(level)
     private val nuggetValue: Int = getNuggetValue(level)
     private fun dropLoot() {
-        when (Utils.getRandomInt(4)) {
+        when (RandomUtils.getRandomInt(4)) {
             0 -> {
-                val num1 = Utils.getRandomInt(10, 16)
+                val num1 = RandomUtils.getRandomInt(10, 16)
                 var i = 0
                 while (i < num1) {
                     parent.addActor(
                         GoldNugget(
                             body.position,
-                            Utils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
+                            RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
                         )
                     )
                     i++
