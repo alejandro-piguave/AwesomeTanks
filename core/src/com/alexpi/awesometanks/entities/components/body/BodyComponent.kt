@@ -49,9 +49,9 @@ class BodyComponent(
         shape.dispose()
     }
 
-    fun getLeft(): Float = body.position.x - bodyShape.getWidth() /2
+    fun getLeft(): Float = body.position.x - bodyShape.width /2
 
-    fun getBottom(): Float = body.position.y - bodyShape.getHeight() / 2
+    fun getBottom(): Float = body.position.y - bodyShape.height / 2
 
 
     fun destroy() {

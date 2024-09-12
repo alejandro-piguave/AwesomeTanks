@@ -24,7 +24,7 @@ open class Block(
         BodyComponent(this, world, bodyShape, BodyDef.BodyType.StaticBody, FixtureFilter.BLOCK, position)
 
     init {
-        this.setSize(bodyShape.getWidth() * TILE_SIZE, bodyShape.getHeight() * TILE_SIZE)
+        this.setSize(bodyShape.width * TILE_SIZE, bodyShape.height * TILE_SIZE)
         this.setPosition(
             bodyComponent.getLeft() * TILE_SIZE,
             bodyComponent.getBottom() * TILE_SIZE

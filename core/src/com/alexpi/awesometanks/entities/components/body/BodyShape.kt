@@ -1,20 +1,7 @@
 package com.alexpi.awesometanks.entities.components.body
 
-sealed class BodyShape {
-    data class Circular(val radius: Float): BodyShape()
-    data class Box(val width: Float, val height: Float): BodyShape()
+sealed class BodyShape(val width: Float, val height: Float) {
+    class Circular(val radius: Float): BodyShape(radius*2, radius*2)
+    class Box(width: Float, height: Float): BodyShape(width, height)
 
-    fun getWidth(): Float {
-        return when(this) {
-            is Box -> width
-            is Circular -> radius*2
-        }
-    }
-
-    fun getHeight(): Float {
-        return when(this) {
-            is Box -> height
-            is Circular -> radius*2
-        }
-    }
 }
