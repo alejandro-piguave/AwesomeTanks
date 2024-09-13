@@ -9,11 +9,11 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 
-class ExplosionManager(assetManager: AssetManager, private val stage: Stage, private val world: World, private val rumbleController: RumbleController) {
+class ExplosionManager(assetManager: AssetManager, private val world: World, private val rumbleController: RumbleController): Actor() {
     private val explosionSound: Sound = assetManager.get("sounds/explosion.ogg")
     private val explosionTexture = assetManager.get("sprites/explosion_shine.png", Texture::class.java)
 

@@ -14,7 +14,8 @@ import com.alexpi.awesometanks.screens.game.stage.GameUIStage
 import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
 import com.alexpi.awesometanks.utils.fastHypot
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.GameContainer
+import com.alexpi.awesometanks.world.GameListener
+import com.alexpi.awesometanks.world.GameStage
 import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
@@ -31,16 +32,17 @@ import kotlin.math.abs
 /**
  * Created by Alex on 30/12/2015.
  */
-class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameContainer.GameListener {
+class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor,
+    GameListener {
     private lateinit var uiStage: GameUIStage
-    private lateinit var gameContainer: GameContainer
+    private lateinit var gameStage: GameStage
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
 
     private val pauseMenu: Table = PauseMenu(game.manager, {
-        gameContainer.isPaused = false
+        gameStage.isPaused = false
         uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = LevelScreen(game) }))
     }, {
-        gameContainer.isPaused = false
+        gameStage.isPaused = false
         uiStage.pauseButton.isVisible = true
     })
 
@@ -54,11 +56,11 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun show() {
-        gameContainer = GameContainer(game, this, level)
-        gameContainer.player.onMoneyUpdated = { money ->
+        gameStage = GameStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), level, game.manager,  game.gameValues,this)
+        gameStage.player.onMoneyUpdated = { money ->
             uiStage.money.profit = money
         }
-        gameContainer.player.onWeaponAmmoUpdated = { ammo ->
+        gameStage.player.onWeaponAmmoUpdated = { ammo ->
             uiStage.ammoBar.value = ammo
         }
         createUIStage()
@@ -71,36 +73,38 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         uiStage.pauseButton.onClickListener = { showPauseMenu() }
         uiStage.weaponMenu.buttonsEnabled =  Weapon.Type.values().indices.map { it == 0 || game.gameValues.getBoolean("isWeaponAvailable$it",false) }
         uiStage.weaponMenu.onWeaponClick = this::onWeaponUpdated
-        uiStage.onWeaponMenuButtonClick = { gameContainer.isPaused = !gameContainer.isPaused }
+        uiStage.onWeaponMenuButtonClick = { gameStage.isPaused = !gameStage.isPaused }
         uiStage.onMovementKnobTouch = { isTouched, knobPercentX, knobPercentY ->
-            if(isTouched) gameContainer.onKnobTouch(knobPercentX, knobPercentY) else false
+            if(isTouched) gameStage.onKnobTouch(knobPercentX, knobPercentY) else false
         }
         uiStage.onAimKnobTouch = { isTouched, knobPercentX, knobPercentY ->
             if (isTouched && (abs(knobPercentX) > .2f || abs(knobPercentY) > .2f)) {
-                gameContainer.setRotationInput(knobPercentY,knobPercentY)
+                gameStage.setRotationInput(knobPercentY,knobPercentY)
                 val distanceFromCenter = fastHypot(knobPercentY.toDouble(), knobPercentY.toDouble()).toFloat()
-                gameContainer.player.isShooting = distanceFromCenter > 0.95f && !gameContainer.isLevelCompleted
-            } else gameContainer.player.isShooting = false
+                gameStage.player.isShooting = distanceFromCenter > 0.95f && !gameStage.isLevelCompleted
+            } else gameStage.player.isShooting = false
             true
         }
     }
 
     override fun resize(width: Int, height: Int) {
         uiStage.viewport.update(width, height, true)
-        gameContainer.updateViewport(width, height)
+        gameStage.updateViewport(width, height)
     }
 
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        gameContainer.render(delta)
+        gameStage.act(delta)
         uiStage.act(delta)
+        gameStage.draw()
         uiStage.draw()
+
     }
 
     private fun onWeaponUpdated(index: Int){
         if (Settings.soundsOn) gunChangeSound.play()
-        gameContainer.player.currentWeaponIndex = index
+        gameStage.player.currentWeaponIndex = index
         uiStage.ammoBar.isVisible = index != 0
     }
 
@@ -113,9 +117,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private fun saveProgress(unlockNextLevel: Boolean = false) {
         if (unlockNextLevel) game.gameValues.putBoolean("unlocked" + (level+1), true)
-        gameContainer.player.saveProgress(game.gameValues)
+        gameStage.player.saveProgress(game.gameValues)
         val savedMoney = game.gameValues.getInteger("money")
-        game.gameValues.putInteger("money",savedMoney + gameContainer.player.money)
+        game.gameValues.putInteger("money",savedMoney + gameStage.player.money)
         game.gameValues.flush()
     }
 
@@ -131,7 +135,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun showPauseMenu(){
-        gameContainer.isPaused = true
+        gameStage.isPaused = true
         uiStage.addActor(pauseMenu)
         uiStage.pauseButton.isVisible = false
 
@@ -142,8 +146,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             Input.Keys.BACK, Input.Keys.ESCAPE -> {
                 if(Gdx.app.type != Application.ApplicationType.Desktop && uiStage.weaponMenu.parent != null){
                     uiStage.weaponMenu.remove()
-                    gameContainer.isPaused = false
-                } else if(!gameContainer.isLevelCompleted){
+                    gameStage.isPaused = false
+                } else if(!gameStage.isLevelCompleted){
                     showPauseMenu()
                 }
                 return true
@@ -181,20 +185,20 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 uiStage.weaponMenu.selectWeapon(7)
                 return true
             }
-             else -> return gameContainer.onKeyDown(keycode)
+             else -> return gameStage.onKeyDown(keycode)
         }
     }
 
     override fun hide() {
         uiStage.dispose()
-        gameContainer.dispose()
+        gameStage.dispose()
         Gdx.input.inputProcessor = null
     }
 
     //EVENTS FOR DESKTOP
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameContainer.player.isShooting = !gameContainer.isLevelCompleted
+            gameStage.player.isShooting = !gameStage.isLevelCompleted
             return true
         }
         return false
@@ -202,7 +206,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameContainer.setRotationInput(
+            gameStage.setRotationInput(
                 screenX - Gdx.graphics.width*.5f,
                 (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
             )
@@ -213,16 +217,16 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameContainer.player.isShooting = false
+            gameStage.player.isShooting = false
             return true
         }
         return false
     }
 
-    override fun keyUp(keycode: Int): Boolean = gameContainer.onKeyUp(keycode)
+    override fun keyUp(keycode: Int): Boolean = gameStage.onKeyUp(keycode)
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        gameContainer.setRotationInput(
+        gameStage.setRotationInput(
             screenX - Gdx.graphics.width*.5f,
             (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
         )

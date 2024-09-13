@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.world
 
-import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.OldHealthBar
 import com.alexpi.awesometanks.entities.actors.ParticleActor
@@ -15,30 +14,25 @@ import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.map.MapEntityCreator
 import com.alexpi.awesometanks.map.MapLoader
 import com.alexpi.awesometanks.map.MapTable
-import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
-import com.alexpi.awesometanks.screens.SCREEN_WIDTH
+import com.badlogic.gdx.Preferences
+import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.badlogic.gdx.utils.viewport.Viewport
 
-class GameContainer(
-    game: MainGame,
-    private val gameListener: GameListener,
-    level: Int
-) : DamageListener {
+class GameStage(viewport: Viewport, level: Int, private val assetManager: AssetManager, private val preferences: Preferences, private val gameListener: GameListener): Stage(viewport), DamageListener {
 
     private val mapTable: MapTable
     private val pathFinding: PathFinding
     private val entityGroup: Group = Group()
     private val blockGroup: Group = Group()
     private val healthBarGroup: Group = Group()
-    private val gameStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
     private val world = World(Vector2(0f, 0f), true)
     private val rumbleController = RumbleController()
-    private val explosionManager = ExplosionManager(game.manager, gameStage, world, rumbleController)
+    private val explosionManager = ExplosionManager(assetManager, world, rumbleController)
 
     var isPaused = false
     var isLevelCompleted = false
@@ -47,8 +41,8 @@ class GameContainer(
 
     init {
         GameModule.world = world
-        GameModule.assetManager = game.manager
-        GameModule.set(game.gameValues)
+        GameModule.assetManager = assetManager
+        GameModule.set(preferences)
 
         val mapLoader = MapLoader()
         val map = mapLoader.load(level)
@@ -81,25 +75,24 @@ class GameContainer(
 
         healthBarGroup.addActor(OldHealthBar(player))
 
-        gameStage.addActor(floorGroup)
-        gameStage.addActor(entityGroup)
-        gameStage.addActor(blockGroup)
-        gameStage.addActor(healthBarGroup)
-        gameStage.addActor(shadeGroup)
-        gameStage.addActor(rumbleController)
+        addActor(floorGroup)
+        addActor(entityGroup)
+        addActor(blockGroup)
+        addActor(healthBarGroup)
+        addActor(shadeGroup)
+        addActor(rumbleController)
+        addActor(explosionManager)
     }
 
-
-    fun render(delta: Float) {
-        if (!isPaused) {
-            gameStage.act(delta)
+    override fun act(delta: Float) {
+        if(!isPaused) {
+            super.act(delta)
+            world.step(1 / 60f, 6, 2)
         }
-        gameStage.draw()
-        if (!isPaused) world.step(1 / 60f, 6, 2)
     }
 
     fun updateViewport(width: Int, height: Int) {
-        gameStage.viewport.update(width, height, true)
+        viewport.update(width, height, true)
     }
 
     fun setRotationInput(x: Float, y: Float) {
@@ -128,8 +121,8 @@ class GameContainer(
         world.setContactListener(ContactManager())
     }
 
-    fun dispose() {
-        gameStage.dispose()
+    override fun dispose() {
+        super.dispose()
         world.dispose()
         GameModule.dispose()
     }
@@ -137,7 +130,7 @@ class GameContainer(
     override fun onDamage(actor: DamageableActor) { }
 
     override fun onDeath(actor: DamageableActor) {
-        gameStage.addActor(
+        addActor(
             ParticleActor(
                 "particles/explosion.party",
                 actor.x + actor.width / 2,
@@ -164,11 +157,4 @@ class GameContainer(
         }
     }
 
-    interface GameListener {
-        fun onLevelFailed()
-        fun onLevelCompleted()
-    }
 }
-
-
-
