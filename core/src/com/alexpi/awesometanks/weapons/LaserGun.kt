@@ -1,7 +1,8 @@
 package com.alexpi.awesometanks.weapons
 
-import com.alexpi.awesometanks.entities.actors.DamageableActor
+import com.alexpi.awesometanks.entities.blocks.Block
 import com.alexpi.awesometanks.entities.projectiles.Laser
+import com.alexpi.awesometanks.entities.tanks.Tank
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.utils.fastHypot
@@ -66,7 +67,7 @@ class LaserGun(
             createProjectile(group, position)
 
             GameModule.world.rayCast({ fixture, point, _, fraction ->
-                if(fixture.userData is  DamageableActor){
+                if(fixture.userData is Block || fixture.userData is Tank){
                     if(fraction < minFraction){
                         minFraction = fraction
                         val distance = fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * TILE_SIZE

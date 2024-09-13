@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.projectiles
 
-import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.HealthOwner
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.components.body.BodyShape
@@ -54,8 +53,7 @@ abstract class Projectile(
     open fun shouldBeDestroyedAfterCollision(actor: Actor) = true
 
     open fun handleCollision(actor: Actor) {
-        if(actor is DamageableActor) actor.takeDamage(damage)
-        else if(actor is HealthOwner) actor.healthComponent.takeDamage(damage)
+        if(actor is HealthOwner) actor.healthComponent.takeDamage(damage)
     }
 
     override fun act(delta: Float) {
