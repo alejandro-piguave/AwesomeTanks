@@ -1,103 +1,76 @@
-package com.alexpi.awesometanks.world.collision;
+package com.alexpi.awesometanks.world.collision
 
-import com.alexpi.awesometanks.entities.actors.DamageableActor;
-import com.alexpi.awesometanks.entities.blocks.Mine;
-import com.alexpi.awesometanks.entities.blocks.Spawner;
-import com.alexpi.awesometanks.entities.items.FreezingBall;
-import com.alexpi.awesometanks.entities.items.GoldNugget;
-import com.alexpi.awesometanks.entities.items.HealthPack;
-import com.alexpi.awesometanks.entities.items.Item;
-import com.alexpi.awesometanks.entities.projectiles.CanonBall;
-import com.alexpi.awesometanks.entities.projectiles.Flame;
-import com.alexpi.awesometanks.entities.projectiles.Projectile;
-import com.alexpi.awesometanks.entities.projectiles.Rail;
-import com.alexpi.awesometanks.entities.projectiles.Rocket;
-import com.alexpi.awesometanks.entities.tanks.Player;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Manifold;
+import com.alexpi.awesometanks.entities.actors.DamageableActor
+import com.alexpi.awesometanks.entities.blocks.Mine
+import com.alexpi.awesometanks.entities.blocks.Spawner
+import com.alexpi.awesometanks.entities.items.Item
+import com.alexpi.awesometanks.entities.projectiles.CanonBall
+import com.alexpi.awesometanks.entities.projectiles.Flame
+import com.alexpi.awesometanks.entities.projectiles.Projectile
+import com.alexpi.awesometanks.entities.projectiles.Rail
+import com.alexpi.awesometanks.entities.projectiles.Rocket
+import com.alexpi.awesometanks.entities.tanks.Player
+import com.badlogic.gdx.physics.box2d.Contact
+import com.badlogic.gdx.physics.box2d.ContactImpulse
+import com.badlogic.gdx.physics.box2d.ContactListener
+import com.badlogic.gdx.physics.box2d.Manifold
 
-public class ContactManager implements ContactListener {
-
-    public interface ContactListener{
-        void onGoldNuggetFound(GoldNugget goldNugget);
-        void onHealthPackFound(HealthPack healthPack);
-        void onFreezingBallFound(FreezingBall freezingBall);
-        void onBulletCollision(float x, float y);
-        void onLandMineFound(float x, float y);
-        void onExplosiveProjectileCollided(float x, float y);
+class ContactManager(private val contactListener: ContactListener) : ContactListener {
+    interface ContactListener {
+        fun onBulletCollision(x: Float, y: Float)
+        fun onLandMineFound(x: Float, y: Float)
+        fun onExplosiveProjectileCollided(x: Float, y: Float)
     }
 
-    private final ContactListener contactListener;
+    override fun beginContact(contact: Contact) {
+        val fixtureA = contact.fixtureA
+        val fixtureB = contact.fixtureB
 
-    public ContactManager(ContactListener contactListener){
-        this.contactListener = contactListener;
-    }
+        if ((fixtureA.userData is Projectile && (fixtureB.userData is DamageableActor))
+            || ((fixtureB.userData is Projectile) && (fixtureA.userData is DamageableActor))
+        ) {
+            val projectile =
+                if (fixtureA.userData is Projectile) fixtureA.userData as Projectile else (fixtureB.userData as Projectile)
 
-    @Override
-    public void beginContact(Contact contact) {
-        Fixture fixtureA = contact.getFixtureA(), fixtureB = contact.getFixtureB();
+            val damageableActor =
+                (if (fixtureA.userData is DamageableActor) fixtureA.userData else fixtureB.userData) as DamageableActor
 
-        if((fixtureA.getUserData() instanceof Projectile && (fixtureB.getUserData() instanceof DamageableActor))
-                || ((fixtureB.getUserData() instanceof Projectile) && (fixtureA.getUserData() instanceof DamageableActor))){
+            if (projectile is Flame) damageableActor.burn(projectile.burnDuration)
 
-            Projectile projectile = fixtureA.getUserData()instanceof Projectile?
-                    (Projectile)fixtureA.getUserData(): (Projectile)fixtureB.getUserData();
-
-            DamageableActor damageableActor =(DamageableActor) (fixtureA.getUserData()instanceof DamageableActor?
-                    fixtureA.getUserData(): fixtureB.getUserData());
-
-            if(projectile instanceof Flame)
-                damageableActor.burn(((Flame) projectile).getBurnDuration());
-
-            if(!(projectile.isEnemy() && damageableActor instanceof Spawner)){
-                damageableActor.takeDamage(projectile.getDamage());
+            if (!(projectile.isEnemy && damageableActor is Spawner)) {
+                damageableActor.takeDamage(projectile.damage)
             }
-            if(projectile instanceof CanonBall || projectile instanceof Rocket || projectile instanceof Rail){
-                contactListener.onExplosiveProjectileCollided(projectile.getX()+projectile.getBodyWidth()*.5f, projectile.getY()+projectile.getBodyHeight()*.5f);
+            if (projectile is CanonBall || projectile is Rocket || projectile is Rail) {
+                contactListener.onExplosiveProjectileCollided(
+                    projectile.x + projectile.bodyWidth * .5f,
+                    projectile.y + projectile.bodyHeight * .5f
+                )
             }
-            projectile.collide();
+            projectile.collide()
 
-            contactListener.onBulletCollision(projectile.getX()+projectile.getBodyWidth()*.5f, projectile.getY()+projectile.getBodyHeight()*.5f);
+            contactListener.onBulletCollision(
+                projectile.x + projectile.bodyWidth * .5f,
+                projectile.y + projectile.bodyHeight * .5f
+            )
 
-            if(!damageableActor.isAlive() && (damageableActor instanceof Mine)){
-                Fixture mineFixture = fixtureA.getUserData() instanceof Mine? fixtureA:fixtureB;
-                float mineX = mineFixture.getBody().getPosition().x, mineY = mineFixture.getBody().getPosition().y;
-                contactListener.onLandMineFound(mineX, mineY);
+            if (!damageableActor.isAlive && (damageableActor is Mine)) {
+                val mineFixture = if (fixtureA.userData is Mine) fixtureA else fixtureB
+                val mineX = mineFixture.body.position.x
+                val mineY = mineFixture.body.position.y
+                contactListener.onLandMineFound(mineX, mineY)
             }
         }
 
-        if((fixtureA.getUserData()instanceof Item && fixtureB.getUserData()instanceof Player)
-                || (contact.getFixtureB().getUserData()instanceof Item && fixtureA.getUserData()instanceof Player)){
-
-            Item item = fixtureA.getUserData()instanceof Item?
-                    (Item)fixtureA.getUserData(): (Item)fixtureB.getUserData();
-
-            if(item instanceof GoldNugget) {
-                GoldNugget nugget = (GoldNugget)item;
-                contactListener.onGoldNuggetFound(nugget);
-            }
-            else if(item instanceof HealthPack){
-                HealthPack pack  = (HealthPack) item;
-                contactListener.onHealthPackFound(pack);
-            }
-            else if(item instanceof FreezingBall){
-                FreezingBall ball = (FreezingBall) item;
-                contactListener.onFreezingBallFound(ball);
-            }
-            item.pickUp();
+        if ((fixtureA.userData is Item && fixtureB.userData is Player) || (contact.fixtureB.userData is Item && fixtureA.userData is Player)) {
+            val item = if (fixtureA.userData is Item) fixtureA.userData as Item else (fixtureB.userData as Item)
+            val player = if (fixtureA.userData is Player) fixtureA.userData as Player else (fixtureB.userData as Player)
+            player.pickUp(item)
         }
-
     }
 
-    @Override
-    public void endContact(Contact contact) { }
+    override fun endContact(contact: Contact) {}
 
-    @Override
-    public void preSolve(Contact contact, Manifold oldManifold) { }
+    override fun preSolve(contact: Contact, oldManifold: Manifold) {}
 
-    @Override
-    public void postSolve(Contact contact, ContactImpulse impulse) { }
+    override fun postSolve(contact: Contact, impulse: ContactImpulse) {}
 }

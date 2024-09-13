@@ -1,5 +1,17 @@
 package com.alexpi.awesometanks.entities.tanks
 
+import com.alexpi.awesometanks.entities.actors.DamageableActor
+import com.alexpi.awesometanks.entities.blocks.Spawner
+import com.alexpi.awesometanks.entities.blocks.Turret
+import com.alexpi.awesometanks.entities.components.body.CAT_BLOCK
+import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
+import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY_BULLET
+import com.alexpi.awesometanks.entities.components.body.CAT_ITEM
+import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
+import com.alexpi.awesometanks.entities.items.FreezingBall
+import com.alexpi.awesometanks.entities.items.GoldNugget
+import com.alexpi.awesometanks.entities.items.HealthPack
+import com.alexpi.awesometanks.entities.items.Item
 import com.alexpi.awesometanks.map.MapTable
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.upgrades.UpgradeType
@@ -7,19 +19,16 @@ import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameModule
-import com.alexpi.awesometanks.entities.components.body.CAT_BLOCK
-import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
-import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY_BULLET
-import com.alexpi.awesometanks.entities.components.body.CAT_ITEM
-import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.experimental.or
 import kotlin.math.abs
 
-class Player : Tank(Vector2(-1f,-1f), .75f,
+class Player(val entityGroup: Group, val blockGroup: Group) : Tank(Vector2(-1f,-1f), .75f,
     .07f + GameModule.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
     150 + GameModule.getGameValues().getInteger(UpgradeType.SPEED.name) * 10f,
     CAT_PLAYER,
@@ -210,6 +219,26 @@ class Player : Tank(Vector2(-1f,-1f), .75f,
 
     private fun updateMovement(){
         setMovementDirection(horizontalMovement, verticalMovement)
+    }
+
+    fun pickUp(item: Item) {
+        when (item) {
+            is GoldNugget -> {
+                money += item.value
+            }
+
+            is HealthPack -> heal(item.health)
+
+            is FreezingBall -> freezeEnemies()
+        }
+        item.pickUp()
+    }
+
+    private fun freezeEnemies() {
+        for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
+            (a as DamageableActor).freeze()
+        }
+        for (a: Actor in blockGroup.children) if (a is Turret) a.freeze()
     }
 
 }

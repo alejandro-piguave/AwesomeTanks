@@ -9,9 +9,6 @@ import com.alexpi.awesometanks.entities.ai.PathFinding
 import com.alexpi.awesometanks.entities.blocks.BaseBlock
 import com.alexpi.awesometanks.entities.blocks.Spawner
 import com.alexpi.awesometanks.entities.blocks.Turret
-import com.alexpi.awesometanks.entities.items.FreezingBall
-import com.alexpi.awesometanks.entities.items.GoldNugget
-import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.listener.DamageListener
@@ -61,7 +58,7 @@ class GameRenderer(
         pathFinding = PathFinding(mapTable)
         GameModule.pathFinding = pathFinding
 
-        player = Player()
+        player = Player(entityGroup, blockGroup)
         GameModule.player = player
 
         setWorldContactListener()
@@ -157,22 +154,6 @@ class GameRenderer(
         if((actor is EnemyTank || actor is Turret || actor is Spawner) && isLevelCleared().also { isLevelCompleted = it }) {
             gameListener.onLevelCompleted()
         }
-    }
-
-
-    override fun onGoldNuggetFound(goldNugget: GoldNugget) {
-        player.money += goldNugget.value
-    }
-
-    override fun onHealthPackFound(healthPack: HealthPack) {
-        player.heal(healthPack.health)
-    }
-
-    override fun onFreezingBallFound(freezingBall: FreezingBall) {
-        for (a: Actor in entityGroup.children) if (a is EnemyTank || a is Spawner) {
-            (a as DamageableActor).freeze()
-        }
-        for (a: Actor in blockGroup.children) if (a is Turret) a.freeze()
     }
 
     override fun onBulletCollision(x: Float, y: Float) {
