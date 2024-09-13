@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.world.collision
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
-import com.alexpi.awesometanks.entities.blocks.Mine
 import com.alexpi.awesometanks.entities.blocks.Spawner
 import com.alexpi.awesometanks.entities.items.Item
 import com.alexpi.awesometanks.entities.projectiles.CanonBall
@@ -18,23 +17,11 @@ import com.badlogic.gdx.physics.box2d.Manifold
 class ContactManager(private val contactListener: ContactListener) : ContactListener {
     interface ContactListener {
         fun onBulletCollision(x: Float, y: Float)
-        fun onLandMineFound(x: Float, y: Float)
         fun onExplosiveProjectileCollided(x: Float, y: Float)
     }
 
     override fun beginContact(contact: Contact) {
-        val fixtureA = contact.fixtureA
-        val fixtureB = contact.fixtureB
-
-        if ((fixtureA.userData is Projectile && (fixtureB.userData is DamageableActor))
-            || ((fixtureB.userData is Projectile) && (fixtureA.userData is DamageableActor))
-        ) {
-            val projectile =
-                if (fixtureA.userData is Projectile) fixtureA.userData as Projectile else (fixtureB.userData as Projectile)
-
-            val damageableActor =
-                (if (fixtureA.userData is DamageableActor) fixtureA.userData else fixtureB.userData) as DamageableActor
-
+        contact.isOfType(Projectile::class.java, DamageableActor::class.java) { projectile, damageableActor ->
             if (projectile is Flame) damageableActor.burn(projectile.burnDuration)
 
             if (!(projectile.isEnemy && damageableActor is Spawner)) {
@@ -52,20 +39,17 @@ class ContactManager(private val contactListener: ContactListener) : ContactList
                 projectile.x + projectile.bodyWidth * .5f,
                 projectile.y + projectile.bodyHeight * .5f
             )
-
-            if (!damageableActor.isAlive && (damageableActor is Mine)) {
-                val mineFixture = if (fixtureA.userData is Mine) fixtureA else fixtureB
-                val mineX = mineFixture.body.position.x
-                val mineY = mineFixture.body.position.y
-                contactListener.onLandMineFound(mineX, mineY)
-            }
         }
 
-        if ((fixtureA.userData is Item && fixtureB.userData is Player) || (contact.fixtureB.userData is Item && fixtureA.userData is Player)) {
-            val item = if (fixtureA.userData is Item) fixtureA.userData as Item else (fixtureB.userData as Item)
-            val player = if (fixtureA.userData is Player) fixtureA.userData as Player else (fixtureB.userData as Player)
+
+        contact.isOfType(Player::class.java, Item::class.java) { player, item ->
             player.pickUp(item)
         }
+    }
+
+    private fun <A, B> Contact.isOfType(classA: Class<A>, classB: Class<B>, body: (a: A, b: B) -> Unit) {
+        if(classA.isInstance(fixtureA.userData) && classB.isInstance(fixtureB.userData)) body(classA.cast(fixtureA.userData), classB.cast(fixtureB.userData))
+        else if(classA.isInstance(fixtureB.userData) && classB.isInstance(fixtureA.userData)) body(classA.cast(fixtureB.userData), classB.cast(fixtureA.userData))
     }
 
     override fun endContact(contact: Contact) {}

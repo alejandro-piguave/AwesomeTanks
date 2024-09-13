@@ -67,7 +67,7 @@ class GameRenderer(
         val floorGroup = Group()
 
         val mapEntityCreator = MapEntityCreator()
-        mapEntityCreator.create(mapTable, level, player, shadeGroup, blockGroup, entityGroup, floorGroup, this)
+        mapEntityCreator.create(mapTable, level, player, shadeGroup, blockGroup, entityGroup, floorGroup, explosionManager,this)
 
         healthBarGroup.addActor(HealthBar(player))
 
@@ -158,10 +158,6 @@ class GameRenderer(
 
     override fun onBulletCollision(x: Float, y: Float) {
         gameStage.addActor(ParticleActor("particles/collision.party", x, y, false))
-    }
-
-    override fun onLandMineFound(x: Float, y: Float) {
-        explosionManager.createLandMineExplosion(x,y)
     }
 
     override fun onExplosiveProjectileCollided(x: Float, y: Float) {

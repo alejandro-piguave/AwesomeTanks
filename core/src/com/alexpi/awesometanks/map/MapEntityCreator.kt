@@ -13,6 +13,7 @@ import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.scenes.scene2d.Group
 
 class MapEntityCreator {
@@ -24,6 +25,7 @@ class MapEntityCreator {
         blockGroup: Group,
         entityGroup: Group,
         floorGroup: Group,
+        explosionManager: ExplosionManager,
         damageListener: DamageListener? = null
     ) {
         mapTable.forCell { cell ->
@@ -50,7 +52,7 @@ class MapEntityCreator {
                         ).also { it.damageListener = damageListener }
                     )
 
-                    MapTable.BOMB -> blockGroup.addActor(Mine(cell.toWorldPosition(mapTable)).also { it.damageListener = damageListener })
+                    MapTable.BOMB -> blockGroup.addActor(Mine(explosionManager, cell.toWorldPosition(mapTable)).also { it.damageListener = damageListener })
 
                     in MapTable.bosses -> {
                         val type = cell.value.code - MapTable.MINIGUN_BOSS.code
