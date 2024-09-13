@@ -16,7 +16,7 @@ class ShotGun(ammo: Float, power: Int, filter: Boolean) :
             group.addActor(
                 Bullet(
                     position, currentRotationAngle + delta, RandomUtils.getRandomInt(10, 30)
-                        .toFloat(), .15f, 10f + power, isPlayer
+                        .toFloat(), .075f, 10f + power, isPlayer
                 )
             )
         }

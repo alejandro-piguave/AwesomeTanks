@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.world
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
-import com.alexpi.awesometanks.entities.blocks.Spawner
 import com.alexpi.awesometanks.entities.items.Item
 import com.alexpi.awesometanks.entities.projectiles.Flame
 import com.alexpi.awesometanks.entities.projectiles.Projectile
@@ -17,10 +16,7 @@ class ContactManager: ContactListener {
         contact.isOfType(Projectile::class.java, DamageableActor::class.java) { projectile, damageableActor ->
             if (projectile is Flame) damageableActor.burn(projectile.burnDuration)
 
-            if (!(projectile.isEnemy && damageableActor is Spawner)) {
-                damageableActor.takeDamage(projectile.damage)
-            }
-
+            damageableActor.takeDamage(projectile.damage)
             projectile.collide()
         }
 

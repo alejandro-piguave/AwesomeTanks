@@ -29,7 +29,7 @@ abstract class Projectile(
     angle: Float,
     val speed: Float,
     val damage: Float,
-    isPlayer: Boolean
+    val isPlayer: Boolean
 ) : Actor() {
     val body: Body
     private val fixture: Fixture
@@ -37,9 +37,6 @@ abstract class Projectile(
     protected var sprite: Sprite? = null
     var hasCollided = false
         private set
-    val isEnemy: Boolean
-        get() = fixture.filterData.maskBits == ENEMY_BULLET_MASK
-
     open fun destroy() {
         body.world.destroyBody(body)
         stage.addActor(ParticleActor("particles/collision.party", x + bodyShape.width/2, y + bodyShape.height/2, false))
