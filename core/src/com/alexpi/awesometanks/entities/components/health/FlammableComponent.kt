@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.entities.components
+package com.alexpi.awesometanks.entities.components.health
 
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
