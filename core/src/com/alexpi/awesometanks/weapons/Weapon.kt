@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.weapons
 
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.alexpi.awesometanks.world.GameModule
 import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.audio.Sound
@@ -112,6 +113,7 @@ abstract class Weapon(
     companion object {
         fun getWeaponAt(
             type: Type,
+            explosionManager: ExplosionManager,
             ammo: Float,
             power: Int,
             isPlayer: Boolean,
@@ -122,10 +124,10 @@ abstract class Weapon(
                 Type.SHOTGUN -> ShotGun( ammo, power, isPlayer)
                 Type.RICOCHET -> Ricochet( ammo, power, isPlayer)
                 Type.FLAMETHROWER -> Flamethrower( ammo, power, isPlayer)
-                Type.CANNON -> Canon( ammo, power, isPlayer)
-                Type.ROCKETS -> RocketLauncher( ammo, power, isPlayer, rocketListener)
+                Type.CANNON -> Cannon(explosionManager, ammo, power, isPlayer)
+                Type.ROCKETS -> RocketLauncher(explosionManager, ammo, power, isPlayer, rocketListener)
                 Type.LASERGUN -> LaserGun( ammo, power, isPlayer)
-                Type.RAILGUN -> RailGun( ammo, power, isPlayer)
+                Type.RAILGUN -> RailGun(explosionManager, ammo, power, isPlayer)
             }
         }
     }

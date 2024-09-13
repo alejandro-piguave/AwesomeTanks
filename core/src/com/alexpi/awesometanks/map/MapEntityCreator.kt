@@ -44,9 +44,10 @@ class MapEntityCreator {
 
                     MapTable.GATE -> blockGroup.addActor(Gate(cell.toWorldPosition(mapTable)).also { it.damageListener = damageListener })
                     MapTable.BRICKS -> blockGroup.addActor(Bricks(cell.toWorldPosition(mapTable)).also { it.damageListener = damageListener })
-                    MapTable.BOX -> entityGroup.addActor(Box(level, cell.toWorldPosition(mapTable)).also { it.damageListener = damageListener })
+                    MapTable.BOX -> entityGroup.addActor(Box(explosionManager, level, cell.toWorldPosition(mapTable)).also { it.damageListener = damageListener })
                     MapTable.SPAWNER -> entityGroup.addActor(
                         Spawner(
+                            explosionManager,
                             level,
                             cell.toWorldPosition(mapTable)
                         ).also { it.damageListener = damageListener }
@@ -59,6 +60,7 @@ class MapEntityCreator {
                         val weaponType = Weapon.Type.values()[type]
                         entityGroup.addActor(
                             EnemyTank(
+                                explosionManager,
                                 cell.toWorldPosition(mapTable),
                                 EnemyTank.Tier.BOSS,
                                 weaponType
@@ -68,7 +70,7 @@ class MapEntityCreator {
 
                     in MapTable.turrets -> {
                         val weaponType = Weapon.Type.values()[Character.getNumericValue(cell.value)]
-                        blockGroup.addActor(Turret(cell.toWorldPosition(mapTable), weaponType).also { it.damageListener = damageListener })
+                        blockGroup.addActor(Turret(explosionManager, cell.toWorldPosition(mapTable), weaponType).also { it.damageListener = damageListener })
                     }
 
                 }

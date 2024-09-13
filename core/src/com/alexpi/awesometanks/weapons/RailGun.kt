@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.projectiles.Rail
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.utils.fastHypot
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.alexpi.awesometanks.world.GameModule
 import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.graphics.Color
@@ -19,7 +20,7 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 04/01/2016.
  */
-class RailGun(ammo: Float, power: Int, filter: Boolean) :
+class RailGun(private val explosionManager: ExplosionManager, ammo: Float, power: Int, filter: Boolean) :
     Weapon(
         "weapons/railgun.png",
         "sounds/railgun.ogg",
@@ -99,7 +100,7 @@ class RailGun(ammo: Float, power: Int, filter: Boolean) :
     override fun await() {}
 
     override fun createProjectile(group: Group, position: Vector2) {
-        group.addActor(Rail( position, currentRotationAngle, power.toFloat(), isPlayer))
+        group.addActor(Rail(explosionManager, position, currentRotationAngle, power.toFloat(), isPlayer))
     }
 
     companion object {

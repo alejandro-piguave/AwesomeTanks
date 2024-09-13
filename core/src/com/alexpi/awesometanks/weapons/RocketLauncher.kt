@@ -1,10 +1,11 @@
 package com.alexpi.awesometanks.weapons
 
 import com.alexpi.awesometanks.entities.projectiles.Rocket
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 
-class RocketLauncher(ammo: Float, power: Int, isPlayer: Boolean, private val rocketListener: RocketListener? = null) :
+class RocketLauncher(private val explosionManager: ExplosionManager, ammo: Float, power: Int, isPlayer: Boolean, private val rocketListener: RocketListener? = null) :
     Weapon(
         "weapons/rocket.png",
         "sounds/rocket_launch.ogg",
@@ -20,7 +21,7 @@ class RocketLauncher(ammo: Float, power: Int, isPlayer: Boolean, private val roc
     override fun canShoot(): Boolean = super.canShoot() && rocket?.hasCollided ?: true
 
     override fun createProjectile(group: Group, position: Vector2) {
-        rocket = Rocket(position,currentRotationAngle, power, isPlayer, rocketListener)
+        rocket = Rocket(explosionManager, position,currentRotationAngle, power, isPlayer, rocketListener)
         group.addActor(rocket)
     }
 }

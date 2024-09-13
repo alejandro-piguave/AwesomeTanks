@@ -18,6 +18,7 @@ import com.alexpi.awesometanks.screens.upgrades.UpgradeType
 import com.alexpi.awesometanks.weapons.RocketLauncher
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Preferences
@@ -28,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.experimental.or
 import kotlin.math.abs
 
-class Player(private val entityGroup: Group, private val blockGroup: Group) : Tank(Vector2(-1f,-1f), .75f,
+class Player(private val explosionManager: ExplosionManager, private val entityGroup: Group, private val blockGroup: Group) : Tank(Vector2(-1f,-1f), .75f,
     .07f + GameModule.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
     150 + GameModule.getGameValues().getInteger(UpgradeType.SPEED.name) * 10f,
     CAT_PLAYER,
@@ -60,7 +61,7 @@ class Player(private val entityGroup: Group, private val blockGroup: Group) : Ta
     private val weapons: List<Weapon> = Weapon.Type.values().map {
         val weaponAmmo =  GameModule.getGameValues().getFloat("ammo${it.ordinal}")
         val weaponPower = GameModule.getGameValues().getInteger("power${it.ordinal}")
-        Weapon.getWeaponAt(it,weaponAmmo, weaponPower, true, this)
+        Weapon.getWeaponAt(it, explosionManager, weaponAmmo, weaponPower, true, this)
     }
 
     //Used for keys

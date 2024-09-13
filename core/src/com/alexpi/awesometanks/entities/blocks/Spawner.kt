@@ -8,6 +8,7 @@ import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
 import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.utils.TimeUtils
@@ -16,7 +17,7 @@ import kotlin.experimental.or
 /**
  * Created by Alex on 15/02/2016.
  */
-class Spawner(level: Int, pos: Vector2) : BaseBlock(
+class Spawner(private val explosionManager: ExplosionManager, level: Int, pos: Vector2) : BaseBlock(
     "sprites/spawner.png",
     Shape.Type.Polygon,
     getHealth(level),
@@ -40,6 +41,7 @@ class Spawner(level: Int, pos: Vector2) : BaseBlock(
             maxSpan += 5000
             parent.addActor(
                 EnemyTank(
+                    explosionManager,
                     body.position,
                     EnemyTank.Tier.NORMAL,
                     generatedTypes.random()

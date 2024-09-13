@@ -3,13 +3,14 @@ package com.alexpi.awesometanks.entities.tanks
 import com.alexpi.awesometanks.entities.ai.EnemyTankState
 import com.alexpi.awesometanks.entities.ai.FrozenState
 import com.alexpi.awesometanks.entities.ai.WanderState
-import com.alexpi.awesometanks.entities.items.GoldNugget
-import com.alexpi.awesometanks.utils.RandomUtils
-import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.entities.components.body.CAT_BLOCK
 import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
 import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
 import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
+import com.alexpi.awesometanks.entities.items.GoldNugget
+import com.alexpi.awesometanks.utils.RandomUtils
+import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
@@ -22,6 +23,7 @@ import kotlin.experimental.or
  * Created by Alex on 17/02/2016.
  */
 class EnemyTank(
+    explosionManager: ExplosionManager,
     position: Vector2,
     tier: Tier,
     type: Weapon.Type) : Tank(position, getSizeByTier(tier),
@@ -32,7 +34,7 @@ class EnemyTank(
 
     val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState(position.cpy()))
     private val nuggetValue: Int
-    private val weapon: Weapon = Weapon.getWeaponAt(type, 1f, powerByTier(tier), false)
+    private val weapon: Weapon = Weapon.getWeaponAt(type, explosionManager,1f, powerByTier(tier), false)
     override val currentWeapon: Weapon
         get() = weapon
 

@@ -7,13 +7,14 @@ import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
 import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Shape
 
 /**
  * Created by Alex on 19/01/2016.
  */
-class Box(level: Int, pos: Vector2) : BaseBlock("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false) {
+class Box(private val explosionManager: ExplosionManager, level: Int, pos: Vector2) : BaseBlock("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false) {
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(level)
     private val nuggetValue: Int = getNuggetValue(level)
     private fun dropLoot() {
@@ -35,6 +36,7 @@ class Box(level: Int, pos: Vector2) : BaseBlock("sprites/box.png", Shape.Type.Po
             2 -> parent.addActor(HealthPack( body.position))
             3 -> parent.addActor(
                 EnemyTank(
+                    explosionManager,
                     body.position,
                     EnemyTank.Tier.MINI,
                     generatedTypes.random()

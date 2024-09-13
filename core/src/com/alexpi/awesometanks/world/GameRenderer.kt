@@ -58,7 +58,7 @@ class GameRenderer(
         pathFinding = PathFinding(mapTable)
         GameModule.pathFinding = pathFinding
 
-        player = Player(entityGroup, blockGroup)
+        player = Player(explosionManager, entityGroup, blockGroup)
         GameModule.player = player
 
         setWorldContactListener()

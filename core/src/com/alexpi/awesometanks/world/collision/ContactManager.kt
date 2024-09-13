@@ -3,7 +3,7 @@ package com.alexpi.awesometanks.world.collision
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.blocks.Spawner
 import com.alexpi.awesometanks.entities.items.Item
-import com.alexpi.awesometanks.entities.projectiles.CanonBall
+import com.alexpi.awesometanks.entities.projectiles.CannonBall
 import com.alexpi.awesometanks.entities.projectiles.Flame
 import com.alexpi.awesometanks.entities.projectiles.Projectile
 import com.alexpi.awesometanks.entities.projectiles.Rail
@@ -26,7 +26,7 @@ class ContactManager(private val contactListener: ContactListener) : ContactList
             if (!(projectile.isEnemy && damageableActor is Spawner)) {
                 damageableActor.takeDamage(projectile.damage)
             }
-            if (projectile is CanonBall || projectile is Rocket || projectile is Rail) {
+            if (projectile is CannonBall || projectile is Rocket || projectile is Rail) {
                 contactListener.onExplosiveProjectileCollided(
                     projectile.x + projectile.bodyShape.width * .5f,
                     projectile.y + projectile.bodyShape.height * .5f

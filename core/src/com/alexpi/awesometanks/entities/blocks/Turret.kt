@@ -6,6 +6,7 @@ import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Filter
@@ -15,6 +16,7 @@ import com.badlogic.gdx.physics.box2d.Shape
  * Created by Alex on 18/02/2016.
  */
 class Turret(
+    explosionManager: ExplosionManager,
     pos: Vector2,
     type: Weapon.Type
 ) : BaseBlock( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, true), TurretAICallback {
@@ -89,7 +91,7 @@ class Turret(
         filter.categoryBits = CAT_ENEMY
         fixture.filterData = filter
         nuggetValue = getNuggetValue(type)
-        weapon = Weapon.getWeaponAt(type, 1f, 2, false)
+        weapon = Weapon.getWeaponAt(type, explosionManager,1f, 2, false)
         weapon.unlimitedAmmo = true
         setOrigin(width / 2, height / 2)
     }
