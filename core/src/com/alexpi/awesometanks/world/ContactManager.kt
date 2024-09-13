@@ -1,23 +1,17 @@
-package com.alexpi.awesometanks.world.collision
+package com.alexpi.awesometanks.world
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.blocks.Spawner
 import com.alexpi.awesometanks.entities.items.Item
-import com.alexpi.awesometanks.entities.projectiles.CannonBall
 import com.alexpi.awesometanks.entities.projectiles.Flame
 import com.alexpi.awesometanks.entities.projectiles.Projectile
-import com.alexpi.awesometanks.entities.projectiles.Rail
-import com.alexpi.awesometanks.entities.projectiles.Rocket
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
 
-class ContactManager(private val contactListener: ContactListener) : ContactListener {
-    interface ContactListener {
-        fun onExplosiveProjectileCollided(x: Float, y: Float)
-    }
+class ContactManager: ContactListener {
 
     override fun beginContact(contact: Contact) {
         contact.isOfType(Projectile::class.java, DamageableActor::class.java) { projectile, damageableActor ->
@@ -26,12 +20,7 @@ class ContactManager(private val contactListener: ContactListener) : ContactList
             if (!(projectile.isEnemy && damageableActor is Spawner)) {
                 damageableActor.takeDamage(projectile.damage)
             }
-            if (projectile is CannonBall || projectile is Rocket || projectile is Rail) {
-                contactListener.onExplosiveProjectileCollided(
-                    projectile.x + projectile.bodyShape.width * .5f,
-                    projectile.y + projectile.bodyShape.height * .5f
-                )
-            }
+
             projectile.collide()
         }
 

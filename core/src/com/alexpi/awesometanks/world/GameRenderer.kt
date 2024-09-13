@@ -17,7 +17,6 @@ import com.alexpi.awesometanks.map.MapLoader
 import com.alexpi.awesometanks.map.MapTable
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
-import com.alexpi.awesometanks.world.collision.ContactManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -28,7 +27,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 class GameRenderer(
     game: MainGame,
     private val gameListener: GameListener,
-    level: Int) : DamageListener, ContactManager.ContactListener {
+    level: Int) : DamageListener{
 
     private val mapTable: MapTable
     private val pathFinding: PathFinding
@@ -115,11 +114,7 @@ class GameRenderer(
     }
 
     private fun setWorldContactListener(){
-        world.setContactListener(
-            ContactManager(
-                this
-            )
-        )
+        world.setContactListener(ContactManager())
     }
 
     fun dispose(){
@@ -154,10 +149,6 @@ class GameRenderer(
         if((actor is EnemyTank || actor is Turret || actor is Spawner) && isLevelCleared().also { isLevelCompleted = it }) {
             gameListener.onLevelCompleted()
         }
-    }
-
-    override fun onExplosiveProjectileCollided(x: Float, y: Float) {
-        explosionManager.createCanonBallExplosion(x,y)
     }
 
     interface GameListener {
