@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles
 
+import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.alexpi.awesometanks.weapons.RocketListener
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
@@ -17,7 +18,7 @@ class Rocket(
     power: Int,
     filter: Boolean,
     private val rocketListener: RocketListener? = null
-) : Projectile(pos, angle, .075f, .38f, .1f, 90F + power * 15, filter){
+) : Projectile(pos, BodyShape.Box(.38f, 1f), angle, .075f, 90F + power * 15, filter){
 
     private var isDestroyedFlag = false
     private val flameSprite: Sprite

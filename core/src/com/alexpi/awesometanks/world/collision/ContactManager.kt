@@ -28,8 +28,8 @@ class ContactManager(private val contactListener: ContactListener) : ContactList
             }
             if (projectile is CanonBall || projectile is Rocket || projectile is Rail) {
                 contactListener.onExplosiveProjectileCollided(
-                    projectile.x + projectile.bodyWidth * .5f,
-                    projectile.y + projectile.bodyHeight * .5f
+                    projectile.x + projectile.bodyShape.width * .5f,
+                    projectile.y + projectile.bodyShape.height * .5f
                 )
             }
             projectile.collide()

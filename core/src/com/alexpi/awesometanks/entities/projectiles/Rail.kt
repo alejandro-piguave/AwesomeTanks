@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.entities.actors.ParticleActor
+import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 
@@ -12,11 +13,11 @@ class Rail(
     angle: Float,
     power: Float,
     filter: Boolean
-) : Projectile( pos, angle, 50f, .25f, 180 + power * 40, filter) {
-    var particleActor: ParticleActor = ParticleActor(
+) : Projectile(pos, BodyShape.Circular(.25f), angle, 50f, 180 + power * 40, filter) {
+    private val particleActor: ParticleActor = ParticleActor(
         "particles/railgun.party",
-        x + bodyWidth / 2,
-        y + bodyHeight / 2,
+        x + bodyShape.width / 2,
+        y + bodyShape.height / 2,
         true
     )
 
@@ -27,7 +28,7 @@ class Rail(
 
     override fun act(delta: Float) {
         super.act(delta)
-        particleActor.setPosition(x + bodyWidth / 2, y + bodyHeight / 2)
+        particleActor.setPosition(x + bodyShape.width / 2, y + bodyShape.height / 2)
         particleActor.act(delta)
     }
 

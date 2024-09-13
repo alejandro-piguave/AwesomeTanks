@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.entities.actors.ParticleActor
+import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 
@@ -8,12 +9,12 @@ import com.badlogic.gdx.math.Vector2
  * Created by Alex on 16/01/2016.
  */
 class Flame(pos: Vector2, angle: Float, var burnDuration: Float, filter: Boolean) : Projectile(
-    pos, angle, 15f, .1f, 20f, filter
+    pos, BodyShape.Circular(.1f), angle, 15f, 20f, filter
 ) {
     private val particleActor: ParticleActor = ParticleActor(
         "particles/flame.party",
-        x + bodyWidth / 2,
-        y + bodyHeight / 2,
+        x + bodyShape.width / 2,
+        y + bodyShape.height / 2,
         true
     )
 
@@ -24,7 +25,7 @@ class Flame(pos: Vector2, angle: Float, var burnDuration: Float, filter: Boolean
 
     override fun act(delta: Float) {
         super.act(delta)
-        particleActor.setPosition(x + bodyWidth / 2, y + bodyHeight / 2)
+        particleActor.setPosition(x + bodyShape.width / 2, y + bodyShape.height / 2)
         particleActor.act(delta)
     }
 

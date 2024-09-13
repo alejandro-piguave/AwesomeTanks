@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.entities.actors.ParticleActor
+import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY_BULLET
 import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
 import com.alexpi.awesometanks.entities.components.body.ENEMY_BULLET_MASK
@@ -17,19 +18,16 @@ import com.badlogic.gdx.physics.box2d.CircleShape
 import com.badlogic.gdx.physics.box2d.Fixture
 import com.badlogic.gdx.physics.box2d.FixtureDef
 import com.badlogic.gdx.physics.box2d.PolygonShape
-import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.scenes.scene2d.Actor
 
 /**
  * Created by Alex on 16/01/2016.
  */
-abstract class Projectile private constructor(
+abstract class Projectile(
     position: Vector2,
-    shapeType: Shape.Type,
+    val bodyShape: BodyShape,
     angle: Float,
     val speed: Float,
-    val bodyWidth: Float,
-    val bodyHeight: Float,
     val damage: Float,
     isPlayer: Boolean
 ) : Actor() {
@@ -42,9 +40,9 @@ abstract class Projectile private constructor(
     val isEnemy: Boolean
         get() = fixture.filterData.maskBits == ENEMY_BULLET_MASK
 
-    private fun destroy() {
+    open fun destroy() {
         body.world.destroyBody(body)
-        stage.addActor(ParticleActor("particles/collision.party", x + bodyWidth/2, y + bodyHeight/2, false))
+        stage.addActor(ParticleActor("particles/collision.party", x + bodyShape.width/2, y + bodyShape.height/2, false))
         remove()
     }
 
@@ -58,8 +56,8 @@ abstract class Projectile private constructor(
             return
         }
         setPosition(
-            (body.position.x - bodyWidth / 2) * TILE_SIZE,
-            (body.position.y - bodyHeight / 2) * TILE_SIZE
+            (body.position.x - bodyShape.width / 2) * TILE_SIZE,
+            (body.position.y - bodyShape.height / 2) * TILE_SIZE
         )
 
         rotation = body.angle * MathUtils.radiansToDegrees
@@ -80,25 +78,6 @@ abstract class Projectile private constructor(
         )
     }
 
-    constructor(
-        position: Vector2,
-        angle: Float,
-        speed: Float,
-        radius: Float,
-        damage: Float,
-        isPlayer: Boolean
-    ): this(position, Shape.Type.Circle, angle, speed, radius, radius, damage, isPlayer)
-
-    constructor(
-        position: Vector2,
-        angle: Float,
-        speed: Float,
-        bodyWidth: Float,
-        bodyHeight: Float,
-        damage: Float,
-        isPlayer: Boolean
-    ): this(position, Shape.Type.Polygon, angle, speed, bodyWidth, bodyHeight, damage, isPlayer)
-
     init {
         val bodyDef = BodyDef()
         bodyDef.type = BodyDef.BodyType.DynamicBody
@@ -107,10 +86,9 @@ abstract class Projectile private constructor(
         bodyDef.bullet = true
         val fixtureDef = FixtureDef()
         fixtureDef.density = 1f
-        val shape = when (shapeType) {
-            Shape.Type.Circle -> CircleShape().apply { radius = bodyWidth/2 }
-            Shape.Type.Polygon -> PolygonShape().apply { setAsBox(bodyWidth/2, bodyHeight/2) }
-            else -> throw IllegalArgumentException("Illegal shape")
+        val shape = when (bodyShape) {
+            is BodyShape.Circular -> CircleShape().apply { radius = radius}
+            is BodyShape.Box -> PolygonShape().apply { setAsBox(bodyShape.width/2, bodyShape.height/2) }
         }
         fixtureDef.shape = shape
         fixtureDef.restitution = .9f
@@ -125,11 +103,11 @@ abstract class Projectile private constructor(
         body.isBullet = true
         body.setLinearVelocity(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed)
         body.setTransform(body.position, angle)
-        setSize(TILE_SIZE * bodyWidth, TILE_SIZE * bodyHeight)
+        setSize(TILE_SIZE * bodyShape.width, TILE_SIZE * bodyShape.height)
         setOrigin(originX + width / 2, originY + height / 2)
         setPosition(
-            (body.position.x - bodyWidth / 2) * TILE_SIZE,
-            (body.position.y - bodyHeight / 2) * TILE_SIZE
+            (body.position.x - bodyShape.width / 2) * TILE_SIZE,
+            (body.position.y - bodyShape.height / 2) * TILE_SIZE
         )
         rotation = body.angle * MathUtils.radiansToDegrees
     }
