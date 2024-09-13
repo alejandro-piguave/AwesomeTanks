@@ -15,7 +15,7 @@ import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
 import com.alexpi.awesometanks.utils.fastHypot
 import com.alexpi.awesometanks.weapons.Weapon
 import com.alexpi.awesometanks.world.GameListener
-import com.alexpi.awesometanks.world.GameStage
+import com.alexpi.awesometanks.screens.game.stage.GameStage
 import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx

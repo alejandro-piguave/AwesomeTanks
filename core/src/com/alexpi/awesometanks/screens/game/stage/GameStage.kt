@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.world
+package com.alexpi.awesometanks.screens.game.stage
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.OldHealthBar
@@ -14,6 +14,10 @@ import com.alexpi.awesometanks.listener.DamageListener
 import com.alexpi.awesometanks.map.MapEntityCreator
 import com.alexpi.awesometanks.map.MapLoader
 import com.alexpi.awesometanks.map.MapTable
+import com.alexpi.awesometanks.world.ContactManager
+import com.alexpi.awesometanks.world.ExplosionManager
+import com.alexpi.awesometanks.world.GameListener
+import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2
