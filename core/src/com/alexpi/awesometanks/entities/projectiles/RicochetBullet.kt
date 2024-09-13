@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.entities.projectiles
 
-import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.alexpi.awesometanks.world.GameModule
@@ -17,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
  */
 class RicochetBullet(
     pos: Vector2,
-    private var hitSound: Sound,
+    private val hitSound: Sound,
     angle: Float,
     power: Float,
     isPlayer: Boolean
@@ -35,15 +34,19 @@ class RicochetBullet(
         particleActor.draw(batch, parentAlpha)
     }
 
-    override fun collide(actor: Actor) {
+    override fun shouldBeDestroyedAfterCollision(actor: Actor): Boolean {
         if (hits < MAX_HITS) {
-            if(actor is DamageableActor) actor.takeDamage(damage)
             hits++
-            if (soundsOn) hitSound.play()
+            return false
         } else {
-            if(actor is DamageableActor) actor.takeDamage(damage)
-            hasCollided = true
+            return true
         }
+    }
+
+    override fun handleCollision(actor: Actor) {
+        super.handleCollision(actor)
+        if(hits < MAX_HITS && soundsOn) hitSound.play()
+
     }
 
     companion object {

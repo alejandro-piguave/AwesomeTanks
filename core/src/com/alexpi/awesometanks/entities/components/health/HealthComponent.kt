@@ -2,8 +2,8 @@ package com.alexpi.awesometanks.entities.components.health
 
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.TimeUtils
 
@@ -12,8 +12,8 @@ class HealthComponent(
     private val parent: Actor,
     private val maxHealth: Float,
     initialState: HealthState = HealthState.Normal,
-    val isFlammable: Boolean = true,
-    val isFreezable: Boolean = true,
+    private val isFlammable: Boolean = true,
+    private val isFreezable: Boolean = true,
     var onDamageTaken: ((Actor) -> Unit)? = null,
     var onDeath: ((Actor) -> Unit)? = null){
 
@@ -28,7 +28,6 @@ class HealthComponent(
         if(damage <= 0) throw IllegalArgumentException("damage must be greater than 0.")
         currentHealth = (currentHealth - damage).coerceAtLeast(0f)
         onDamageTaken?.invoke(parent)
-        if(currentHealth <= 0) onDeath?.invoke(parent)
     }
 
     fun heal(health: Float) {
@@ -48,9 +47,13 @@ class HealthComponent(
     }
 
     fun act(delta: Float) {
-        flameEffect.setPosition(parent.x + parent.width/2, parent.y + parent.height/2)
+        if(currentHealth <= 0) {
+            onDeath?.invoke(parent)
+            return
+        }
         when(val state = healthState) {
             is HealthState.Burning -> {
+                flameEffect.setPosition(parent.x + parent.width/2, parent.y + parent.height/2)
                 flameEffect.update(delta)
                 if(flameEffect.isComplete) flameEffect.reset()
                 takeDamage(state.damage)
@@ -64,7 +67,7 @@ class HealthComponent(
         }
     }
 
-    fun draw(batch: SpriteBatch) {
+    fun draw(batch: Batch) {
         when(healthState) {
             HealthState.Normal -> {}
             is HealthState.Burning -> flameEffect.draw(batch)

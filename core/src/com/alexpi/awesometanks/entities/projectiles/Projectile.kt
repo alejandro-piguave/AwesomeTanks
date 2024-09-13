@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.entities.actors.DamageableActor
+import com.alexpi.awesometanks.entities.actors.HealthActor
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY_BULLET
@@ -36,22 +37,30 @@ abstract class Projectile(
     private val fixture: Fixture
     @JvmField
     protected var sprite: Sprite? = null
-    var hasCollided = false
-    protected set
-    open fun destroy() {
+    var shouldBeDestroyed = false
+    private set
+
+    override fun remove(): Boolean {
         body.world.destroyBody(body)
         stage.addActor(ParticleActor("particles/collision.party", x + bodyShape.width/2, y + bodyShape.height/2, false))
-        remove()
+        return super.remove()
     }
 
-    open fun collide(actor: Actor) {
+    fun collide(actor: Actor) {
+        handleCollision(actor)
+        shouldBeDestroyed = shouldBeDestroyedAfterCollision(actor)
+    }
+
+    open fun shouldBeDestroyedAfterCollision(actor: Actor) = true
+
+    open fun handleCollision(actor: Actor) {
         if(actor is DamageableActor) actor.takeDamage(damage)
-        hasCollided = true
+        else if(actor is HealthActor) actor.healthComponent.takeDamage(damage)
     }
 
     override fun act(delta: Float) {
-        if (hasCollided) {
-            destroy()
+        if (shouldBeDestroyed) {
+            remove()
             return
         }
         setPosition(

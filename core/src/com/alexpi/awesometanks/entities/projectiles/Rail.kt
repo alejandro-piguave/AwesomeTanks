@@ -23,9 +23,10 @@ class Rail(
         true
     )
 
-    override fun destroy() {
+
+    override fun remove(): Boolean {
         explosionManager.createCanonBallExplosion(x + bodyShape.width / 2, y + bodyShape.height / 2)
-        super.destroy()
+        return super.remove()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

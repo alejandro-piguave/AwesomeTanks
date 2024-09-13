@@ -51,9 +51,9 @@ class Rocket(
         body.setTransform(body.position, angle)
     }
 
-    override fun destroy() {
+    override fun remove(): Boolean {
         explosionManager.createCanonBallExplosion(x + bodyShape.width / 2, y + bodyShape.height / 2)
-        super.destroy()
+        return super.remove()
     }
 
     override fun act(delta: Float) {
@@ -61,11 +61,11 @@ class Rocket(
         body.applyForceToCenter(forceX, forceY,true)
         if(body.linearVelocity.len2() > MAX_VELOCITY2)
             body.linearVelocity.setLength2(MAX_VELOCITY2)
-        if(hasCollided && !isDestroyedFlag){
+        if(shouldBeDestroyed && !isDestroyedFlag){
             rocketListener?.onRocketCollided()
             isDestroyedFlag = true
             return
-        } else if (!hasCollided) rocketListener?.onRocketMoved(body.position.x, body.position.y)
+        } else if (!shouldBeDestroyed) rocketListener?.onRocketMoved(body.position.x, body.position.y)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

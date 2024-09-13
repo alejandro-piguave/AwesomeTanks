@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles
 
-import com.alexpi.awesometanks.entities.actors.DamageableActor
+import com.alexpi.awesometanks.entities.actors.HealthActor
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -20,9 +20,9 @@ class Flame(pos: Vector2, angle: Float, private var burnDuration: Float, filter:
         true
     )
 
-    override fun collide(actor: Actor) {
-        super.collide(actor)
-        if(actor is DamageableActor) actor.burn(burnDuration)
+    override fun handleCollision(actor: Actor) {
+        super.handleCollision(actor)
+        if(actor is HealthActor) actor.healthComponent.burn(burnDuration, .35f)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
