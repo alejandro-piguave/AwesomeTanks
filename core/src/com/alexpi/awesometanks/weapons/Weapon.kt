@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.weapons
 
-import com.alexpi.awesometanks.world.ExplosionManager
-import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
@@ -18,6 +17,7 @@ import kotlin.math.atan2
  * Created by Alex on 03/01/2016.
  */
 abstract class Weapon(
+    gameContext: GameContext,
     texturePath: String,
     shotSoundPath: String,
     ammo: Float,
@@ -113,28 +113,28 @@ abstract class Weapon(
     companion object {
         fun getWeaponAt(
             type: Type,
-            explosionManager: ExplosionManager,
+            gameContext: GameContext,
             ammo: Float,
             power: Int,
             isPlayer: Boolean,
             rocketListener: RocketListener? = null
         ): Weapon {
             return when (type) {
-                Type.MINIGUN -> MiniGun( ammo, power, isPlayer)
-                Type.SHOTGUN -> ShotGun( ammo, power, isPlayer)
-                Type.RICOCHET -> Ricochet( ammo, power, isPlayer)
-                Type.FLAMETHROWER -> Flamethrower( ammo, power, isPlayer)
-                Type.CANNON -> Cannon(explosionManager, ammo, power, isPlayer)
-                Type.ROCKETS -> RocketLauncher(explosionManager, ammo, power, isPlayer, rocketListener)
-                Type.LASERGUN -> LaserGun( ammo, power, isPlayer)
-                Type.RAILGUN -> RailGun(explosionManager, ammo, power, isPlayer)
+                Type.MINIGUN -> MiniGun(gameContext, ammo, power, isPlayer)
+                Type.SHOTGUN -> ShotGun(gameContext, ammo, power, isPlayer)
+                Type.RICOCHET -> Ricochet(gameContext, ammo, power, isPlayer)
+                Type.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, isPlayer)
+                Type.CANNON -> Cannon(gameContext, ammo, power, isPlayer)
+                Type.ROCKETS -> RocketLauncher(gameContext, ammo, power, isPlayer, rocketListener)
+                Type.LASERGUN -> LaserGun(gameContext, ammo, power, isPlayer)
+                Type.RAILGUN -> RailGun(gameContext, ammo, power, isPlayer)
             }
         }
     }
 
     init {
-        sprite = Sprite(GameModule.assetManager.get(texturePath, Texture::class.java))
-        shotSound = GameModule.assetManager.get(shotSoundPath, Sound::class.java)
+        sprite = Sprite(gameContext.getAssetManager().get(texturePath, Texture::class.java))
+        shotSound = gameContext.getAssetManager().get(shotSoundPath, Sound::class.java)
         this.ammo = ammo
     }
 

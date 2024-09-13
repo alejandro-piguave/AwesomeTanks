@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import java.io.BufferedReader
 import java.io.IOException
 
-class MapLoader {
+object MapLoader {
     fun load(level: Int): Array<CharArray> {
         val file = Gdx.files.internal("levels/level$level.txt")
         val reader = BufferedReader(file.reader())

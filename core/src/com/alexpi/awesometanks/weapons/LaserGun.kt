@@ -3,6 +3,7 @@ package com.alexpi.awesometanks.weapons
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.projectiles.Laser
 import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.utils.fastHypot
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Color
@@ -18,10 +19,12 @@ import com.badlogic.gdx.utils.Timer
  * Created by Alex on 04/01/2016.
  */
 class LaserGun(
+    gameContext: GameContext,
     ammo: Float,
     power: Int,
     isPlayer: Boolean,
 ) : Weapon(
+    gameContext,
     "weapons/laser.png",
     "sounds/laser.ogg",
     ammo,
@@ -30,7 +33,7 @@ class LaserGun(
     .05f,
     .2f
 ) {
-    private val laserRay = Image(GameModule.assetManager.get<Texture>("sprites/laser_ray.png"))
+    private val laserRay = Image(gameContext.getAssetManager().get<Texture>("sprites/laser_ray.png"))
     private var playSound = false
     private var minFraction = 1f
 

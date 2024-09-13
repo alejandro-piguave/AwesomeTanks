@@ -1,20 +1,22 @@
 package com.alexpi.awesometanks.entities.blocks
 
+import com.alexpi.awesometanks.entities.components.body.BodyShape
+import com.alexpi.awesometanks.entities.components.body.FixtureFilter
 import com.alexpi.awesometanks.entities.items.FreezingBall
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.items.HealthPack
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.Shape
 
 /**
  * Created by Alex on 19/01/2016.
  */
-class Box(private val explosionManager: ExplosionManager, level: Int, pos: Vector2) : BaseBlock("sprites/box.png", Shape.Type.Polygon, 50f, pos, .8f, true, false) {
+class Box(private val gameContext: GameContext, level: Int, pos: Vector2) :
+    HealthBlock(gameContext, "sprites/box.png", BodyShape.Box(.8f, .8f), pos,50f,  true, false, FixtureFilter.BLOCK) {
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(level)
     private val nuggetValue: Int = getNuggetValue(level)
     private fun dropLoot() {
@@ -25,19 +27,20 @@ class Box(private val explosionManager: ExplosionManager, level: Int, pos: Vecto
                 while (i < num1) {
                     parent.addActor(
                         GoldNugget(
-                            body.position,
+                            bodyComponent.body.position,
                             RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
                         )
                     )
                     i++
                 }
             }
-            1 -> parent.addActor(FreezingBall(body.position))
-            2 -> parent.addActor(HealthPack( body.position))
+
+            1 -> parent.addActor(FreezingBall(bodyComponent.body.position))
+            2 -> parent.addActor(HealthPack(bodyComponent.body.position))
             3 -> parent.addActor(
                 EnemyTank(
-                    explosionManager,
-                    body.position,
+                    gameContext,
+                    bodyComponent.body.position,
                     EnemyTank.Tier.MINI,
                     generatedTypes.random()
                 )
@@ -45,9 +48,9 @@ class Box(private val explosionManager: ExplosionManager, level: Int, pos: Vecto
         }
     }
 
-    override fun onDestroy() {
+    override fun remove(): Boolean {
         dropLoot()
-        super.onDestroy()
+        return super.remove()
     }
 
     companion object {
@@ -57,8 +60,8 @@ class Box(private val explosionManager: ExplosionManager, level: Int, pos: Vecto
 
         private fun getMaxType(level: Int): Int {
             return if (level <= 7) Weapon.Type.RICOCHET.ordinal
-            else if(level <= 15) Weapon.Type.ROCKETS.ordinal
-            else if(level <= 22) Weapon.Type.LASERGUN.ordinal
+            else if (level <= 15) Weapon.Type.ROCKETS.ordinal
+            else if (level <= 22) Weapon.Type.LASERGUN.ordinal
             else Weapon.Type.RAILGUN.ordinal
         }
 

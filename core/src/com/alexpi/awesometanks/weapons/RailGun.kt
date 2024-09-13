@@ -3,9 +3,8 @@ package com.alexpi.awesometanks.weapons
 import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.projectiles.Rail
 import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.utils.fastHypot
-import com.alexpi.awesometanks.world.ExplosionManager
-import com.alexpi.awesometanks.world.GameModule
 import com.alexpi.awesometanks.world.Settings.soundsOn
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -20,8 +19,9 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 04/01/2016.
  */
-class RailGun(private val explosionManager: ExplosionManager, ammo: Float, power: Int, filter: Boolean) :
+class RailGun(private val gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) :
     Weapon(
+        gameContext,
         "weapons/railgun.png",
         "sounds/railgun.ogg",
         ammo,
@@ -30,8 +30,8 @@ class RailGun(private val explosionManager: ExplosionManager, ammo: Float, power
         1f
     ) {
 
-    private val world: World = GameModule.world
-    private val laserRay = Image(GameModule.assetManager.get<Texture>("sprites/railgun_laser.png"))
+    private val world: World = gameContext.getWorld()
+    private val laserRay = Image(gameContext.getAssetManager().get<Texture>("sprites/railgun_laser.png"))
     private var drawLaser = false
     private var minFraction = 1f
 
@@ -100,7 +100,7 @@ class RailGun(private val explosionManager: ExplosionManager, ammo: Float, power
     override fun await() {}
 
     override fun createProjectile(group: Group, position: Vector2) {
-        group.addActor(Rail(explosionManager, position, currentRotationAngle, power.toFloat(), isPlayer))
+        group.addActor(Rail(gameContext, position, currentRotationAngle, power.toFloat(), isPlayer))
     }
 
     companion object {

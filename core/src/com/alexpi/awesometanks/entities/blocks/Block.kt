@@ -4,30 +4,28 @@ import com.alexpi.awesometanks.entities.components.body.BodyComponent
 import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.alexpi.awesometanks.entities.components.body.FixtureFilter
 import com.alexpi.awesometanks.screens.TILE_SIZE
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.BodyDef
-import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 
 open class Block(
-    assetManager: AssetManager,
+    gameContext: GameContext,
     texturePath: String,
-    world: World,
     bodyShape: BodyShape,
-    position: Vector2
+    position: Vector2,
+    fixtureFilter: FixtureFilter,
 ) : Actor() {
-    private val texture: Texture = assetManager.get(texturePath, Texture::class.java)
-    private val bodyComponent =
-        BodyComponent(this, world, bodyShape, BodyDef.BodyType.StaticBody, FixtureFilter.BLOCK, position)
+    private val texture: Texture = gameContext.getAssetManager().get(texturePath, Texture::class.java)
+    protected val bodyComponent = BodyComponent(this, gameContext.getWorld(), bodyShape, BodyDef.BodyType.StaticBody, fixtureFilter, position)
 
     init {
         this.setSize(bodyShape.width * TILE_SIZE, bodyShape.height * TILE_SIZE)
         this.setPosition(
-            bodyComponent.getLeft() * TILE_SIZE,
-            bodyComponent.getBottom() * TILE_SIZE
+            bodyComponent.left * TILE_SIZE,
+            bodyComponent.bottom * TILE_SIZE
         )
     }
 
@@ -37,6 +35,10 @@ open class Block(
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
+        drawBlock(batch, parentAlpha)
+    }
+
+    open fun drawBlock(batch: Batch, parentAlpha: Float) {
         batch.draw(texture, x, y, width, height)
     }
 

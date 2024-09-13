@@ -1,51 +1,49 @@
 package com.alexpi.awesometanks.entities.blocks
 
-import com.alexpi.awesometanks.entities.components.body.CAT_ITEM
-import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
-import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
+import com.alexpi.awesometanks.entities.components.body.BodyShape
+import com.alexpi.awesometanks.entities.components.body.FixtureFilter
 import com.alexpi.awesometanks.entities.items.GoldNugget
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
+import com.alexpi.awesometanks.screens.game.stage.GameContext
+import com.alexpi.awesometanks.screens.game.stage.GameStage
 import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.Shape
 import com.badlogic.gdx.utils.TimeUtils
-import kotlin.experimental.or
 
 /**
  * Created by Alex on 15/02/2016.
  */
-class Spawner(private val explosionManager: ExplosionManager, level: Int, pos: Vector2) : BaseBlock(
+class Spawner(private val gameContext: GameContext, level: Int, pos: Vector2) : HealthBlock(
+    gameContext,
     "sprites/spawner.png",
-    Shape.Type.Polygon,
-    getHealth(level),
+    BodyShape.Box(1f, 1f),
     pos,
-    1f,
+    getHealth(level),
     true,
-    true
+    true, FixtureFilter.SPAWNER
 ) {
+    private val gameStage: GameStage = gameContext.getStage()
     private var lastSpawn: Long
     private var interval: Long
     private var maxSpan = 15000
     private var generatedTypes: List<Weapon.Type> = getEnemyTypes(level)
     private val nuggetValue: Int
-    override fun onAlive(delta: Float) {
-        super.onAlive(delta)
-
-        if (lastSpawn + interval < TimeUtils.millis() && !isFrozen) {
+    override fun act(delta: Float) {
+        super.act(delta)
+        if (lastSpawn + interval < TimeUtils.millis() && !healthComponent.isFrozen) {
             lastSpawn = TimeUtils.millis()
             //It increments the spawn interval by 5 seconds each time to prevent excessive enemy generation
             interval = RandomUtils.getRandomInt(maxSpan - 5000, maxSpan).toLong()
             maxSpan += 5000
             parent.addActor(
                 EnemyTank(
-                    explosionManager,
-                    body.position,
+                    gameContext,
+                    bodyComponent.body.position,
                     EnemyTank.Tier.NORMAL,
                     generatedTypes.random()
-                ).also { it.damageListener = damageListener }
+                )
             )
         }
     }
@@ -81,9 +79,10 @@ class Spawner(private val explosionManager: ExplosionManager, level: Int, pos: V
         }
     }
 
-    override fun onDestroy() {
+    override fun remove(): Boolean {
         dropLoot()
-        super.onDestroy()
+        gameStage.checkLevelCompletion()
+        return super.remove()
     }
 
     private fun dropLoot() {
@@ -91,15 +90,13 @@ class Spawner(private val explosionManager: ExplosionManager, level: Int, pos: V
         for (i in 0 until num1)
             parent.addActor(
                 GoldNugget(
-                    body.position,
+                    bodyComponent.body.position,
                     RandomUtils.getRandomInt(nuggetValue - 10, nuggetValue + 10)
                 )
             )
     }
 
     init {
-        fixture.filterData.maskBits =
-            (CAT_PLAYER or CAT_PLAYER_BULLET or CAT_ITEM)
         lastSpawn = TimeUtils.millis()
         interval = 1000
         nuggetValue = getNuggetValue(level)

@@ -11,9 +11,6 @@ import com.badlogic.gdx.math.Vector2
 
 class MapTable(charMap: Array<CharArray>) {
     private val map: Array<Array<Cell>>
-    private var playerCol: Int = -1
-    private var playerRow: Int = -1
-    var visualRange: Int = 3
     val cellCount: Int
 
 
@@ -24,13 +21,20 @@ class MapTable(charMap: Array<CharArray>) {
         val cA = charMap.first().size
         val rA = charMap.size
         cellCount = cA * rA
+
+        var playerRow = -1
+        var playerColumn = -1
         map = Array(rA) { row ->
             Array(cA){ col ->
-                if(charMap[row][col] == START) setPlayerCell(row, col)
+                if(charMap[row][col] == START) {
+                    playerRow = row
+                    playerColumn = col
+                }
                 Cell(row, col, charMap[row][col], row == 0 || col == 0|| row == rA -1 || col == cA -1 ) // Make the map bounds visible
             }
         }
-        updateVisibleArea()
+
+        if(playerRow != -1 && playerColumn != -1) updateVisibleArea(playerRow, playerColumn,3)
 
         forCell { cell ->
             if(cell.value in emptyBlocks){
@@ -63,11 +67,6 @@ class MapTable(charMap: Array<CharArray>) {
         cell.connections.shuffle()
     }
 
-    fun setPlayerCell(row: Int, col: Int){
-        playerRow = row
-        playerCol = col
-    }
-
     fun forCell(predicate: (Cell) -> Unit){
         for (row in map.indices)
             for (col in 0 until map[row].size)
@@ -90,9 +89,9 @@ class MapTable(charMap: Array<CharArray>) {
     }
 
     private inline fun forValidNeighbors(cell: Cell, predicate: (Cell) -> Unit){
-        for (offset in NEIGHBORHOOD.indices) {
-            val neighborCol: Int = cell.col + NEIGHBORHOOD[offset][0]
-            val neighborRow: Int = cell.row + NEIGHBORHOOD[offset][1]
+        for (offset in NEIGHBORHOOD) {
+            val neighborCol: Int = cell.col + offset[0]
+            val neighborRow: Int = cell.row + offset[1]
             if (neighborRow in map.indices && neighborCol >= 0 && neighborCol < map[0].size) {
                 predicate( map[neighborRow][neighborCol])
             }
@@ -100,22 +99,22 @@ class MapTable(charMap: Array<CharArray>) {
     }
 
     fun toCell(pos: Vector2): Cell {
-        val row = map.size - pos.y.toInt()
+        val row = map.size - 1 - pos.y.toInt()
         val col = pos.x.toInt()
         return map[row][col]
     }
 
-    fun updateVisibleArea(){
-        map[playerRow][playerCol].isVisible = true
+    fun updateVisibleArea(playerRow: Int, playerColumn: Int, visualRange: Int){
+        map[playerRow][playerColumn].isVisible = true
         for(i in 0 until 360 step 2){
             val x = MathUtils.cos(i*.01745f)
             val y = MathUtils.sin(i*.01745f)
-            doFOV(x,y)
+            doFOV(playerRow, playerColumn, x,y, visualRange)
         }
     }
 
-    private fun doFOV(x: Float, y: Float) {
-        var ox: Float = playerCol + 0.5f
+    private fun doFOV(playerRow: Int, playerColumn: Int, x: Float, y: Float, visualRange: Int) {
+        var ox: Float = playerColumn + 0.5f
         var oy: Float = playerRow + 0.5f
         for (i in 0 until visualRange){
             val oxInt = ox.toInt()

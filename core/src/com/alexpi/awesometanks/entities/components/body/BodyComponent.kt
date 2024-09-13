@@ -20,7 +20,7 @@ class BodyComponent(
     position: Vector2 = Vector2.Zero,
     density: Float = 0f
 ) {
-    private val body: Body
+    val body: Body
     private val fixture: Fixture
 
     init {
@@ -49,9 +49,9 @@ class BodyComponent(
         shape.dispose()
     }
 
-    fun getLeft(): Float = body.position.x - bodyShape.width /2
+    val left: Float get() = body.position.x - bodyShape.width /2
 
-    fun getBottom(): Float = body.position.y - bodyShape.height / 2
+    val bottom: Float get() = body.position.y - bodyShape.height / 2
 
 
     fun destroy() {

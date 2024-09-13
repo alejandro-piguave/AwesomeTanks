@@ -1,8 +1,8 @@
 package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.entities.components.body.BodyShape
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.weapons.RocketListener
-import com.alexpi.awesometanks.world.ExplosionManager
 import com.alexpi.awesometanks.world.GameModule
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -14,7 +14,7 @@ import kotlin.math.sin
 
 //Here the attribute speed is rather used for the magnitude of the force applied
 class Rocket(
-    private val explosionManager: ExplosionManager,
+    gameContext: GameContext,
     pos: Vector2,
     angle: Float,
     power: Int,
@@ -22,6 +22,7 @@ class Rocket(
     private val rocketListener: RocketListener? = null
 ) : Projectile(pos, BodyShape.Box(.38f, 1f), angle, .075f, 90F + power * 15, filter){
 
+    private val explosionManager = gameContext.getExplosionManager()
     private var isDestroyedFlag = false
     private val flameSprite: Sprite
 
@@ -52,7 +53,7 @@ class Rocket(
     }
 
     override fun remove(): Boolean {
-        explosionManager.createCanonBallExplosion(x + bodyShape.width / 2, y + bodyShape.height / 2)
+        explosionManager.createCanonBallExplosion(body.position.x,  body.position.y)
         return super.remove()
     }
 

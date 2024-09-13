@@ -1,22 +1,22 @@
 package com.alexpi.awesometanks.entities.ai
 
-import com.alexpi.awesometanks.entities.blocks.BaseBlock
+import com.alexpi.awesometanks.entities.blocks.Block
 import com.alexpi.awesometanks.entities.tanks.Player
-import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import kotlin.math.atan2
 
-class TurretAI(private val position: Vector2,
+class TurretAI(gameContext: GameContext, private val position: Vector2,
                private val callback: TurretAICallback,
                visibilityRadius: Float = VISIBILITY_RADIUS) {
     private val visibilityRadius2 = visibilityRadius * visibilityRadius
-    private val target: Player = GameModule.player
-    private val world: World = GameModule.world
+    private val target: Player = gameContext.getPlayer()
+    private val world: World = gameContext.getWorld()
     private var isTargetVisible = false
 
     fun update(){
-        if (!target.isAlive){
+        if (!target.healthComponent.isAlive){
             callback.await()
             return
         }
@@ -27,7 +27,7 @@ class TurretAI(private val position: Vector2,
         if(distanceFromTarget2 < visibilityRadius2){
             isTargetVisible = true
             world.rayCast({ fixture, _, _, _ ->
-                if(fixture.userData is BaseBlock){
+                if(fixture.userData is Block){
                     isTargetVisible = false
                     0f
                 }

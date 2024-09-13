@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.entities.projectiles
 
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.components.body.BodyShape
-import com.alexpi.awesometanks.world.ExplosionManager
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 
@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2
  * Created by Alex on 17/01/2016.
  */
 class Rail(
-    private val explosionManager: ExplosionManager,
+    gameContext: GameContext,
     pos: Vector2,
     angle: Float,
     power: Float,
@@ -23,9 +23,11 @@ class Rail(
         true
     )
 
+    private val explosionManager = gameContext.getExplosionManager()
+
 
     override fun remove(): Boolean {
-        explosionManager.createCanonBallExplosion(x + bodyShape.width / 2, y + bodyShape.height / 2)
+        explosionManager.createCanonBallExplosion(body.position.x,  body.position.y)
         return super.remove()
     }
 

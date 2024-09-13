@@ -3,65 +3,50 @@ package com.alexpi.awesometanks.entities.tanks
 import com.alexpi.awesometanks.entities.ai.EnemyTankState
 import com.alexpi.awesometanks.entities.ai.FrozenState
 import com.alexpi.awesometanks.entities.ai.WanderState
-import com.alexpi.awesometanks.entities.components.body.CAT_BLOCK
-import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
-import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER
-import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
+import com.alexpi.awesometanks.entities.components.body.FixtureFilter
 import com.alexpi.awesometanks.entities.items.GoldNugget
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import kotlin.experimental.or
 
 /**
  * Created by Alex on 17/02/2016.
  */
 class EnemyTank(
-    explosionManager: ExplosionManager,
+    gameContext: GameContext,
     position: Vector2,
     tier: Tier,
-    type: Weapon.Type) : Tank(position, getSizeByTier(tier),
-    ROTATION_SPEED, MOVEMENT_SPEED,
-    CAT_ENEMY,
-    CAT_BLOCK or CAT_PLAYER or CAT_PLAYER_BULLET or CAT_ENEMY,
-    getHealthByTierAndType(tier, type),true, getColorByTier(tier)), Telegraph {
+    type: Weapon.Type) : Tank(gameContext, position, FixtureFilter.ENEMY_TANK, getSizeByTier(tier),
+    getHealthByTierAndType(tier, type),
+    true,
+    ROTATION_SPEED, MOVEMENT_SPEED, getColorByTier(tier)), Telegraph {
 
     val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState(position.cpy()))
     private val nuggetValue: Int
-    private val weapon: Weapon = Weapon.getWeaponAt(type, explosionManager,1f, powerByTier(tier), false)
+    private val weapon: Weapon = Weapon.getWeaponAt(type, gameContext,1f, powerByTier(tier), false)
     override val currentWeapon: Weapon
         get() = weapon
 
-    override fun onAlive(delta: Float) {
-        super.onAlive(delta)
-        if(isAlive) stateMachine.update()
+    override fun act(delta: Float) {
+        super.act(delta)
+        stateMachine.update()
     }
 
-    override fun takeDamage(damage: Float) {
-        super.takeDamage(damage)
-        MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
-    }
-
-    override fun freeze(){
-        super.freeze()
-        stateMachine.changeState(FrozenState)
-    }
-
-    override fun onDestroy() {
+    override fun remove(): Boolean {
         dropLoot()
-        super.onDestroy()
+        return super.remove()
     }
 
     private fun dropLoot() {
         val count = RandomUtils.getRandomInt(5, 15)
         repeat(count){
-            parent.addActor(GoldNugget(body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+            parent.addActor(GoldNugget(bodyComponent.body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
         }
     }
 
@@ -126,6 +111,13 @@ class EnemyTank(
     init {
         weapon.unlimitedAmmo = true
         nuggetValue = getNuggetValue(tier, type)
+        healthComponent.onDamageTaken = {
+            healthBarComponent.updateHealth(it, 2f)
+            MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
+        }
+        healthComponent.onFreeze = {
+            stateMachine.changeState(FrozenState)
+        }
     }
 
     enum class Tier{

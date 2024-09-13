@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.components.health
 
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.ParticleEffect
@@ -8,25 +8,40 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.TimeUtils
 
 class HealthComponent(
-    assetManager: AssetManager,
+    gameContext: GameContext,
     val maxHealth: Float,
+    private val isFlammable: Boolean,
+    private val isFreezable: Boolean,
     initialState: HealthState = HealthState.Normal,
-    private val isFlammable: Boolean = true,
-    private val isFreezable: Boolean = true,
     var onDamageTaken: ((Float) -> Unit)? = null,
+    var onFreeze: (() -> Unit)? = null,
     var onDeath: ((Actor) -> Unit)? = null){
     var currentHealth: Float = maxHealth
     private set
     var healthState = initialState
         private set
 
-    private val flameEffect: ParticleEffect = ParticleEffect(assetManager.get("particles/flame.party"))
-    private val frozenTexture: Texture = assetManager.get("sprites/frozen.png", Texture::class.java)
+    var damageReduction = 0f
+        set(value) {
+            if(value < 0 || value > 1) throw IllegalArgumentException("damageReduction must be between 0 and 1")
+            field = value
+        }
+
+    val isAlive: Boolean get() = currentHealth > 0
+    val isFrozen: Boolean get() = healthState is HealthState.Frozen
+
+    private val flameEffect: ParticleEffect = ParticleEffect(gameContext.getAssetManager().get("particles/flame.party"))
+    private val frozenTexture: Texture = gameContext.getAssetManager().get("sprites/frozen.png", Texture::class.java)
 
     fun takeDamage(damage: Float) {
         if(damage <= 0) throw IllegalArgumentException("damage must be greater than 0.")
-        currentHealth = (currentHealth - damage).coerceAtLeast(0f)
+        val finalDamage = damage * (1 - damageReduction)
+        currentHealth = (currentHealth - finalDamage).coerceAtLeast(0f)
         onDamageTaken?.invoke(currentHealth)
+    }
+
+    fun kill() {
+        currentHealth = 0f
     }
 
     fun heal(health: Float) {
@@ -43,6 +58,7 @@ class HealthComponent(
     fun freeze(duration: Float) {
         if(!isFreezable) return
         healthState = HealthState.Frozen(startTime = TimeUtils.millis(), duration = duration)
+        onFreeze?.invoke()
     }
 
     fun update(parent: Actor, delta: Float) {

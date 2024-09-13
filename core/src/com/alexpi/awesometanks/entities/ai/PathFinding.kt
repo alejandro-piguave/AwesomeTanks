@@ -24,7 +24,7 @@ class PathFinding(private val map: MapTable) {
 
         pathfinder.searchConnectionPath(sourceCell, targetCell, heuristic, connectionPath)
 
-        return if (connectionPath.count == 0) null else connectionPath[0].toNode.toWorldPosition(map).add(.5f, .5f)
+        return if (connectionPath.count == 0) null else connectionPath[0].toNode.toWorldPosition(map)
     }
 
     fun findPath(source: Cell, target: Cell): GraphPath<Connection<Cell>> {

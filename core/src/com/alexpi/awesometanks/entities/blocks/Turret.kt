@@ -2,36 +2,38 @@ package com.alexpi.awesometanks.entities.blocks
 
 import com.alexpi.awesometanks.entities.ai.TurretAI
 import com.alexpi.awesometanks.entities.ai.TurretAICallback
-import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY
+import com.alexpi.awesometanks.entities.components.body.BodyShape
+import com.alexpi.awesometanks.entities.components.body.FixtureFilter
 import com.alexpi.awesometanks.entities.items.GoldNugget
+import com.alexpi.awesometanks.screens.game.stage.GameContext
+import com.alexpi.awesometanks.screens.game.stage.GameStage
 import com.alexpi.awesometanks.utils.RandomUtils
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.ExplosionManager
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.physics.box2d.Filter
-import com.badlogic.gdx.physics.box2d.Shape
 
 /**
  * Created by Alex on 18/02/2016.
  */
 class Turret(
-    explosionManager: ExplosionManager,
+    gameContext: GameContext,
     pos: Vector2,
     type: Weapon.Type
-) : BaseBlock( "sprites/turret_base.png", Shape.Type.Polygon, getHealthByType(type), pos, .8f, true, true), TurretAICallback {
+) : HealthBlock( gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET), TurretAICallback {
     private val weapon: Weapon
-    private val enemyAI = TurretAI(body.position, this)
-    private val nuggetValue: Int
-    override fun draw(batch: Batch, parentAlpha: Float) {
-        drawSprite(batch)
+    private val gameStage: GameStage = gameContext.getStage()
+    private val enemyAI = TurretAI(gameContext, bodyComponent.body.position, this)
+    private val nuggetValue: Int = getNuggetValue(type)
+    private val explosionManager = gameContext.getExplosionManager()
+
+    override fun drawBlock(batch: Batch, parentAlpha: Float) {
+        super.drawBlock(batch, parentAlpha)
         weapon.draw(batch,color, x, parentAlpha, originX, originY, width, height, scaleX, scaleY, y)
-        drawBurning(batch, parentAlpha)
-        drawFrozen(batch)
+
     }
 
-    override fun onAlive(delta: Float) {
-        if (!isFrozen){
+    override fun act(delta: Float) {
+        if (!healthComponent.isFrozen){
             enemyAI.update()
         } else{
             await()
@@ -73,25 +75,22 @@ class Turret(
         }
     }
 
-    override fun onDestroy() {
+    override fun remove(): Boolean {
         dropLoot()
-        super.onDestroy()
+        gameStage.checkLevelCompletion()
+        return super.remove()
     }
 
     private fun dropLoot() {
         val count = RandomUtils.getRandomInt(10, 15)
         repeat(count){
-            parent.addActor(GoldNugget(body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+            parent.addActor(GoldNugget(bodyComponent.body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
 
         }
     }
 
     init {
-        val filter = Filter()
-        filter.categoryBits = CAT_ENEMY
-        fixture.filterData = filter
-        nuggetValue = getNuggetValue(type)
-        weapon = Weapon.getWeaponAt(type, explosionManager,1f, 2, false)
+        weapon = Weapon.getWeaponAt(type, gameContext,1f, 2, false)
         weapon.unlimitedAmmo = true
         setOrigin(width / 2, height / 2)
     }
@@ -99,7 +98,7 @@ class Turret(
     override fun attack(angle: Float) {
         weapon.desiredRotationAngle = angle
         weapon.updateAngleRotation(ROTATION_SPEED)
-        weapon.shoot(parent, body.position)
+        weapon.shoot(parent, bodyComponent.body.position)
     }
 
     override fun await() {

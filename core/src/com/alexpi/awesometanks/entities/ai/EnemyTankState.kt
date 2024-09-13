@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.entities.ai
 
-import com.alexpi.awesometanks.entities.blocks.BaseBlock
+import com.alexpi.awesometanks.entities.blocks.Block
 import com.alexpi.awesometanks.entities.tanks.EnemyTank
 import com.alexpi.awesometanks.map.Cell
 import com.alexpi.awesometanks.world.GameModule
@@ -31,9 +31,9 @@ sealed class EnemyTankState: State<EnemyTank>{
     val pathFinding = GameModule.pathFinding
 
     override fun update(entity: EnemyTank) {
-        if(target.isAlive){
-            val deltaX = target.position.x - entity.body.position.x
-            val deltaY = target.position.y - entity.body.position.y
+        if(target.healthComponent.isAlive){
+            val deltaX = target.position.x - entity.bodyComponent.body.position.x
+            val deltaY = target.position.y - entity.bodyComponent.body.position.y
 
             //If the player is in range, check if it's within the visibility angle
             if(deltaX * deltaX  + deltaY * deltaY < SHOOTING_RADIUS_2){
@@ -42,7 +42,7 @@ sealed class EnemyTankState: State<EnemyTank>{
                 val angleDifference = (entity.currentWeapon.currentRotationAngle - angleOfTarget + MathUtils.PI + MathUtils.PI2) % MathUtils.PI2 - MathUtils.PI
                 if(angleDifference <= HALF_VISIBILITY_ANGLE && angleDifference >= -HALF_VISIBILITY_ANGLE){
                     //If the player is within the visibility angle, check if there's no obstacles in between
-                    val isTargetVisible = checkTargetVisibility(entity.body.position)
+                    val isTargetVisible = checkTargetVisibility(entity.bodyComponent.body.position)
                     if(isTargetVisible){
                         entity.stateMachine.changeState(ChaseState())
                         return
@@ -55,7 +55,7 @@ sealed class EnemyTankState: State<EnemyTank>{
     protected fun checkTargetVisibility(position: Vector2): Boolean{
         var isVisible = true
         GameModule.world.rayCast({ fixture, _, _, _ ->
-            if(fixture.userData is BaseBlock){
+            if(fixture.userData is Block){
                 isVisible = false
                 0f
             }
@@ -79,7 +79,7 @@ sealed class EnemyTankState: State<EnemyTank>{
 
 object FrozenState: EnemyTankState(){
     override fun update(entity: EnemyTank) {
-        if(!entity.isFrozen){
+        if(!entity.healthComponent.isFrozen){
             entity.stateMachine.changeState(entity.stateMachine.previousState)
         }
     }
@@ -116,7 +116,7 @@ class PeekState(private val peekAngle: Float): EnemyTankState(){
         if(entity.currentWeapon.hasRotated()){
             val nextState = if(MathUtils.randomBoolean()){
                 PeekState(MathUtils.random()* MathUtils.PI2)
-            } else WanderState(entity.body.position.cpy())
+            } else WanderState(entity.bodyComponent.body.position.cpy())
 
             entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
         }
@@ -131,15 +131,15 @@ class WanderState(startingPosition: Vector2): EnemyTankState(){
         val randomCell = gameMap.getRandomEmptyAdjacentCell(currentCell, 2)
         path = pathFinding.findPath(currentCell, randomCell)
         val nextCell = if (path.count > 0 ) path[0].toNode else null
-        nextPosition = nextCell?.let { it.toWorldPosition(gameMap).add(.5f,.5f) } ?: startingPosition
+        nextPosition = nextCell?.let { it.toWorldPosition(gameMap)} ?: startingPosition
     }
 
     override fun update(entity: EnemyTank) {
         super.update(entity)
 
-        if (withinBounds(entity.body.position)){
+        if (withinBounds(entity.bodyComponent.body.position)){
             visitedCellCount++
-            val currentCell = gameMap.toCell(entity.body.position)
+            val currentCell = gameMap.toCell(entity.bodyComponent.body.position)
             val nextCell = path.firstOrNull { it.fromNode.col == currentCell.col && it.fromNode.row == currentCell.row }?.toNode
             if(nextCell == null || visitedCellCount > VISITED_CELL_COUNT_LIMIT){
                 //If there is no next position, rotate to check the area
@@ -147,12 +147,12 @@ class WanderState(startingPosition: Vector2): EnemyTankState(){
                 entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
                 return
             } else {
-                nextPosition = nextCell.toWorldPosition(gameMap).add(.5f,.5f)
+                nextPosition = nextCell.toWorldPosition(gameMap)
             }
         }
 
         //Else, move to the next position
-        val rotationAngle = MathUtils.atan2(nextPosition.y - entity.body.position.y, nextPosition.x - entity.body.position.x)
+        val rotationAngle = MathUtils.atan2(nextPosition.y - entity.bodyComponent.body.position.y, nextPosition.x - entity.bodyComponent.body.position.x)
 
         entity.currentWeapon.desiredRotationAngle = rotationAngle
         entity.setOrientation(rotationAngle)
@@ -172,18 +172,18 @@ class ChaseState: EnemyTankState(){
     private var lastPathFindingExecution = TimeUtils.millis()
 
     override fun update(entity: EnemyTank) {
-        if(!target.isAlive){
-            entity.stateMachine.changeState(WanderState(entity.body.position.cpy()))
+        if(!target.healthComponent.isAlive){
+            entity.stateMachine.changeState(WanderState(entity.bodyComponent.body.position.cpy()))
             return
         }
         //If it still remembers having seen the player, check if it's in range
         if(playerLastSeen + FORGET_TARGET_LIMIT_MILLIS > TimeUtils.millis()){
-            val deltaX = target.position.x - entity.body.position.x
-            val deltaY = target.position.y - entity.body.position.y
+            val deltaX = target.position.x - entity.bodyComponent.body.position.x
+            val deltaY = target.position.y - entity.bodyComponent.body.position.y
 
             //If the player is in range to shoot, check if its directly visible
             if(deltaX * deltaX  + deltaY * deltaY < SHOOTING_RADIUS_2){
-                val isTargetVisible = checkTargetVisibility(entity.body.position)
+                val isTargetVisible = checkTargetVisibility(entity.bodyComponent.body.position)
                 if(isTargetVisible){
                     //If it is, then shoot
                     entity.stateMachine.changeState(ShootState)
@@ -196,15 +196,15 @@ class ChaseState: EnemyTankState(){
             if(lastPathFindingExecution + PATHFINDING_EXECUTION_INTERVAL < TimeUtils.millis()){
                 lastPathFindingExecution = TimeUtils.millis()
 
-                val nextPosition = pathFinding.findNextPosition(entity.body.position, target.position)
+                val nextPosition = pathFinding.findNextPosition(entity.bodyComponent.body.position, target.position)
                 if(nextPosition == null){
                     //Path is blocked or doesn't exist, keep wandering
-                    entity.stateMachine.changeState(WanderState(entity.body.position.cpy()))
+                    entity.stateMachine.changeState(WanderState(entity.bodyComponent.body.position.cpy()))
                 }
                 else {
                     //Else, update position
-                    val nextDeltaX = nextPosition.x - entity.body.position.x
-                    val nextDeltaY = nextPosition.y - entity.body.position.y
+                    val nextDeltaX = nextPosition.x - entity.bodyComponent.body.position.x
+                    val nextDeltaY = nextPosition.y - entity.bodyComponent.body.position.y
                     val moveAngle = atan2(nextDeltaY, nextDeltaX)
 
                     entity.currentWeapon.desiredRotationAngle = moveAngle
@@ -214,7 +214,7 @@ class ChaseState: EnemyTankState(){
 
         } else{
             //Else keep wandering
-            val wanderState = WanderState(entity.body.position.cpy())
+            val wanderState = WanderState(entity.bodyComponent.body.position.cpy())
             entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, wanderState))
         }
 
@@ -230,17 +230,17 @@ class ChaseState: EnemyTankState(){
 object ShootState: EnemyTankState(){
 
     override fun update(entity: EnemyTank) {
-        if(!target.isAlive){
-            entity.stateMachine.changeState(WanderState(entity.body.position.cpy()))
+        if(!target.healthComponent.isAlive){
+            entity.stateMachine.changeState(WanderState(entity.bodyComponent.body.position.cpy()))
             return
         }
 
-        val deltaX = target.position.x - entity.body.position.x
-        val deltaY = target.position.y - entity.body.position.y
+        val deltaX = target.position.x - entity.bodyComponent.body.position.x
+        val deltaY = target.position.y - entity.bodyComponent.body.position.y
 
 
         if(deltaX * deltaX + deltaY * deltaY < SHOOTING_RADIUS_2){
-            val isTargetVisible = checkTargetVisibility(entity.body.position)
+            val isTargetVisible = checkTargetVisibility(entity.bodyComponent.body.position)
             if(isTargetVisible){
                 //If the player is in range and visible, aim and keep shooting
                 val rotationAngle = MathUtils.atan2(deltaY, deltaX)
