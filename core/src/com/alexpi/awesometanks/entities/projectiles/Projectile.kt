@@ -87,7 +87,7 @@ abstract class Projectile(
         val fixtureDef = FixtureDef()
         fixtureDef.density = 1f
         val shape = when (bodyShape) {
-            is BodyShape.Circular -> CircleShape().apply { radius = radius}
+            is BodyShape.Circular -> CircleShape().apply { radius = bodyShape.radius }
             is BodyShape.Box -> PolygonShape().apply { setAsBox(bodyShape.width/2, bodyShape.height/2) }
         }
         fixtureDef.shape = shape

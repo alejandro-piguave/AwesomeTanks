@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector2
  * Created by Alex on 16/01/2016.
  */
 class Flame(pos: Vector2, angle: Float, var burnDuration: Float, filter: Boolean) : Projectile(
-    pos, BodyShape.Circular(.1f), angle, 15f, 20f, filter
+    pos, BodyShape.Circular(.05f), angle, 15f, 20f, filter
 ) {
     private val particleActor: ParticleActor = ParticleActor(
         "particles/flame.party",

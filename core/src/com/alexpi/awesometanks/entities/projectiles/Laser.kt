@@ -11,4 +11,4 @@ class Laser(
     angle: Float,
     power: Float,
     filter: Boolean
-) : Projectile( pos, BodyShape.Circular(.2f), angle, 50f, 20 + power * 5, filter)
+) : Projectile( pos, BodyShape.Circular(.1f), angle, 50f, 20 + power * 5, filter)

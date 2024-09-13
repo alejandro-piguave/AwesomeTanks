@@ -16,7 +16,7 @@ class MiniGun(ammo: Float, power: Int, isPlayer: Boolean) : Weapon(
     .06f
 ) {
     override fun createProjectile(group: Group, position: Vector2) {
-        group.addActor(Bullet(position, currentRotationAngle, 30f, .1f, 3.5f + power, isPlayer))
+        group.addActor(Bullet(position, currentRotationAngle, 30f, .05f, 3.5f + power, isPlayer))
     }
 
     init {
