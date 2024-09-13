@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles
 
+import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY_BULLET
 import com.alexpi.awesometanks.entities.components.body.CAT_PLAYER_BULLET
 import com.alexpi.awesometanks.entities.components.body.ENEMY_BULLET_MASK
@@ -43,6 +44,7 @@ abstract class Projectile private constructor(
 
     private fun destroy() {
         body.world.destroyBody(body)
+        stage.addActor(ParticleActor("particles/collision.party", x + bodyWidth/2, y + bodyHeight/2, false))
         remove()
     }
 

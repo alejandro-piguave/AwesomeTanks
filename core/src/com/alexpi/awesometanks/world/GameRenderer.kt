@@ -156,10 +156,6 @@ class GameRenderer(
         }
     }
 
-    override fun onBulletCollision(x: Float, y: Float) {
-        gameStage.addActor(ParticleActor("particles/collision.party", x, y, false))
-    }
-
     override fun onExplosiveProjectileCollided(x: Float, y: Float) {
         explosionManager.createCanonBallExplosion(x,y)
     }

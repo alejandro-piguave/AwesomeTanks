@@ -16,7 +16,6 @@ import com.badlogic.gdx.physics.box2d.Manifold
 
 class ContactManager(private val contactListener: ContactListener) : ContactListener {
     interface ContactListener {
-        fun onBulletCollision(x: Float, y: Float)
         fun onExplosiveProjectileCollided(x: Float, y: Float)
     }
 
@@ -34,13 +33,7 @@ class ContactManager(private val contactListener: ContactListener) : ContactList
                 )
             }
             projectile.collide()
-
-            contactListener.onBulletCollision(
-                projectile.x + projectile.bodyWidth * .5f,
-                projectile.y + projectile.bodyHeight * .5f
-            )
         }
-
 
         contact.isOfType(Player::class.java, Item::class.java) { player, item ->
             player.pickUp(item)
