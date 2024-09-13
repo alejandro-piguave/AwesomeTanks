@@ -2,6 +2,8 @@ package com.alexpi.awesometanks.screens.upgrades
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.screens.BaseScreen
+import com.alexpi.awesometanks.screens.LevelScreen
+import com.alexpi.awesometanks.screens.MainScreen
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
 import com.alexpi.awesometanks.screens.TILE_SIZE
@@ -83,15 +85,15 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             upgradeTable
         }
         //Creates the back button
-        val backButton = GameButton(game.manager, "Back", {
+        val backButton = GameButton(game.manager, "Back") {
             stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run {
-                game.screen = game.mainScreen
+                game.screen = MainScreen(game)
             }))
-        })
+        }
 
 
         //Creates the next button
-        val nextButton = GameButton(game.manager, "Next", {
+        val nextButton = GameButton(game.manager, "Next") {
             for (p: UpgradeTable in upgradeTables) game.gameValues.putInteger(p.name, p.value)
             weaponValues.forEachIndexed { index, values ->
                 game.gameValues.putInteger("power$index", values.power)
@@ -103,11 +105,11 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             stage.addAction(
                 Actions.sequence(
                     Actions.fadeOut(TRANSITION_DURATION), Actions.run {
-                        game.screen = game.levelScreen
+                        game.screen = LevelScreen(game)
                     }
                 )
             )
-        })
+        }
 
 
         val currentWeaponImage = ImageButton(getWeaponButtonStyle(0))
@@ -276,7 +278,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         stage.draw()
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run {
-                game.screen = game.mainScreen
+                game.screen = MainScreen(game)
             }))
         }
     }

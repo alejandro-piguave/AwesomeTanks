@@ -2,6 +2,7 @@ package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.screens.game.GameScreen
+import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
 import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.Styles
 import com.badlogic.gdx.Gdx
@@ -30,11 +31,11 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
         table.setFillParent(true)
         val levelTable = Table()
         addLevelButtons(levelTable)
-        val backButton = GameButton(game.manager, "Back", {
+        val backButton = GameButton(game.manager, "Back") {
             stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run {
-                game.screen = game.upgradesScreen
+                game.screen = UpgradesScreen(game)
             }))
-        })
+        }
         table.add(Label("Select level", Styles.getLabelStyleBackground(game.manager))).row()
         table.add(levelTable).expand().fillX().row()
         table.add(backButton).size(TILE_SIZE * 3, TILE_SIZE).row()
@@ -52,7 +53,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
     private fun addLevelButtons(table: Table) {
         for (i in 0 until LEVEL_COUNT) {
             val isLevelUnlocked = game.gameValues.getBoolean("unlocked$i") || i == 0
-            val levelButton = GameButton(game.manager, (i + 1).toString(), {
+            val levelButton = GameButton(game.manager, (i + 1).toString()) {
                 if (isLevelUnlocked) stage.addAction(
                     Actions.sequence(
                         Actions.fadeOut(TRANSITION_DURATION), Actions.run {
@@ -60,7 +61,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
                         }
                     )
                 )
-            })
+            }
             if(!isLevelUnlocked){
                 levelButton.color = Color.GRAY
                 levelButton.touchable = Touchable.disabled
@@ -91,7 +92,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
         stage.draw()
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACK) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             stage.addAction(Actions.sequence(Actions.fadeOut(.5f), Actions.run {
-                game.screen = game.upgradesScreen
+                game.screen = UpgradesScreen(game)
             }))
         }
     }

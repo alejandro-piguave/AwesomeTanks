@@ -24,7 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 
-class GameRenderer(
+class GameContainer(
     game: MainGame,
     private val gameListener: GameListener,
     level: Int
@@ -38,8 +38,7 @@ class GameRenderer(
     private val gameStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
     private val world = World(Vector2(0f, 0f), true)
     private val rumbleController = RumbleController()
-    private val explosionManager =
-        ExplosionManager(game.manager, gameStage, world, rumbleController)
+    private val explosionManager = ExplosionManager(game.manager, gameStage, world, rumbleController)
 
     var isPaused = false
     var isLevelCompleted = false

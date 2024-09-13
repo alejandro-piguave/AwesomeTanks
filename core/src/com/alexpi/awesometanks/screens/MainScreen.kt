@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
+import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
 import com.alexpi.awesometanks.widget.GameButton
 import com.alexpi.awesometanks.widget.Styles
 import com.alexpi.awesometanks.world.Settings
@@ -36,14 +37,14 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
         val title2 = Label("Tanks", Styles.getGameTitleStyle2(game.manager))
         title1.setAlignment(Align.center)
         title2.setAlignment(Align.center)
-        val playButton = GameButton(game.manager, "Play", {
+        val playButton = GameButton(game.manager, "Play") {
             stage.addAction(
                 Actions.sequence(
                     Actions.fadeOut(TRANSITION_DURATION),
-                    Actions.run { game.screen = game.upgradesScreen }
+                    Actions.run { game.screen = UpgradesScreen(game) }
                 )
             )
-        })
+        }
         val soundButton = ImageButton(TextureRegionDrawable(game.manager.get<Texture>(
             if(Settings.soundsOn)"sprites/sound_on.png" else "sprites/sound_off.png")))
         soundButton.setPosition(SCREEN_WIDTH - 92f, SCREEN_HEIGHT - 92f)

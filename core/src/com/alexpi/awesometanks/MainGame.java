@@ -1,10 +1,8 @@
 package com.alexpi.awesometanks;
 
-import com.alexpi.awesometanks.screens.LevelScreen;
 import com.alexpi.awesometanks.screens.MainScreen;
-import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen;
-import com.alexpi.awesometanks.world.Settings;
 import com.alexpi.awesometanks.weapons.Weapon;
+import com.alexpi.awesometanks.world.Settings;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -25,9 +23,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class MainGame extends Game {
 
     private AssetManager manager;
-    public MainScreen mainScreen;
-    public LevelScreen levelScreen;
-    public UpgradesScreen upgradesScreen;
     private Preferences gameSettings;
     private Preferences gameValues;
 
@@ -129,11 +124,7 @@ public class MainGame extends Game {
         boolean soundsOn = gameSettings.getBoolean("areSoundsActivated", true);
         Settings.INSTANCE.setSoundsOn(soundsOn);
 
-        mainScreen = new MainScreen(this);
-        levelScreen = new LevelScreen(this);
-        upgradesScreen = new UpgradesScreen(this);
-
-        setScreen(mainScreen);
+        setScreen(new MainScreen(this));
     }
 
     private void loadFonts() {

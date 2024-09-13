@@ -3,6 +3,7 @@ package com.alexpi.awesometanks.screens.game
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.screens.BaseScreen
+import com.alexpi.awesometanks.screens.LevelScreen
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
 import com.alexpi.awesometanks.screens.TRANSITION_DURATION
@@ -10,9 +11,10 @@ import com.alexpi.awesometanks.screens.game.menu.LevelCompletedMenu
 import com.alexpi.awesometanks.screens.game.menu.LevelFailedMenu
 import com.alexpi.awesometanks.screens.game.menu.PauseMenu
 import com.alexpi.awesometanks.screens.game.stage.GameUIStage
+import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
 import com.alexpi.awesometanks.utils.fastHypot
 import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.GameRenderer
+import com.alexpi.awesometanks.world.GameContainer
 import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
@@ -29,34 +31,34 @@ import kotlin.math.abs
 /**
  * Created by Alex on 30/12/2015.
  */
-class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameRenderer.GameListener {
+class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor, GameContainer.GameListener {
     private lateinit var uiStage: GameUIStage
-    private lateinit var gameRenderer: GameRenderer
+    private lateinit var gameContainer: GameContainer
     private val gunChangeSound: Sound = game.manager.get("sounds/gun_change.ogg")
 
     private val pauseMenu: Table = PauseMenu(game.manager, {
-        gameRenderer.isPaused = false
-        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+        gameContainer.isPaused = false
+        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = LevelScreen(game) }))
     }, {
-        gameRenderer.isPaused = false
+        gameContainer.isPaused = false
         uiStage.pauseButton.isVisible = true
     })
 
     private val levelFailedMenu = LevelFailedMenu(game.manager) {
         saveProgress()
-        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.upgradesScreen }))
+        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = UpgradesScreen(game) }))
     }
 
     private val levelCompletedMenu = LevelCompletedMenu(game.manager) {
-        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = game.levelScreen }))
+        uiStage.addAction(Actions.sequence(Actions.fadeOut(TRANSITION_DURATION), Actions.run { game.screen = LevelScreen(game) }))
     }
 
     override fun show() {
-        gameRenderer = GameRenderer(game, this, level)
-        gameRenderer.player.onMoneyUpdated = { money ->
+        gameContainer = GameContainer(game, this, level)
+        gameContainer.player.onMoneyUpdated = { money ->
             uiStage.money.profit = money
         }
-        gameRenderer.player.onWeaponAmmoUpdated = { ammo ->
+        gameContainer.player.onWeaponAmmoUpdated = { ammo ->
             uiStage.ammoBar.value = ammo
         }
         createUIStage()
@@ -69,36 +71,36 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
         uiStage.pauseButton.onClickListener = { showPauseMenu() }
         uiStage.weaponMenu.buttonsEnabled =  Weapon.Type.values().indices.map { it == 0 || game.gameValues.getBoolean("isWeaponAvailable$it",false) }
         uiStage.weaponMenu.onWeaponClick = this::onWeaponUpdated
-        uiStage.onWeaponMenuButtonClick = { gameRenderer.isPaused = !gameRenderer.isPaused }
+        uiStage.onWeaponMenuButtonClick = { gameContainer.isPaused = !gameContainer.isPaused }
         uiStage.onMovementKnobTouch = { isTouched, knobPercentX, knobPercentY ->
-            if(isTouched) gameRenderer.onKnobTouch(knobPercentX, knobPercentY) else false
+            if(isTouched) gameContainer.onKnobTouch(knobPercentX, knobPercentY) else false
         }
         uiStage.onAimKnobTouch = { isTouched, knobPercentX, knobPercentY ->
             if (isTouched && (abs(knobPercentX) > .2f || abs(knobPercentY) > .2f)) {
-                gameRenderer.setRotationInput(knobPercentY,knobPercentY)
+                gameContainer.setRotationInput(knobPercentY,knobPercentY)
                 val distanceFromCenter = fastHypot(knobPercentY.toDouble(), knobPercentY.toDouble()).toFloat()
-                gameRenderer.player.isShooting = distanceFromCenter > 0.95f && !gameRenderer.isLevelCompleted
-            } else gameRenderer.player.isShooting = false
+                gameContainer.player.isShooting = distanceFromCenter > 0.95f && !gameContainer.isLevelCompleted
+            } else gameContainer.player.isShooting = false
             true
         }
     }
 
     override fun resize(width: Int, height: Int) {
         uiStage.viewport.update(width, height, true)
-        gameRenderer.updateViewport(width, height)
+        gameContainer.updateViewport(width, height)
     }
 
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        gameRenderer.render(delta)
+        gameContainer.render(delta)
         uiStage.act(delta)
         uiStage.draw()
     }
 
     private fun onWeaponUpdated(index: Int){
         if (Settings.soundsOn) gunChangeSound.play()
-        gameRenderer.player.currentWeaponIndex = index
+        gameContainer.player.currentWeaponIndex = index
         uiStage.ammoBar.isVisible = index != 0
     }
 
@@ -111,9 +113,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private fun saveProgress(unlockNextLevel: Boolean = false) {
         if (unlockNextLevel) game.gameValues.putBoolean("unlocked" + (level+1), true)
-        gameRenderer.player.saveProgress(game.gameValues)
+        gameContainer.player.saveProgress(game.gameValues)
         val savedMoney = game.gameValues.getInteger("money")
-        game.gameValues.putInteger("money",savedMoney + gameRenderer.player.money)
+        game.gameValues.putInteger("money",savedMoney + gameContainer.player.money)
         game.gameValues.flush()
     }
 
@@ -129,7 +131,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun showPauseMenu(){
-        gameRenderer.isPaused = true
+        gameContainer.isPaused = true
         uiStage.addActor(pauseMenu)
         uiStage.pauseButton.isVisible = false
 
@@ -140,8 +142,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             Input.Keys.BACK, Input.Keys.ESCAPE -> {
                 if(Gdx.app.type != Application.ApplicationType.Desktop && uiStage.weaponMenu.parent != null){
                     uiStage.weaponMenu.remove()
-                    gameRenderer.isPaused = false
-                } else if(!gameRenderer.isLevelCompleted){
+                    gameContainer.isPaused = false
+                } else if(!gameContainer.isLevelCompleted){
                     showPauseMenu()
                 }
                 return true
@@ -179,20 +181,20 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
                 uiStage.weaponMenu.selectWeapon(7)
                 return true
             }
-             else -> return gameRenderer.onKeyDown(keycode)
+             else -> return gameContainer.onKeyDown(keycode)
         }
     }
 
     override fun hide() {
         uiStage.dispose()
-        gameRenderer.dispose()
+        gameContainer.dispose()
         Gdx.input.inputProcessor = null
     }
 
     //EVENTS FOR DESKTOP
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameRenderer.player.isShooting = !gameRenderer.isLevelCompleted
+            gameContainer.player.isShooting = !gameContainer.isLevelCompleted
             return true
         }
         return false
@@ -200,7 +202,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameRenderer.setRotationInput(
+            gameContainer.setRotationInput(
                 screenX - Gdx.graphics.width*.5f,
                 (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
             )
@@ -211,16 +213,16 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameRenderer.player.isShooting = false
+            gameContainer.player.isShooting = false
             return true
         }
         return false
     }
 
-    override fun keyUp(keycode: Int): Boolean = gameRenderer.onKeyUp(keycode)
+    override fun keyUp(keycode: Int): Boolean = gameContainer.onKeyUp(keycode)
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-        gameRenderer.setRotationInput(
+        gameContainer.setRotationInput(
             screenX - Gdx.graphics.width*.5f,
             (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
         )
