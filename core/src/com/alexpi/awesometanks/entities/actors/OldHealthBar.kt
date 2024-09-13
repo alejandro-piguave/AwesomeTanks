@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 
-class HealthBar(private val maxHealth: Float, var currentHealth: Float): Actor() {
+class OldHealthBar(private val damageableActor: DamageableActor): Actor() {
     private val background: Texture = GameModule.assetManager.get("sprites/health_bar/health_bar_background.png")
     private val foreground: Texture = GameModule.assetManager.get("sprites/health_bar/health_bar_foreground.png")
 
@@ -14,14 +14,15 @@ class HealthBar(private val maxHealth: Float, var currentHealth: Float): Actor()
         setSize(TILE_SIZE*.9f, TILE_SIZE * .12f)
     }
 
-    fun setPosition(parent: Actor) {
-        setPosition(parent.x + parent.width*.5f - width*.5f, parent.y + height*.5f + parent.height)
-    }
+    override fun act(delta: Float) {
+        super.act(delta)
+        setPosition(damageableActor.x + damageableActor.width*.5f - width*.5f, damageableActor.y + height*.5f + damageableActor.height)
+   }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
         batch.draw(background, x, y,width, height)
-        batch.draw(foreground, x, y,width * (currentHealth/maxHealth), height)
+        batch.draw(foreground, x, y,width * (damageableActor.health/damageableActor.maxHealth), height)
     }
 
 }

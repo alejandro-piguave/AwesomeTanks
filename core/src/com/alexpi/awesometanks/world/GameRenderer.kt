@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.world
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.entities.actors.DamageableActor
-import com.alexpi.awesometanks.entities.actors.HealthBar
+import com.alexpi.awesometanks.entities.actors.OldHealthBar
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.actors.RumbleController
 import com.alexpi.awesometanks.entities.ai.PathFinding
@@ -22,7 +22,6 @@ import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 
 class GameRenderer(
@@ -81,7 +80,7 @@ class GameRenderer(
             this
         )
 
-        healthBarGroup.addActor(HealthBar(player))
+        healthBarGroup.addActor(OldHealthBar(player))
 
         gameStage.addActor(floorGroup)
         gameStage.addActor(entityGroup)
@@ -136,18 +135,7 @@ class GameRenderer(
         GameModule.dispose()
     }
 
-    override fun onDamage(actor: DamageableActor) {
-        healthBarGroup.addActor(
-            HealthBar(actor).apply {
-                addAction(
-                    Actions.sequence(
-                        Actions.delay(2f),
-                        Actions.fadeOut(1f),
-                        Actions.removeActor(),
-                    )
-                )
-            })
-    }
+    override fun onDamage(actor: DamageableActor) { }
 
     override fun onDeath(actor: DamageableActor) {
         gameStage.addActor(

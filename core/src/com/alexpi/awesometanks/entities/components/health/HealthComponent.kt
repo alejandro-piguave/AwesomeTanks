@@ -9,15 +9,14 @@ import com.badlogic.gdx.utils.TimeUtils
 
 class HealthComponent(
     assetManager: AssetManager,
-    private val parent: Actor,
-    private val maxHealth: Float,
+    val maxHealth: Float,
     initialState: HealthState = HealthState.Normal,
     private val isFlammable: Boolean = true,
     private val isFreezable: Boolean = true,
-    var onDamageTaken: ((Actor) -> Unit)? = null,
+    var onDamageTaken: ((Float) -> Unit)? = null,
     var onDeath: ((Actor) -> Unit)? = null){
-
-    private var currentHealth: Float = maxHealth
+    var currentHealth: Float = maxHealth
+    private set
     var healthState = initialState
         private set
 
@@ -27,7 +26,7 @@ class HealthComponent(
     fun takeDamage(damage: Float) {
         if(damage <= 0) throw IllegalArgumentException("damage must be greater than 0.")
         currentHealth = (currentHealth - damage).coerceAtLeast(0f)
-        onDamageTaken?.invoke(parent)
+        onDamageTaken?.invoke(currentHealth)
     }
 
     fun heal(health: Float) {
@@ -46,7 +45,7 @@ class HealthComponent(
         healthState = HealthState.Frozen(startTime = TimeUtils.millis(), duration = duration)
     }
 
-    fun act(delta: Float) {
+    fun update(parent: Actor, delta: Float) {
         if(currentHealth <= 0) {
             onDeath?.invoke(parent)
             return
@@ -67,7 +66,7 @@ class HealthComponent(
         }
     }
 
-    fun draw(batch: Batch) {
+    fun draw(parent: Actor, batch: Batch) {
         when(healthState) {
             HealthState.Normal -> {}
             is HealthState.Burning -> flameEffect.draw(batch)
