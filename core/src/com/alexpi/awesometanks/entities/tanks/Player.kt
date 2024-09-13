@@ -28,7 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import kotlin.experimental.or
 import kotlin.math.abs
 
-class Player(val entityGroup: Group, val blockGroup: Group) : Tank(Vector2(-1f,-1f), .75f,
+class Player(private val entityGroup: Group, private val blockGroup: Group) : Tank(Vector2(-1f,-1f), .75f,
     .07f + GameModule.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
     150 + GameModule.getGameValues().getInteger(UpgradeType.SPEED.name) * 10f,
     CAT_PLAYER,
