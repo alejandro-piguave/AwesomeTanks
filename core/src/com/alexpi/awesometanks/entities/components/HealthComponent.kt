@@ -8,24 +8,19 @@ class HealthComponent(
     var onDamageTaken: ((Actor) -> Unit)? = null,
     var onDeath: ((Actor) -> Unit)? = null) : Actor() {
 
-    var health: Float = maxHealth
-        set(value) {
-            var damageTaken = false
+    var currentHealth: Float = maxHealth
+        private set
 
-            if(value >= maxHealth)
-                field = maxHealth
-            else if(value <= 0){
-                if(value < health) damageTaken = true
-                field = 0f
-                if(damageTaken) onDamageTaken?.invoke(parent)
-                onDeath?.invoke(parent)
-            }
-            else {
-                if(value < health) damageTaken = true
-                field = value
-                if(damageTaken) onDamageTaken?.invoke(parent)
-            }
+    fun takeDamage(damage: Float) {
+        if(damage <= 0) throw IllegalArgumentException("damage must be greater than 0.")
+        currentHealth = (currentHealth - damage).coerceAtLeast(0f)
+        onDamageTaken?.invoke(parent)
+        if(currentHealth <= 0) onDeath?.invoke(parent)
+    }
 
-        }
+    fun heal(health: Float) {
+        if(health <= 0) throw IllegalArgumentException("health must be greater than 0.")
+        currentHealth = (currentHealth + health).coerceAtMost(maxHealth)
+    }
 
 }

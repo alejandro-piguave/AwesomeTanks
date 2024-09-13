@@ -28,7 +28,7 @@ class FlammableComponent(assetManager: AssetManager, val parent: Actor, val heal
         if (isBurning) {
             flameEffect.update(delta)
             if(flameEffect.isComplete) flameEffect.reset()
-            healthComponent.health -= burnDamage
+            healthComponent.takeDamage(burnDamage)
 
             if(startBurningTime + burnDuration * 1000 > TimeUtils.millis()) isBurning = false
         }
