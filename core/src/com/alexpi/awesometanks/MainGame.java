@@ -95,7 +95,8 @@ public class MainGame extends Game {
         manager.load("sprites/rocket.png", Texture.class);
         manager.load("sprites/rocket_flame.png", Texture.class);
 
-        manager.load("sprites/health_bar.png", Texture.class);
+        manager.load("sprites/health_bar/health_bar_background.png", Texture.class);
+        manager.load("sprites/health_bar/health_bar_foreground.png", Texture.class);
         manager.load("sprites/ricochet_bullet.png", Texture.class);
 
         manager.load("particles/flame.party", ParticleEffect.class);

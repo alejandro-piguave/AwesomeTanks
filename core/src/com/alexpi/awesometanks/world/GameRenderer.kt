@@ -22,12 +22,14 @@ import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 
 class GameRenderer(
     game: MainGame,
     private val gameListener: GameListener,
-    level: Int) : DamageListener{
+    level: Int
+) : DamageListener {
 
     private val mapTable: MapTable
     private val pathFinding: PathFinding
@@ -37,7 +39,8 @@ class GameRenderer(
     private val gameStage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
     private val world = World(Vector2(0f, 0f), true)
     private val rumbleController = RumbleController()
-    private val explosionManager = ExplosionManager(game.manager, gameStage, world, rumbleController)
+    private val explosionManager =
+        ExplosionManager(game.manager, gameStage, world, rumbleController)
 
     var isPaused = false
     var isLevelCompleted = false
@@ -66,7 +69,17 @@ class GameRenderer(
         val floorGroup = Group()
 
         val mapEntityCreator = MapEntityCreator()
-        mapEntityCreator.create(mapTable, level, player, shadeGroup, blockGroup, entityGroup, floorGroup, explosionManager,this)
+        mapEntityCreator.create(
+            mapTable,
+            level,
+            player,
+            shadeGroup,
+            blockGroup,
+            entityGroup,
+            floorGroup,
+            explosionManager,
+            this
+        )
 
         healthBarGroup.addActor(HealthBar(player))
 
@@ -79,20 +92,20 @@ class GameRenderer(
     }
 
 
-    fun render(delta: Float){
+    fun render(delta: Float) {
         if (!isPaused) {
             gameStage.act(delta)
         }
         gameStage.draw()
-        if(!isPaused) world.step(1 / 60f, 6, 2)
+        if (!isPaused) world.step(1 / 60f, 6, 2)
     }
 
-    fun updateViewport(width: Int, height: Int){
+    fun updateViewport(width: Int, height: Int) {
         gameStage.viewport.update(width, height, true)
     }
 
-    fun setRotationInput(x: Float, y: Float){
-        player.setRotationInput(x,y)
+    fun setRotationInput(x: Float, y: Float) {
+        player.setRotationInput(x, y)
     }
 
     fun onKeyDown(keycode: Int): Boolean {
@@ -113,40 +126,53 @@ class GameRenderer(
         return true
     }
 
-    private fun setWorldContactListener(){
+    private fun setWorldContactListener() {
         world.setContactListener(ContactManager())
     }
 
-    fun dispose(){
+    fun dispose() {
         gameStage.dispose()
         world.dispose()
         GameModule.dispose()
     }
 
     override fun onDamage(actor: DamageableActor) {
-        healthBarGroup.addActor(HealthBar(actor, DamageableActor.HEALTH_BAR_DURATION))
+        healthBarGroup.addActor(
+            HealthBar(actor).apply {
+                addAction(
+                    Actions.sequence(
+                        Actions.delay(2f),
+                        Actions.fadeOut(1f),
+                        Actions.removeActor(),
+                    )
+                )
+            })
     }
 
     override fun onDeath(actor: DamageableActor) {
-        gameStage.addActor(ParticleActor(
-            "particles/explosion.party",
-            actor.x + actor.width / 2,
-            actor.y + actor.height / 2,
-            false
-        ))
+        gameStage.addActor(
+            ParticleActor(
+                "particles/explosion.party",
+                actor.x + actor.width / 2,
+                actor.y + actor.height / 2,
+                false
+            )
+        )
 
-        if(actor.rumble) {
+        if (actor.rumble) {
             rumbleController.rumble(15f, .3f)
         }
 
-        if(actor is BaseBlock){
+        if (actor is BaseBlock) {
             val cell = mapTable.toCell(actor.body.position)
             mapTable.clear(cell)
-        } else if(actor is Player) {
+        } else if (actor is Player) {
             gameListener.onLevelFailed()
         }
 
-        if((actor is EnemyTank || actor is Turret || actor is Spawner) && isLevelCleared().also { isLevelCompleted = it }) {
+        if ((actor is EnemyTank || actor is Turret || actor is Spawner) && isLevelCleared().also {
+                isLevelCompleted = it
+            }) {
             gameListener.onLevelCompleted()
         }
     }
