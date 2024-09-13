@@ -1,23 +1,19 @@
 package com.alexpi.awesometanks.world
 
-import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.items.Item
-import com.alexpi.awesometanks.entities.projectiles.Flame
 import com.alexpi.awesometanks.entities.projectiles.Projectile
 import com.alexpi.awesometanks.entities.tanks.Player
 import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
 import com.badlogic.gdx.physics.box2d.Manifold
+import com.badlogic.gdx.scenes.scene2d.Actor
 
 class ContactManager: ContactListener {
 
     override fun beginContact(contact: Contact) {
-        contact.isOfType(Projectile::class.java, DamageableActor::class.java) { projectile, damageableActor ->
-            if (projectile is Flame) damageableActor.burn(projectile.burnDuration)
-
-            damageableActor.takeDamage(projectile.damage)
-            projectile.collide()
+        contact.isOfType(Projectile::class.java, Actor::class.java) { projectile, actor ->
+            projectile.collide(actor)
         }
 
         contact.isOfType(Player::class.java, Item::class.java) { player, item ->

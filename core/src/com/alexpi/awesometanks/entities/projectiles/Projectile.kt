@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.entities.projectiles
 
+import com.alexpi.awesometanks.entities.actors.DamageableActor
 import com.alexpi.awesometanks.entities.actors.ParticleActor
 import com.alexpi.awesometanks.entities.components.body.BodyShape
 import com.alexpi.awesometanks.entities.components.body.CAT_ENEMY_BULLET
@@ -28,7 +29,7 @@ abstract class Projectile(
     val bodyShape: BodyShape,
     angle: Float,
     val speed: Float,
-    val damage: Float,
+    protected val damage: Float,
     val isPlayer: Boolean
 ) : Actor() {
     val body: Body
@@ -36,14 +37,15 @@ abstract class Projectile(
     @JvmField
     protected var sprite: Sprite? = null
     var hasCollided = false
-        private set
+    protected set
     open fun destroy() {
         body.world.destroyBody(body)
         stage.addActor(ParticleActor("particles/collision.party", x + bodyShape.width/2, y + bodyShape.height/2, false))
         remove()
     }
 
-    open fun collide() {
+    open fun collide(actor: Actor) {
+        if(actor is DamageableActor) actor.takeDamage(damage)
         hasCollided = true
     }
 
