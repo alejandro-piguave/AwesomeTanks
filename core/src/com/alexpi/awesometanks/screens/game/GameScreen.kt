@@ -57,10 +57,10 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun show() {
         gameStage = GameStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), level, game.manager,  game.gameRepository,this)
-        gameStage.player.onMoneyUpdated = { money ->
+        gameStage.playerTank.onMoneyUpdated = { money ->
             uiStage.money.profit = money
         }
-        gameStage.player.onWeaponAmmoUpdated = { ammo ->
+        gameStage.playerTank.onWeaponAmmoUpdated = { ammo ->
             uiStage.ammoBar.currentValue = ammo
         }
         createUIStage()
@@ -81,8 +81,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             if (isTouched && (abs(knobPercentX) > .2f || abs(knobPercentY) > .2f)) {
                 gameStage.setRotationInput(knobPercentY,knobPercentY)
                 val distanceFromCenter = fastHypot(knobPercentY.toDouble(), knobPercentY.toDouble()).toFloat()
-                gameStage.player.isShooting = distanceFromCenter > 0.95f && !gameStage.isLevelCompleted
-            } else gameStage.player.isShooting = false
+                gameStage.playerTank.isShooting = distanceFromCenter > 0.95f && !gameStage.isLevelCompleted
+            } else gameStage.playerTank.isShooting = false
             true
         }
     }
@@ -104,7 +104,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private fun onWeaponUpdated(index: Int){
         if (Settings.soundsOn) gunChangeSound.play()
-        gameStage.player.currentWeaponIndex = index
+        gameStage.playerTank.currentWeaponIndex = index
         uiStage.ammoBar.isVisible = index != 0
     }
 
@@ -117,8 +117,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     private fun saveProgress(unlockNextLevel: Boolean = false) {
         if (unlockNextLevel) game.gameRepository.unlockLevel(level+1)
-        gameStage.player.saveProgress(game.gameRepository)
-        game.gameRepository.updateMoney(gameStage.player.money)
+        gameStage.playerTank.saveProgress(game.gameRepository)
+        game.gameRepository.updateMoney(gameStage.playerTank.money)
     }
 
     private fun showLevelFailedMenu() {
@@ -196,7 +196,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     //EVENTS FOR DESKTOP
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameStage.player.isShooting = !gameStage.isLevelCompleted
+            gameStage.playerTank.isShooting = !gameStage.isLevelCompleted
             return true
         }
         return false
@@ -215,7 +215,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameStage.player.isShooting = false
+            gameStage.playerTank.isShooting = false
             return true
         }
         return false

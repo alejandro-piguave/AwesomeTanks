@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.game.manager
 
 import com.alexpi.awesometanks.game.items.Item
 import com.alexpi.awesometanks.game.projectiles.Projectile
-import com.alexpi.awesometanks.game.tanks.Player
+import com.alexpi.awesometanks.game.tanks.player.PlayerTank
 import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
 import com.badlogic.gdx.physics.box2d.ContactListener
@@ -16,7 +16,7 @@ class ContactManager: ContactListener {
             projectile.collide(actor)
         }
 
-        contact.isOfType(Player::class.java, Item::class.java) { player, item ->
+        contact.isOfType(PlayerTank::class.java, Item::class.java) { player, item ->
             player.pickUp(item)
         }
     }

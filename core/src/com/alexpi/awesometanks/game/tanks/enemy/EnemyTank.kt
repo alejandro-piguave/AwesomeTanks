@@ -28,7 +28,7 @@ import com.badlogic.gdx.math.Vector2
  * Created by Alex on 17/02/2016.
  */
 class EnemyTank(
-    gameContext: GameContext,
+    val gameContext: GameContext,
     position: Vector2,
     type: EnemyType) : Tank(gameContext, position, FixtureFilter.ENEMY_TANK, type.tier.size,
     type.getHealth(),
@@ -36,7 +36,7 @@ class EnemyTank(
     ROTATION_SPEED, MOVEMENT_SPEED, type.tier.color
 ), Telegraph {
 
-    val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState(position.cpy()))
+    val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState)
     private val nuggetValue: Int
     private val weapon: Weapon = getWeaponAt(type.weapon, gameContext,1f, type.tier.power)
     override val currentWeapon: Weapon

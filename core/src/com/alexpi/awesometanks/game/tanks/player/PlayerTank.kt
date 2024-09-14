@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.game.tanks
+package com.alexpi.awesometanks.game.tanks.player
 
 import com.alexpi.awesometanks.data.GameRepository
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
@@ -8,6 +8,7 @@ import com.alexpi.awesometanks.game.items.GoldNugget
 import com.alexpi.awesometanks.game.items.HealthPack
 import com.alexpi.awesometanks.game.items.Item
 import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.tanks.Tank
 import com.alexpi.awesometanks.game.weapons.Cannon
 import com.alexpi.awesometanks.game.weapons.Flamethrower
 import com.alexpi.awesometanks.game.weapons.LaserGun
@@ -29,7 +30,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import kotlin.math.abs
 
-class Player(gameContext: GameContext) : Tank(
+class PlayerTank(gameContext: GameContext) : Tank(
     gameContext, Vector2(-1f, -1f), FixtureFilter.PLAYER, .75f,
     500f,
     false,

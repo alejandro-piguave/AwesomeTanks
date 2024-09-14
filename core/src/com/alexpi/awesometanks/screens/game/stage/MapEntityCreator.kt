@@ -26,8 +26,8 @@ fun GameStage.createMap() {
         else {
             when (cell.value) {
                 MapTable.START -> {
-                    player.setPosition(cell.toWorldPosition(mapTable))
-                    entityGroup.addActor(player)
+                    playerTank.setPosition(cell.toWorldPosition(mapTable))
+                    entityGroup.addActor(playerTank)
                 }
 
                 MapTable.GATE -> blockGroup.addActor(Gate(gameContext, cell.toWorldPosition(mapTable)))

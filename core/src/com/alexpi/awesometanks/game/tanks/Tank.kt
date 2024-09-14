@@ -1,15 +1,15 @@
 package com.alexpi.awesometanks.game.tanks
 
-import com.alexpi.awesometanks.game.components.health.HealthOwner
-import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.game.components.body.BodyComponent
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.components.health.HealthComponent
+import com.alexpi.awesometanks.game.components.health.HealthOwner
 import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
+import com.alexpi.awesometanks.game.particles.ParticleActor
+import com.alexpi.awesometanks.game.weapons.Weapon
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.game.stage.GameContext
-import com.alexpi.awesometanks.game.weapons.Weapon
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -41,6 +41,8 @@ abstract class Tank(
         Sprite(gameContext.getAssetManager().get("sprites/tank_body.png", Texture::class.java))
     private val wheelsSprite: Sprite =
         Sprite(gameContext.getAssetManager().get("sprites/tank_wheels.png", Texture::class.java))
+
+    private val entityGroup = gameContext.getEntityGroup()
 
     val bodyComponent = BodyComponent(
         this,
@@ -118,7 +120,7 @@ abstract class Tank(
         }
         currentWeapon.updateAngleRotation(rotationSpeed)
         if (isShooting) {
-            currentWeapon.shoot(parent, bodyComponent.body.position)
+            currentWeapon.shoot(entityGroup, bodyComponent.body.position)
         } else currentWeapon.await()
 
         setPosition(

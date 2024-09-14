@@ -11,7 +11,7 @@ import com.alexpi.awesometanks.game.map.MapLoader
 import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.module.GameModule
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
-import com.alexpi.awesometanks.game.tanks.Player
+import com.alexpi.awesometanks.game.tanks.player.PlayerTank
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
@@ -22,10 +22,10 @@ import com.badlogic.gdx.utils.viewport.Viewport
 
 class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManager, val gameRepository: GameRepository, private val gameListener: GameListener): Stage(viewport) {
 
-    val mapTable: MapTable = MapTable(MapLoader.load(level))
-    private val pathFinding: PathFinding
-    val entityGroup: Group = Group()
-    val blockGroup: Group = Group()
+    val mapTable = MapTable(MapLoader.load(level))
+    val pathFinding = PathFinding(mapTable)
+    val entityGroup = Group()
+    val blockGroup = Group()
     val shadeGroup = Group()
     val floorGroup = Group()
     val healthBarGroup: Group = Group()
@@ -37,17 +37,11 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
     var isPaused = false
     var isLevelCompleted = false
         private set
-    val player: Player = Player(gameContext)
+    val playerTank: PlayerTank = PlayerTank(gameContext)
 
     init {
         GameModule.world = world
         GameModule.assetManager = assetManager
-        GameModule.mapTable = mapTable
-
-        pathFinding = PathFinding(mapTable)
-        GameModule.pathFinding = pathFinding
-
-        GameModule.player = player
 
         setWorldContactListener()
         createMap()
@@ -65,19 +59,19 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
     }
 
     fun setRotationInput(x: Float, y: Float) {
-        player.setRotationInput(x, y)
+        playerTank.setRotationInput(x, y)
     }
 
     fun onKeyDown(keycode: Int): Boolean {
-        return player.onKeyDown(keycode)
+        return playerTank.onKeyDown(keycode)
     }
 
     fun onKeyUp(keycode: Int): Boolean {
-        return player.onKeyUp(keycode)
+        return playerTank.onKeyUp(keycode)
     }
 
     fun onKnobTouch(x: Float, y: Float): Boolean {
-        return player.onKnobTouch(x, y)
+        return playerTank.onKnobTouch(x, y)
     }
 
     private fun isLevelCleared(): Boolean {
