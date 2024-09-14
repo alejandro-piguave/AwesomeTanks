@@ -5,10 +5,19 @@ import com.alexpi.awesometanks.game.ai.TurretAICallback
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.items.GoldNugget
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyWeapon
+import com.alexpi.awesometanks.game.utils.RandomUtils
+import com.alexpi.awesometanks.game.weapons.Cannon
+import com.alexpi.awesometanks.game.weapons.Flamethrower
+import com.alexpi.awesometanks.game.weapons.LaserGun
+import com.alexpi.awesometanks.game.weapons.MiniGun
+import com.alexpi.awesometanks.game.weapons.RailGun
+import com.alexpi.awesometanks.game.weapons.Ricochet
+import com.alexpi.awesometanks.game.weapons.RocketLauncher
+import com.alexpi.awesometanks.game.weapons.ShotGun
+import com.alexpi.awesometanks.game.weapons.Weapon
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.screens.game.stage.GameStage
-import com.alexpi.awesometanks.game.utils.RandomUtils
-import com.alexpi.awesometanks.game.weapons.Weapon
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 
@@ -18,13 +27,12 @@ import com.badlogic.gdx.math.Vector2
 class Turret(
     gameContext: GameContext,
     pos: Vector2,
-    type: Weapon.Type
+    type: EnemyWeapon
 ) : HealthBlock( gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET), TurretAICallback {
     private val weapon: Weapon
     private val gameStage: GameStage = gameContext.getStage()
     private val enemyAI = TurretAI(gameContext, bodyComponent.body.position, this)
     private val nuggetValue: Int = getNuggetValue(type)
-    private val explosionManager = gameContext.getExplosionManager()
 
     override fun drawBlock(batch: Batch, parentAlpha: Float) {
         super.drawBlock(batch, parentAlpha)
@@ -44,34 +52,23 @@ class Turret(
     companion object {
         private const val ROTATION_SPEED = .035f
 
-        fun getHealthByType(type: Weapon.Type): Float{
+        fun getHealthByType(type: EnemyWeapon): Float{
             val typeMultiplier: Float = when(type){
-                Weapon.Type.MINIGUN -> 0f
-                Weapon.Type.SHOTGUN -> .2f
-                Weapon.Type.RICOCHET -> .3f
-                Weapon.Type.FLAMETHROWER -> .6f
-                Weapon.Type.ROCKETS -> .6f
-                Weapon.Type.CANNON -> .6f
-                Weapon.Type.LASERGUN -> 1f
-                Weapon.Type.RAILGUN -> 1f
+                EnemyWeapon.MINIGUN -> 0f
+                EnemyWeapon.SHOTGUN -> .2f
+                EnemyWeapon.RICOCHET -> .3f
+                EnemyWeapon.FLAMETHROWER -> .6f
+                EnemyWeapon.ROCKETS -> .6f
+                EnemyWeapon.CANNON -> .6f
+                EnemyWeapon.LASERGUN -> 1f
+                EnemyWeapon.RAILGUN -> 1f
 
             }
             return 200f + typeMultiplier * 500f
         }
 
-        private fun getNuggetValue(type: Weapon.Type): Int{
-            val typeMultiplier: Float = when(type){
-                Weapon.Type.MINIGUN -> 0f
-                Weapon.Type.SHOTGUN -> .2f
-                Weapon.Type.RICOCHET -> .3f
-                Weapon.Type.FLAMETHROWER -> .6f
-                Weapon.Type.CANNON -> .6f
-                Weapon.Type.ROCKETS -> .6f
-                Weapon.Type.LASERGUN -> 1f
-                else -> 1f
-
-            }
-            return 60 + (typeMultiplier*75).toInt()
+        private fun getNuggetValue(type: EnemyWeapon): Int{
+            return 60 + (type.valueMultiplier*75).toInt()
         }
     }
 
@@ -90,7 +87,7 @@ class Turret(
     }
 
     init {
-        weapon = Weapon.getWeaponAt(type, gameContext,1f, 2, false)
+        weapon = getWeaponAt(type, gameContext)
         weapon.unlimitedAmmo = true
         setOrigin(width / 2, height / 2)
     }
@@ -103,5 +100,21 @@ class Turret(
 
     override fun await() {
         weapon.await()
+    }
+
+    private fun getWeaponAt(
+        type: EnemyWeapon,
+        gameContext: GameContext,
+    ): Weapon {
+        return when (type) {
+            EnemyWeapon.MINIGUN -> MiniGun(gameContext, 1f, 2, false)
+            EnemyWeapon.SHOTGUN -> ShotGun(gameContext, 1f, 2, false)
+            EnemyWeapon.RICOCHET -> Ricochet(gameContext, 1f, 2, false)
+            EnemyWeapon.FLAMETHROWER -> Flamethrower(gameContext, 1f, 2, false)
+            EnemyWeapon.CANNON -> Cannon(gameContext, 1f, 2, false)
+            EnemyWeapon.ROCKETS -> RocketLauncher(gameContext, 1f, 2, false, null)
+            EnemyWeapon.LASERGUN -> LaserGun(gameContext, 1f, 2, false)
+            EnemyWeapon.RAILGUN -> RailGun(gameContext, 1f, 2, false)
+        }
     }
 }

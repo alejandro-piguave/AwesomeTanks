@@ -10,7 +10,7 @@ import com.alexpi.awesometanks.game.manager.RumbleManager
 import com.alexpi.awesometanks.game.map.MapLoader
 import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.module.GameModule
-import com.alexpi.awesometanks.game.tanks.EnemyTank
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.alexpi.awesometanks.game.tanks.Player
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2

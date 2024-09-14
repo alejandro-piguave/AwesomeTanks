@@ -1,7 +1,5 @@
 package com.alexpi.awesometanks.screens.game.stage
 
-import com.alexpi.awesometanks.game.tiles.Floor
-import com.alexpi.awesometanks.game.tiles.Shade
 import com.alexpi.awesometanks.game.blocks.Box
 import com.alexpi.awesometanks.game.blocks.Bricks
 import com.alexpi.awesometanks.game.blocks.Gate
@@ -9,9 +7,13 @@ import com.alexpi.awesometanks.game.blocks.Mine
 import com.alexpi.awesometanks.game.blocks.Spawner
 import com.alexpi.awesometanks.game.blocks.Turret
 import com.alexpi.awesometanks.game.blocks.Wall
-import com.alexpi.awesometanks.game.tanks.EnemyTank
 import com.alexpi.awesometanks.game.map.MapTable
-import com.alexpi.awesometanks.game.weapons.Weapon
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyTier
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyType
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyWeapon
+import com.alexpi.awesometanks.game.tiles.Floor
+import com.alexpi.awesometanks.game.tiles.Shade
 
 
 fun GameStage.createMap() {
@@ -43,19 +45,18 @@ fun GameStage.createMap() {
 
                 in MapTable.bosses -> {
                     val type = cell.value.code - MapTable.MINIGUN_BOSS.code
-                    val weaponType = Weapon.Type.values()[type]
+                    val weaponType = EnemyWeapon.values()[type]
                     entityGroup.addActor(
                         EnemyTank(
                             gameContext,
                             cell.toWorldPosition(mapTable),
-                            EnemyTank.Tier.BOSS,
-                            weaponType
+                            EnemyType(EnemyTier.BOSS, weaponType)
                         )
                     )
                 }
 
                 in MapTable.turrets -> {
-                    val weaponType = Weapon.Type.values()[Character.getNumericValue(cell.value)]
+                    val weaponType = EnemyWeapon.values()[Character.getNumericValue(cell.value)]
                     blockGroup.addActor(Turret(gameContext, cell.toWorldPosition(mapTable), weaponType))
                 }
 

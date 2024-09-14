@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.screens.game.menu
 
-import com.alexpi.awesometanks.game.weapons.Weapon
+import com.alexpi.awesometanks.screens.upgrades.WeaponUpgrade
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -20,9 +20,9 @@ import ktx.actors.onClick
 class WeaponMenu(assetManager: AssetManager): Table() {
     private val background = NinePatchDrawable(NinePatch(assetManager.get("sprites/progress_bar_background.9.png", Texture::class.java), 6, 6, 6, 6))
 
-    private val buttons: List<ImageButton> = (0 until Weapon.Type.values().size).map {
-        val texture = assetManager.get<Texture>("icons/icon_$it.png")
-        val disabled = assetManager.get<Texture>("icons/icon_disabled_$it.png")
+    private val buttons: List<ImageButton> = WeaponUpgrade.values().map {
+        val texture = assetManager.get<Texture>(it.enabledIconPath)
+        val disabled = assetManager.get<Texture>(it.disabledIconPath)
         val style = ImageButtonStyle(assetManager.get<Skin>("uiskin/uiskin.json").get(
             ButtonStyle::class.java))
         style.imageUp = TextureRegionDrawable(TextureRegion(texture))

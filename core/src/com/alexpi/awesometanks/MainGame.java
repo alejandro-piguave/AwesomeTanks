@@ -1,9 +1,9 @@
 package com.alexpi.awesometanks;
 
 import com.alexpi.awesometanks.data.GameRepository;
-import com.alexpi.awesometanks.screens.MainScreen;
-import com.alexpi.awesometanks.game.weapons.Weapon;
 import com.alexpi.awesometanks.game.module.Settings;
+import com.alexpi.awesometanks.screens.MainScreen;
+import com.alexpi.awesometanks.screens.upgrades.WeaponUpgrade;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
@@ -111,11 +111,10 @@ public class MainGame extends Game {
         manager.load("weapons/laser.png", Texture.class);
         manager.load("weapons/railgun.png", Texture.class);
 
-        for (int i = 0; i < Weapon.Type.values().length; i++)
-            manager.load("icons/icon_" + i + ".png", Texture.class);
-
-        for (int i = 0; i < Weapon.Type.values().length; i++)
-            manager.load("icons/icon_disabled_" + i + ".png", Texture.class);
+        for (int i = 0; i < WeaponUpgrade.values().length; i++){
+            manager.load(WeaponUpgrade.values()[i].getEnabledIconPath(), Texture.class);
+            manager.load(WeaponUpgrade.values()[i].getDisabledIconPath(), Texture.class);
+        }
 
         manager.finishLoading();
 

@@ -3,12 +3,14 @@ package com.alexpi.awesometanks.game.blocks
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.items.GoldNugget
-import com.alexpi.awesometanks.game.tanks.EnemyTank
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyTier
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyType
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyWeapon
+import com.alexpi.awesometanks.game.utils.RandomUtils
 import com.alexpi.awesometanks.screens.LEVEL_COUNT
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.screens.game.stage.GameStage
-import com.alexpi.awesometanks.game.utils.RandomUtils
-import com.alexpi.awesometanks.game.weapons.Weapon
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.TimeUtils
 
@@ -28,7 +30,7 @@ class Spawner(private val gameContext: GameContext, level: Int, pos: Vector2) : 
     private var lastSpawn: Long
     private var interval: Long
     private var maxSpan = 15000
-    private var generatedTypes: List<Weapon.Type> = getEnemyTypes(level)
+    private var generatedTypes: List<EnemyWeapon> = getEnemyTypes(level)
     private val nuggetValue: Int
     override fun act(delta: Float) {
         super.act(delta)
@@ -41,8 +43,7 @@ class Spawner(private val gameContext: GameContext, level: Int, pos: Vector2) : 
                 EnemyTank(
                     gameContext,
                     bodyComponent.body.position,
-                    EnemyTank.Tier.NORMAL,
-                    generatedTypes.random()
+                    EnemyType(EnemyTier.NORMAL, generatedTypes.random())
                 )
             )
         }
@@ -58,24 +59,24 @@ class Spawner(private val gameContext: GameContext, level: Int, pos: Vector2) : 
         }
 
         private fun getMaxType(level: Int): Int {
-            return if (level <= 7) Weapon.Type.RICOCHET.ordinal
-            else if (level <= 15) Weapon.Type.ROCKETS.ordinal
-            else if (level <= 22) Weapon.Type.LASERGUN.ordinal
-            else Weapon.Type.RAILGUN.ordinal
+            return if (level <= 7) EnemyWeapon.RICOCHET.ordinal
+            else if (level <= 15) EnemyWeapon.ROCKETS.ordinal
+            else if (level <= 22) EnemyWeapon.LASERGUN.ordinal
+            else EnemyWeapon.RAILGUN.ordinal
         }
 
         private fun getMinType(level: Int): Int {
-            return if (level <= 10) Weapon.Type.MINIGUN.ordinal
-            else if (level <= 12) Weapon.Type.SHOTGUN.ordinal
-            else if (level <= 16) Weapon.Type.RICOCHET.ordinal
-            else Weapon.Type.FLAMETHROWER.ordinal
+            return if (level <= 10) EnemyWeapon.MINIGUN.ordinal
+            else if (level <= 12) EnemyWeapon.SHOTGUN.ordinal
+            else if (level <= 16) EnemyWeapon.RICOCHET.ordinal
+            else EnemyWeapon.FLAMETHROWER.ordinal
         }
 
-        private fun getEnemyTypes(level: Int): List<Weapon.Type> {
+        private fun getEnemyTypes(level: Int): List<EnemyWeapon> {
             val minType = getMinType(level)
             val maxType = getMaxType(level)
 
-            return Weapon.Type.values().slice(minType..maxType)
+            return EnemyWeapon.values().slice(minType..maxType)
         }
     }
 

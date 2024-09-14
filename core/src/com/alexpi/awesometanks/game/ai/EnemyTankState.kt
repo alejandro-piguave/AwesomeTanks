@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.game.ai
 
 import com.alexpi.awesometanks.game.blocks.Block
-import com.alexpi.awesometanks.game.tanks.EnemyTank
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.alexpi.awesometanks.game.map.Cell
 import com.alexpi.awesometanks.game.module.GameModule
 import com.badlogic.gdx.ai.fsm.State

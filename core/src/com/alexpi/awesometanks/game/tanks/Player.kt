@@ -8,8 +8,15 @@ import com.alexpi.awesometanks.game.items.GoldNugget
 import com.alexpi.awesometanks.game.items.HealthPack
 import com.alexpi.awesometanks.game.items.Item
 import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.weapons.Cannon
+import com.alexpi.awesometanks.game.weapons.Flamethrower
+import com.alexpi.awesometanks.game.weapons.LaserGun
+import com.alexpi.awesometanks.game.weapons.MiniGun
+import com.alexpi.awesometanks.game.weapons.RailGun
+import com.alexpi.awesometanks.game.weapons.Ricochet
 import com.alexpi.awesometanks.game.weapons.RocketLauncher
 import com.alexpi.awesometanks.game.weapons.RocketListener
+import com.alexpi.awesometanks.game.weapons.ShotGun
 import com.alexpi.awesometanks.game.weapons.Weapon
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.game.stage.GameContext
@@ -59,7 +66,7 @@ class Player(gameContext: GameContext) : Tank(
 
     private val weapons: List<Weapon> = WeaponUpgrade.values().map {
         val weaponValues = gameContext.getGameRepository().getWeaponValues(it)
-        Weapon.getWeaponAt(it, gameContext, weaponValues.ammo, weaponValues.power, true, this)
+        getWeaponAt(it, gameContext, weaponValues.ammo, weaponValues.power)
     }
 
     //Used for keys
@@ -93,7 +100,7 @@ class Player(gameContext: GameContext) : Tank(
 
     fun setRotationInput(x: Float, y: Float) {
         if (isRocketActive) {
-            val rocketLauncher = weapons[Weapon.Type.ROCKETS.ordinal] as RocketLauncher
+            val rocketLauncher = weapons[WeaponUpgrade.ROCKETS.ordinal] as RocketLauncher
             rocketLauncher.rocket?.updateOrientation(x, y)
         } else currentWeapon.setDesiredRotationAngleFrom(x, y)
     }
@@ -246,6 +253,24 @@ class Player(gameContext: GameContext) : Tank(
     init {
         healthComponent.damageReduction = armor * .1f
         healthBarComponent.showHealthBar()
+    }
+
+    private fun getWeaponAt(
+        type: WeaponUpgrade,
+        gameContext: GameContext,
+        ammo: Float,
+        power: Int
+    ): Weapon {
+        return when (type) {
+            WeaponUpgrade.MINIGUN -> MiniGun(gameContext, ammo, power, true)
+            WeaponUpgrade.SHOTGUN -> ShotGun(gameContext, ammo, power, true)
+            WeaponUpgrade.RICOCHET -> Ricochet(gameContext, ammo, power, true)
+            WeaponUpgrade.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, true)
+            WeaponUpgrade.CANNON -> Cannon(gameContext, ammo, power, true)
+            WeaponUpgrade.ROCKETS -> RocketLauncher(gameContext, ammo, power, true, this)
+            WeaponUpgrade.LASERGUN -> LaserGun(gameContext, ammo, power, true)
+            WeaponUpgrade.RAILGUN -> RailGun(gameContext, ammo, power, true)
+        }
     }
 
 }

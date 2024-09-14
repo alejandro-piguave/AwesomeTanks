@@ -2,7 +2,6 @@ package com.alexpi.awesometanks.game.weapons
 
 import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.alexpi.awesometanks.screens.game.stage.GameContext
-import com.alexpi.awesometanks.screens.upgrades.WeaponUpgrade
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -33,8 +32,8 @@ abstract class Weapon(
             field = value
             onAmmoUpdated?.invoke(value)
         }
-    var sprite: Sprite
-    protected var shotSound: Sound
+    var sprite: Sprite = Sprite(gameContext.getAssetManager().get(texturePath, Texture::class.java))
+    protected var shotSound: Sound = gameContext.getAssetManager().get(shotSoundPath, Sound::class.java)
 
     var desiredRotationAngle = 0f
         set(value) {
@@ -111,61 +110,4 @@ abstract class Weapon(
 
     protected open fun canShoot(): Boolean = (hasAmmo() || unlimitedAmmo) && !isCoolingDown && hasRotated()
 
-    companion object {
-        fun getWeaponAt(
-            type: WeaponUpgrade,
-            gameContext: GameContext,
-            ammo: Float,
-            power: Int,
-            isPlayer: Boolean,
-            rocketListener: RocketListener? = null
-        ): Weapon {
-            return when (type) {
-                WeaponUpgrade.MINIGUN -> MiniGun(gameContext, ammo, power, isPlayer)
-                WeaponUpgrade.SHOTGUN -> ShotGun(gameContext, ammo, power, isPlayer)
-                WeaponUpgrade.RICOCHET -> Ricochet(gameContext, ammo, power, isPlayer)
-                WeaponUpgrade.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, isPlayer)
-                WeaponUpgrade.CANNON -> Cannon(gameContext, ammo, power, isPlayer)
-                WeaponUpgrade.ROCKETS -> RocketLauncher(gameContext, ammo, power, isPlayer, rocketListener)
-                WeaponUpgrade.LASERGUN -> LaserGun(gameContext, ammo, power, isPlayer)
-                WeaponUpgrade.RAILGUN -> RailGun(gameContext, ammo, power, isPlayer)
-            }
-        }
-        fun getWeaponAt(
-            type: Weapon.Type,
-            gameContext: GameContext,
-            ammo: Float,
-            power: Int,
-            isPlayer: Boolean,
-            rocketListener: RocketListener? = null
-        ): Weapon {
-            return when (type) {
-                Type.MINIGUN -> MiniGun(gameContext, ammo, power, isPlayer)
-                Type.SHOTGUN -> ShotGun(gameContext, ammo, power, isPlayer)
-                Type.RICOCHET -> Ricochet(gameContext, ammo, power, isPlayer)
-                Type.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, isPlayer)
-                Type.CANNON -> Cannon(gameContext, ammo, power, isPlayer)
-                Type.ROCKETS -> RocketLauncher(gameContext, ammo, power, isPlayer, rocketListener)
-                Type.LASERGUN -> LaserGun(gameContext, ammo, power, isPlayer)
-                Type.RAILGUN -> RailGun(gameContext, ammo, power, isPlayer)
-            }
-        }
-    }
-
-    init {
-        sprite = Sprite(gameContext.getAssetManager().get(texturePath, Texture::class.java))
-        shotSound = gameContext.getAssetManager().get(shotSoundPath, Sound::class.java)
-        this.ammo = ammo
-    }
-
-    enum class Type{
-        MINIGUN,
-        SHOTGUN,
-        RICOCHET,
-        FLAMETHROWER,
-        CANNON,
-        ROCKETS,
-        LASERGUN,
-        RAILGUN
-    }
 }
