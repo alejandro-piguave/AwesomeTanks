@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.screens.upgrades
 
-import com.alexpi.awesometanks.widget.Styles
+import com.alexpi.awesometanks.screens.widget.Styles
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 

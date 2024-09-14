@@ -2,6 +2,9 @@ package com.alexpi.awesometanks.screens.game
 
 
 import com.alexpi.awesometanks.MainGame
+import com.alexpi.awesometanks.game.utils.fastHypot
+import com.alexpi.awesometanks.game.weapons.Weapon
+import com.alexpi.awesometanks.game.module.Settings
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.alexpi.awesometanks.screens.LevelScreen
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
@@ -10,13 +13,10 @@ import com.alexpi.awesometanks.screens.TRANSITION_DURATION
 import com.alexpi.awesometanks.screens.game.menu.LevelCompletedMenu
 import com.alexpi.awesometanks.screens.game.menu.LevelFailedMenu
 import com.alexpi.awesometanks.screens.game.menu.PauseMenu
+import com.alexpi.awesometanks.screens.game.stage.GameListener
+import com.alexpi.awesometanks.screens.game.stage.GameStage
 import com.alexpi.awesometanks.screens.game.stage.GameUIStage
 import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
-import com.alexpi.awesometanks.utils.fastHypot
-import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.world.GameListener
-import com.alexpi.awesometanks.screens.game.stage.GameStage
-import com.alexpi.awesometanks.world.Settings
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input

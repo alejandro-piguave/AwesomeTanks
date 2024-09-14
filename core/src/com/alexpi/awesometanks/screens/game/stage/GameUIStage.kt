@@ -4,8 +4,8 @@ import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.game.menu.WeaponMenu
 import com.alexpi.awesometanks.screens.game.widget.AmmoBar
 import com.alexpi.awesometanks.screens.game.widget.ProfitLabel
-import com.alexpi.awesometanks.widget.GameButton
-import com.alexpi.awesometanks.widget.Styles
+import com.alexpi.awesometanks.screens.widget.GameButton
+import com.alexpi.awesometanks.screens.widget.Styles
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager

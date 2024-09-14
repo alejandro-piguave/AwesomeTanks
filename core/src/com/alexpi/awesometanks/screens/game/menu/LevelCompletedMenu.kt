@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.screens.game.menu
 
-import com.alexpi.awesometanks.widget.Styles
+import com.alexpi.awesometanks.screens.widget.Styles
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Table

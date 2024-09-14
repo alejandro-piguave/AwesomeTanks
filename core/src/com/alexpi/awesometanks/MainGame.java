@@ -1,8 +1,8 @@
 package com.alexpi.awesometanks;
 
 import com.alexpi.awesometanks.screens.MainScreen;
-import com.alexpi.awesometanks.weapons.Weapon;
-import com.alexpi.awesometanks.world.Settings;
+import com.alexpi.awesometanks.game.weapons.Weapon;
+import com.alexpi.awesometanks.game.module.Settings;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;

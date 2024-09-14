@@ -3,8 +3,8 @@ package com.alexpi.awesometanks.screens
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.screens.game.GameScreen
 import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
-import com.alexpi.awesometanks.widget.GameButton
-import com.alexpi.awesometanks.widget.Styles
+import com.alexpi.awesometanks.screens.widget.GameButton
+import com.alexpi.awesometanks.screens.widget.Styles
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color

@@ -1,9 +1,9 @@
 package com.alexpi.awesometanks.screens.game.stage
 
-import com.alexpi.awesometanks.entities.actors.RumbleController
-import com.alexpi.awesometanks.entities.tanks.Player
-import com.alexpi.awesometanks.map.MapTable
-import com.alexpi.awesometanks.world.ExplosionManager
+import com.alexpi.awesometanks.game.manager.RumbleManager
+import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.tanks.Player
+import com.alexpi.awesometanks.game.manager.ExplosionManager
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.physics.box2d.World
@@ -17,7 +17,7 @@ class GameContext(private val gameStage: GameStage) {
     fun getMapTable(): MapTable = gameStage.mapTable
     fun getEntityGroup(): Group = gameStage.entityGroup
     fun getBlockGroup(): Group = gameStage.blockGroup
-    fun getRumbleController(): RumbleController = gameStage.rumbleController
+    fun getRumbleController(): RumbleManager = gameStage.rumbleManager
     fun getStage(): GameStage = gameStage
     fun getPlayer(): Player = gameStage.player
     fun getGameValues(): Preferences = gameStage.gameValues

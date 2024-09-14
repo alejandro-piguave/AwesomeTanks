@@ -1,17 +1,16 @@
 package com.alexpi.awesometanks.screens.game.stage
 
-import com.alexpi.awesometanks.entities.actors.RumbleController
-import com.alexpi.awesometanks.entities.ai.PathFinding
-import com.alexpi.awesometanks.entities.blocks.Spawner
-import com.alexpi.awesometanks.entities.blocks.Turret
-import com.alexpi.awesometanks.entities.tanks.EnemyTank
-import com.alexpi.awesometanks.entities.tanks.Player
-import com.alexpi.awesometanks.map.MapLoader
-import com.alexpi.awesometanks.map.MapTable
-import com.alexpi.awesometanks.world.ContactManager
-import com.alexpi.awesometanks.world.ExplosionManager
-import com.alexpi.awesometanks.world.GameListener
-import com.alexpi.awesometanks.world.GameModule
+import com.alexpi.awesometanks.game.manager.RumbleManager
+import com.alexpi.awesometanks.game.ai.PathFinding
+import com.alexpi.awesometanks.game.blocks.Spawner
+import com.alexpi.awesometanks.game.blocks.Turret
+import com.alexpi.awesometanks.game.tanks.EnemyTank
+import com.alexpi.awesometanks.game.tanks.Player
+import com.alexpi.awesometanks.game.map.MapLoader
+import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.manager.ContactManager
+import com.alexpi.awesometanks.game.manager.ExplosionManager
+import com.alexpi.awesometanks.game.module.GameModule
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2
@@ -31,8 +30,8 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
     val floorGroup = Group()
     val healthBarGroup: Group = Group()
     val world = World(Vector2(0f, 0f), true)
-    val rumbleController = RumbleController()
-    val explosionManager = ExplosionManager(assetManager, world, rumbleController)
+    val rumbleManager = RumbleManager()
+    val explosionManager = ExplosionManager(assetManager, world, rumbleManager)
     val gameContext = GameContext(this)
 
     var isPaused = false

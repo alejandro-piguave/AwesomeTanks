@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.screens.game.menu
 
-import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.game.weapons.Weapon
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch

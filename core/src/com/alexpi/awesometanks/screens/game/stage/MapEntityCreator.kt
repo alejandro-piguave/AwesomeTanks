@@ -1,17 +1,17 @@
 package com.alexpi.awesometanks.screens.game.stage
 
-import com.alexpi.awesometanks.entities.actors.Floor
-import com.alexpi.awesometanks.entities.actors.Shade
-import com.alexpi.awesometanks.entities.blocks.Box
-import com.alexpi.awesometanks.entities.blocks.Bricks
-import com.alexpi.awesometanks.entities.blocks.Gate
-import com.alexpi.awesometanks.entities.blocks.Mine
-import com.alexpi.awesometanks.entities.blocks.Spawner
-import com.alexpi.awesometanks.entities.blocks.Turret
-import com.alexpi.awesometanks.entities.blocks.Wall
-import com.alexpi.awesometanks.entities.tanks.EnemyTank
-import com.alexpi.awesometanks.map.MapTable
-import com.alexpi.awesometanks.weapons.Weapon
+import com.alexpi.awesometanks.game.tiles.Floor
+import com.alexpi.awesometanks.game.tiles.Shade
+import com.alexpi.awesometanks.game.blocks.Box
+import com.alexpi.awesometanks.game.blocks.Bricks
+import com.alexpi.awesometanks.game.blocks.Gate
+import com.alexpi.awesometanks.game.blocks.Mine
+import com.alexpi.awesometanks.game.blocks.Spawner
+import com.alexpi.awesometanks.game.blocks.Turret
+import com.alexpi.awesometanks.game.blocks.Wall
+import com.alexpi.awesometanks.game.tanks.EnemyTank
+import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.weapons.Weapon
 
 
 fun GameStage.createMap() {
@@ -70,6 +70,6 @@ fun GameStage.createMap() {
     addActor(blockGroup)
     addActor(shadeGroup)
     addActor(healthBarGroup)
-    addActor(rumbleController)
+    addActor(rumbleManager)
     addActor(explosionManager)
 }

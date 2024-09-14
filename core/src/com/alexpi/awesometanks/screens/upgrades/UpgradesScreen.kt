@@ -8,10 +8,10 @@ import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.TRANSITION_DURATION
-import com.alexpi.awesometanks.weapons.Weapon
-import com.alexpi.awesometanks.widget.GameButton
-import com.alexpi.awesometanks.widget.Styles
-import com.alexpi.awesometanks.world.Settings.soundsOn
+import com.alexpi.awesometanks.game.weapons.Weapon
+import com.alexpi.awesometanks.screens.widget.GameButton
+import com.alexpi.awesometanks.screens.widget.Styles
+import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Sound

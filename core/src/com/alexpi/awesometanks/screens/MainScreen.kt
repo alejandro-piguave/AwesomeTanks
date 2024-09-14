@@ -2,9 +2,9 @@ package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
-import com.alexpi.awesometanks.widget.GameButton
-import com.alexpi.awesometanks.widget.Styles
-import com.alexpi.awesometanks.world.Settings
+import com.alexpi.awesometanks.screens.widget.GameButton
+import com.alexpi.awesometanks.screens.widget.Styles
+import com.alexpi.awesometanks.game.module.Settings
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
