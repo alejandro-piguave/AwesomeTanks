@@ -23,7 +23,6 @@ sealed class EnemyTankState: State<EnemyTank>{
         const val HALF_VISIBILITY_ANGLE = 60 * MathUtils.degreesToRadians //120 DEGREES OF VISIBILITY / 2
         const val DAMAGE_RECEIVED_MESSAGE = 0
         const val CELL_OFFSET = .05f
-        const val VISITED_CELL_COUNT_LIMIT = 3
     }
 
     override fun update(entity: EnemyTank) {
@@ -62,9 +61,7 @@ sealed class EnemyTankState: State<EnemyTank>{
         return isVisible
     }
 
-    override fun enter(entity: EnemyTank) {
-        println("EnemyState.enter")
-    }
+    override fun enter(entity: EnemyTank) {}
 
     override fun exit(entity: EnemyTank) { }
 
@@ -116,61 +113,66 @@ class PeekState(private val peekAngle: Float): EnemyTankState(){
         if(entity.currentWeapon.hasRotated()){
             val nextState = if(MathUtils.randomBoolean()){
                 PeekState(MathUtils.random()* MathUtils.PI2)
-            } else WanderState
+            } else WanderState()
 
             entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
         }
     }
 }
 
-object WanderState: EnemyTankState(){
+class WanderState: EnemyTankState(){
     private lateinit var path: GraphPath<Connection<Cell>>
-    private lateinit var nextPosition: Vector2
     private var visitedCellCount = 0
 
+    override fun enter(entity: EnemyTank) {
+        super.enter(entity)
+        path = generatePath(entity)
+    }
 
-    private fun calculateNextPosition(entity: EnemyTank): Vector2 {
+    private fun generatePath(entity: EnemyTank): GraphPath<Connection<Cell>> {
         val mapTable = entity.gameContext.getMapTable()
         val pathFinding = entity.gameContext.getPathFinding()
 
         val currentCell = mapTable.toCell(entity.bodyComponent.body.position)
-        val randomCell = mapTable.getRandomEmptyAdjacentCell(currentCell, 1)
+        val randomCell = mapTable.getRandomEmptyAdjacentCell(currentCell, 5)
 
-        path = pathFinding.findPath(currentCell, randomCell)
-        val nextCell = if (path.count > 0 ) path[0].toNode else null
-        return nextCell?.toWorldPosition(mapTable) ?: entity.bodyComponent.body.position
+        return pathFinding.findPath(currentCell, randomCell)
     }
 
     override fun update(entity: EnemyTank) {
         super.update(entity)
-        if(!::nextPosition.isInitialized) nextPosition = calculateNextPosition(entity)
-        val mapTable = entity.gameContext.getMapTable()
-
-        if (withinBounds(entity.bodyComponent.body.position)){
-            visitedCellCount++
-            val currentCell = mapTable.toCell(entity.bodyComponent.body.position)
-            val nextCell = path.firstOrNull { it.fromNode.col == currentCell.col && it.fromNode.row == currentCell.row }?.toNode
-            if(nextCell == null || visitedCellCount > VISITED_CELL_COUNT_LIMIT){
-                //If there is no next position, rotate to check the area
-                val nextState = PeekState(MathUtils.random() * MathUtils.PI2)
-                entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
-                return
-            } else {
-                nextPosition = nextCell.toWorldPosition(mapTable)
-                return
+        if(!::path.isInitialized) {
+            path = generatePath(entity)
+            while(path.count == 0){
+                path = generatePath(entity)
             }
         }
 
-        //Else, move to the next position
-        val rotationAngle = MathUtils.atan2(nextPosition.y - entity.bodyComponent.body.position.y, nextPosition.x - entity.bodyComponent.body.position.x)
+        val nextCell = if(visitedCellCount < path.count) path[visitedCellCount].toNode else null
 
-        entity.currentWeapon.desiredRotationAngle = rotationAngle
-        entity.setOrientation(rotationAngle)
+        if(nextCell == null) {
+            //If there is no next position, rotate to check the area
+            val nextState = PeekState(MathUtils.random() * MathUtils.PI2)
+            entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, nextState))
+        } else {
+            val mapTable = entity.gameContext.getMapTable()
+            val nextPosition = nextCell.toWorldPosition(mapTable)
+
+            //Else, move to the next position
+            val rotationAngle = MathUtils.atan2(nextPosition.y - entity.bodyComponent.body.position.y, nextPosition.x - entity.bodyComponent.body.position.x)
+            entity.currentWeapon.desiredRotationAngle = rotationAngle
+            entity.setOrientation(rotationAngle)
+
+
+            if (withinBounds(entity.bodyComponent.body.position, nextPosition)){
+                visitedCellCount++
+            }
+        }
     }
 
-    private fun withinBounds(position: Vector2): Boolean{
-        return position.x >= nextPosition.x - CELL_OFFSET && position.x <= nextPosition.x + CELL_OFFSET
-                && position.y >= nextPosition.y - CELL_OFFSET && position.y <= nextPosition.y + CELL_OFFSET
+    private fun withinBounds(position: Vector2, targetPosition: Vector2): Boolean{
+        return position.x >= targetPosition.x - CELL_OFFSET && position.x <= targetPosition.x + CELL_OFFSET
+                && position.y >= targetPosition.y - CELL_OFFSET && position.y <= targetPosition.y + CELL_OFFSET
     }
 
     override fun exit(entity: EnemyTank) {
@@ -185,7 +187,7 @@ class ChaseState: EnemyTankState(){
         val target = entity.gameContext.getPlayer()
         val pathFinding = entity.gameContext.getPathFinding()
         if(!target.healthComponent.isAlive){
-            entity.stateMachine.changeState(WanderState)
+            entity.stateMachine.changeState(WanderState())
             return
         }
         //If it still remembers having seen the player, check if it's in range
@@ -212,7 +214,7 @@ class ChaseState: EnemyTankState(){
                 val nextPosition = pathFinding.findNextPosition(entity.bodyComponent.body.position, target.position)
                 if(nextPosition == null){
                     //Path is blocked or doesn't exist, keep wandering
-                    entity.stateMachine.changeState(WanderState)
+                    entity.stateMachine.changeState(WanderState())
                 }
                 else {
                     //Else, update position
@@ -227,7 +229,7 @@ class ChaseState: EnemyTankState(){
 
         } else{
             //Else keep wandering
-            val wanderState = WanderState
+            val wanderState = WanderState()
             entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, wanderState))
         }
 
@@ -246,7 +248,7 @@ object ShootState: EnemyTankState(){
         val target = entity.gameContext.getPlayer()
 
         if(!target.healthComponent.isAlive){
-            entity.stateMachine.changeState(WanderState)
+            entity.stateMachine.changeState(WanderState())
             return
         }
 

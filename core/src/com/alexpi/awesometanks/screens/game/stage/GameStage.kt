@@ -9,6 +9,7 @@ import com.alexpi.awesometanks.game.manager.ExplosionManager
 import com.alexpi.awesometanks.game.manager.RumbleManager
 import com.alexpi.awesometanks.game.map.MapLoader
 import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.map.createMap
 import com.alexpi.awesometanks.game.module.GameModule
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.alexpi.awesometanks.game.tanks.player.PlayerTank

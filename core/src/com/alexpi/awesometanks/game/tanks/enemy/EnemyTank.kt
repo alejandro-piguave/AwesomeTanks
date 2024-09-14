@@ -36,7 +36,7 @@ class EnemyTank(
     ROTATION_SPEED, MOVEMENT_SPEED, type.tier.color
 ), Telegraph {
 
-    val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState)
+    val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState())
     private val nuggetValue: Int
     private val weapon: Weapon = getWeaponAt(type.weapon, gameContext,1f, type.tier.power)
     override val currentWeapon: Weapon

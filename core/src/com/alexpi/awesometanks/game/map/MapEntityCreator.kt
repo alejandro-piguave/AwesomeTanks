@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.screens.game.stage
+package com.alexpi.awesometanks.game.map
 
 import com.alexpi.awesometanks.game.blocks.Box
 import com.alexpi.awesometanks.game.blocks.Bricks
@@ -7,13 +7,13 @@ import com.alexpi.awesometanks.game.blocks.Mine
 import com.alexpi.awesometanks.game.blocks.Spawner
 import com.alexpi.awesometanks.game.blocks.Turret
 import com.alexpi.awesometanks.game.blocks.Wall
-import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTier
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyType
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyWeapon
 import com.alexpi.awesometanks.game.tiles.Floor
 import com.alexpi.awesometanks.game.tiles.Shade
+import com.alexpi.awesometanks.screens.game.stage.GameStage
 
 
 fun GameStage.createMap() {
