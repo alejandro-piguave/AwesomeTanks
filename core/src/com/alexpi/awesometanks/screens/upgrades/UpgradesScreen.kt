@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.screens.upgrades
 
 import com.alexpi.awesometanks.MainGame
+import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.alexpi.awesometanks.screens.LevelScreen
 import com.alexpi.awesometanks.screens.MainScreen
@@ -8,10 +9,8 @@ import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.SCREEN_WIDTH
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.TRANSITION_DURATION
-import com.alexpi.awesometanks.game.weapons.Weapon
 import com.alexpi.awesometanks.screens.widget.GameButton
 import com.alexpi.awesometanks.screens.widget.Styles
-import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Sound
@@ -34,13 +33,11 @@ import ktx.actors.onClick
  * Created by Alex on 29/01/2016.
  */
 class UpgradesScreen(game: MainGame) : BaseScreen(game) {
-    private lateinit var stage: Stage
-    private lateinit var background: Texture
+    private val stage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
+    private val background: Texture = game.manager.get("sprites/background.png")
     private var currentWeapon = 0
     override fun show() {
         val purchaseSound = game.manager.get("sounds/purchase.ogg", Sound::class.java)
-        stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
-        background = game.manager.get("sprites/background.png")
         val table = Table()
         table.setFillParent(true)
         val performance = Table()
@@ -53,10 +50,10 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         moneyValue.money = game.gameValues.getInteger("money", 0)
 
         //Retrieving the current ammo, power and availability of each weapon
-        val weaponValues = Weapon.Type.values().map { weapon ->
-            val weaponPower = game.gameValues.getInteger("power${weapon.ordinal}", 0)
-            val weaponAmmo = game.gameValues.getFloat("ammo${weapon.ordinal}", 100f)
-            val isWeaponAvailable = game.gameValues.getBoolean("isWeaponAvailable${weapon.ordinal}", true)
+        val weaponValues = WeaponInfo.values().map { weapon ->
+            val weaponPower = game.gameValues.getInteger(weapon.powerKey, 0)
+            val weaponAmmo = game.gameValues.getFloat(weapon.ammoKey, 100f)
+            val isWeaponAvailable = game.gameValues.getBoolean(weapon.availabilityKey, true)
             WeaponValues(weaponPower, weaponAmmo, isWeaponAvailable)
         }
 
@@ -112,13 +109,13 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         }
 
 
-        val currentWeaponImage = ImageButton(getWeaponButtonStyle(0))
-        val currentWeaponName = Label(Weapon.Type.MINIGUN.name, Styles.getLabelStyleSmall(game.manager))
+        val currentWeaponImage = ImageButton(getWeaponButtonStyle(WeaponInfo.values()[currentWeapon]))
+        val currentWeaponName = Label(WeaponInfo.values()[currentWeapon].name, Styles.getLabelStyleSmall(game.manager))
 
         //Creates the button for upgrading the selected weapon power
         val weaponPower = UpgradeTable(
             game.manager, "Power", weaponValues[0].power.toFloat(), 5f,
-            if (weaponValues[0].power >= 5) 5 else Weapon.Type.MINIGUN.upgradePrices[weaponValues[0].power]
+            if (weaponValues[0].power >= 5) 5 else WeaponInfo.MINIGUN.upgradePrices[weaponValues[0].power]
         ).apply {
             if(isMaxValue) buyButton.isVisible = false
             buyButton.onClick {
@@ -130,7 +127,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
                     if (isMaxValue) {
                         buyButton.isVisible = false
                     } else {
-                        changePrice(Weapon.Type.values()[currentWeapon].upgradePrices[weaponValues[currentWeapon].power])
+                        changePrice(WeaponInfo.values()[currentWeapon].upgradePrices[weaponValues[currentWeapon].power])
                     }
                 }
             }
@@ -156,8 +153,8 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         }
 
         //Creates the row of weapon buttons at the bottom of the screen
-        val weaponButtons =  Weapon.Type.values().map { weapon ->
-            val weaponButton = ImageButton(getWeaponButtonStyle(weapon.ordinal)).apply {
+        val weaponButtons =  WeaponInfo.values().map { weapon ->
+            val weaponButton = ImageButton(getWeaponButtonStyle(weapon)).apply {
                 //Sets the availability of all the weapon buttons except for the minigun which is always available
                 if(weapon.ordinal > 0 ) isDisabled = !weaponValues[weapon.ordinal].isAvailable
                 onClick {
@@ -189,14 +186,13 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
                 }
             }
 
-            buttons.add(weaponButton).size(TILE_SIZE, TILE_SIZE).pad(
-                TILE_SIZE / 5)
+            buttons.add(weaponButton).size(TILE_SIZE, TILE_SIZE).pad(TILE_SIZE / 5)
             weaponButton
         }
 
         //Sets the click listener for the big weapon image button in the middle of the screen
         currentWeaponImage.onClick {
-            val currentGunPrice = Weapon.Type.values()[currentWeapon].price
+            val currentGunPrice = WeaponInfo.values()[currentWeapon].price
             if (weaponButtons[currentWeapon].isDisabled && (moneyValue.money - currentGunPrice) > 0) {
                 if (soundsOn) purchaseSound.play()
                 moneyValue.money -= currentGunPrice
@@ -243,10 +239,10 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
     }
 
     //Gets the button style for a specified weapon index
-    private fun getWeaponButtonStyle(index: Int): ImageButtonStyle {
+    private fun getWeaponButtonStyle(weaponInfo: WeaponInfo): ImageButtonStyle {
         val uiSkin = game.manager.get<Skin>("uiskin/uiskin.json")
-        val up = game.manager.get<Texture>("icons/icon_${index}.png")
-        val disabled = game.manager.get<Texture>("icons/icon_disabled_${index}.png")
+        val up = game.manager.get<Texture>(weaponInfo.enabledIconPath)
+        val disabled = game.manager.get<Texture>(weaponInfo.disabledIconPath)
         val style = ImageButtonStyle(uiSkin.get(ButtonStyle::class.java))
         style.imageUp = TextureRegionDrawable(TextureRegion(up))
         style.imageDisabled = TextureRegionDrawable(TextureRegion(disabled))

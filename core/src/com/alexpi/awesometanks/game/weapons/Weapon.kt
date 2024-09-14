@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.game.weapons
 
-import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.game.module.Settings.soundsOn
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -138,14 +138,14 @@ abstract class Weapon(
         this.ammo = ammo
     }
 
-    enum class Type(val price: Int, val ammoPrice: Int, val upgradePrices: List<Int>){
-        MINIGUN(0, 0, listOf(200, 300, 400, 500, 600)),
-        SHOTGUN(2750, 100, listOf(500, 900, 1300, 1700, 2100)),
-        RICOCHET(8000, 200, listOf(2500, 3000, 3500, 4000, 4500)),
-        FLAMETHROWER(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
-        CANNON(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
-        ROCKETS(10000, 300, listOf(3000, 4000, 5000, 6000, 7000)),
-        LASERGUN(28000, 400, listOf(11000, 12000, 13000, 14000, 15000)),
-        RAILGUN(28000, 400, listOf(11000, 12000, 13000, 14000, 15000))
+    enum class Type{
+        MINIGUN,
+        SHOTGUN,
+        RICOCHET,
+        FLAMETHROWER,
+        CANNON,
+        ROCKETS,
+        LASERGUN,
+        RAILGUN
     }
 }
