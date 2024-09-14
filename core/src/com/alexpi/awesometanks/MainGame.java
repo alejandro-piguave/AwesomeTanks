@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks;
 
+import com.alexpi.awesometanks.data.GameRepository;
 import com.alexpi.awesometanks.screens.MainScreen;
 import com.alexpi.awesometanks.game.weapons.Weapon;
 import com.alexpi.awesometanks.game.module.Settings;
@@ -24,7 +25,7 @@ public class MainGame extends Game {
 
     private AssetManager manager;
     private Preferences gameSettings;
-    private Preferences gameValues;
+    private GameRepository gameRepository;
 
     @Override
     public void create() {
@@ -119,7 +120,8 @@ public class MainGame extends Game {
         manager.finishLoading();
 
         gameSettings = Gdx.app.getPreferences("settings");
-        gameValues = Gdx.app.getPreferences("values");
+        Preferences gameValues = Gdx.app.getPreferences("values");
+        gameRepository = new GameRepository(gameValues);
 
         boolean soundsOn = gameSettings.getBoolean("areSoundsActivated", true);
         Settings.INSTANCE.setSoundsOn(soundsOn);
@@ -194,7 +196,7 @@ public class MainGame extends Game {
         return gameSettings;
     }
 
-    public Preferences getGameValues() {
-        return gameValues;
+    public GameRepository getGameRepository() {
+        return gameRepository;
     }
 }

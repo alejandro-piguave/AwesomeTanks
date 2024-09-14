@@ -52,7 +52,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
 
     private fun addLevelButtons(table: Table) {
         for (i in 0 until LEVEL_COUNT) {
-            val isLevelUnlocked = game.gameValues.getBoolean("unlocked$i") || i == 0
+            val isLevelUnlocked = game.gameRepository.isLevelAvailable(i)|| i == 0
             val levelButton = GameButton(game.manager, (i + 1).toString()) {
                 if (isLevelUnlocked) stage.addAction(
                     Actions.sequence(

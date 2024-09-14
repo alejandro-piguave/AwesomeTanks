@@ -1,6 +1,6 @@
 package com.alexpi.awesometanks.screens.upgrades
 
-enum class WeaponInfo(val powerKey: String, val ammoKey: String, val availabilityKey: String, val enabledIconPath: String, val disabledIconPath: String, val price: Int, val ammoPrice: Int, val upgradePrices: List<Int>){
+enum class WeaponUpgrade(val powerKey: String, val ammoKey: String, val availabilityKey: String, val enabledIconPath: String, val disabledIconPath: String, val price: Int, val ammoPrice: Int, val upgradePrices: List<Int>){
     MINIGUN("power0", "ammo", "isWeaponAvailable0", "icons/icon_0.png", "icons/icon_disabled_0.png",0, 0, listOf(200, 300, 400, 500, 600)),
     SHOTGUN( "power1", "ammo1", "isWeaponAvailable1", "icons/icon_1.png", "icons/icon_disabled_1.png",2750, 100, listOf(500, 900, 1300, 1700, 2100)),
     RICOCHET("power2", "ammo2", "isWeaponAvailable2", "icons/icon_2.png", "icons/icon_disabled_2.png",8000, 200, listOf(2500, 3000, 3500, 4000, 4500)),

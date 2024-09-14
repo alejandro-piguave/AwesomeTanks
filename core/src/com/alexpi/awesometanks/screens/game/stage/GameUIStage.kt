@@ -2,8 +2,8 @@ package com.alexpi.awesometanks.screens.game.stage
 
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
 import com.alexpi.awesometanks.screens.game.menu.WeaponMenu
-import com.alexpi.awesometanks.screens.game.widget.AmmoBar
 import com.alexpi.awesometanks.screens.game.widget.ProfitLabel
+import com.alexpi.awesometanks.screens.widget.FloatProgressBar
 import com.alexpi.awesometanks.screens.widget.GameButton
 import com.alexpi.awesometanks.screens.widget.Styles
 import com.badlogic.gdx.Application
@@ -20,7 +20,7 @@ import ktx.actors.alpha
 import ktx.actors.onClick
 
 class GameUIStage(viewport: Viewport, assetManager: AssetManager): Stage(viewport) {
-    val ammoBar: AmmoBar = AmmoBar(assetManager)
+    val ammoBar: FloatProgressBar = FloatProgressBar(assetManager, 100f, 100f)
     val money = ProfitLabel(assetManager)
     val weaponMenu = WeaponMenu(assetManager,)
     val pauseButton: GameButton = GameButton(assetManager, "Pause")

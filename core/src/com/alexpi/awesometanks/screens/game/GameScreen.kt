@@ -2,9 +2,8 @@ package com.alexpi.awesometanks.screens.game
 
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.game.utils.fastHypot
-import com.alexpi.awesometanks.game.weapons.Weapon
 import com.alexpi.awesometanks.game.module.Settings
+import com.alexpi.awesometanks.game.utils.fastHypot
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.alexpi.awesometanks.screens.LevelScreen
 import com.alexpi.awesometanks.screens.SCREEN_HEIGHT
@@ -17,6 +16,7 @@ import com.alexpi.awesometanks.screens.game.stage.GameListener
 import com.alexpi.awesometanks.screens.game.stage.GameStage
 import com.alexpi.awesometanks.screens.game.stage.GameUIStage
 import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
+import com.alexpi.awesometanks.screens.upgrades.WeaponUpgrade
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -56,12 +56,12 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     override fun show() {
-        gameStage = GameStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), level, game.manager,  game.gameValues,this)
+        gameStage = GameStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), level, game.manager,  game.gameRepository,this)
         gameStage.player.onMoneyUpdated = { money ->
             uiStage.money.profit = money
         }
         gameStage.player.onWeaponAmmoUpdated = { ammo ->
-            uiStage.ammoBar.value = ammo
+            uiStage.ammoBar.currentValue = ammo
         }
         createUIStage()
         Gdx.input.inputProcessor = createInputProcessor()
@@ -71,7 +71,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     private fun createUIStage() {
         uiStage = GameUIStage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT), game.manager)
         uiStage.pauseButton.onClickListener = { showPauseMenu() }
-        uiStage.weaponMenu.buttonsEnabled =  Weapon.Type.values().indices.map { it == 0 || game.gameValues.getBoolean("isWeaponAvailable$it",false) }
+        uiStage.weaponMenu.buttonsEnabled =  WeaponUpgrade.values().map { it == WeaponUpgrade.MINIGUN || game.gameRepository.isWeaponAvailable(it) }
         uiStage.weaponMenu.onWeaponClick = this::onWeaponUpdated
         uiStage.onWeaponMenuButtonClick = { gameStage.isPaused = !gameStage.isPaused }
         uiStage.onMovementKnobTouch = { isTouched, knobPercentX, knobPercentY ->
@@ -116,11 +116,9 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun saveProgress(unlockNextLevel: Boolean = false) {
-        if (unlockNextLevel) game.gameValues.putBoolean("unlocked" + (level+1), true)
-        gameStage.player.saveProgress(game.gameValues)
-        val savedMoney = game.gameValues.getInteger("money")
-        game.gameValues.putInteger("money",savedMoney + gameStage.player.money)
-        game.gameValues.flush()
+        if (unlockNextLevel) game.gameRepository.unlockLevel(level+1)
+        gameStage.player.saveProgress(game.gameRepository)
+        game.gameRepository.updateMoney(gameStage.player.money)
     }
 
     private fun showLevelFailedMenu() {

@@ -14,7 +14,6 @@ object GameModule {
     private var _world: World? = null
     private var _mapTable: MapTable? = null
     private var _pathFinding: PathFinding? = null
-    private var gameValues: Preferences? = null
     private var _player: Player? = null
 
     var mapTable: MapTable
@@ -33,11 +32,6 @@ object GameModule {
     var world: World get() = _world!!
         set(value) { _world = value }
 
-    fun getGameValues(): Preferences = gameValues!!
-
-    fun set(gameValues: Preferences){
-        GameModule.gameValues = gameValues
-    }
 
     //Calling this method when disposing the GameRenderer is very important to avoid memory leaks
     fun dispose(){
@@ -45,7 +39,6 @@ object GameModule {
         _world = null
         _mapTable = null
         _pathFinding = null
-        gameValues = null
         _player = null
     }
 }

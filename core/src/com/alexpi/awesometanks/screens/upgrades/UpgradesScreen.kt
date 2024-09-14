@@ -47,38 +47,30 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         //Money label
         val moneyValue = MoneyValue(0)
         val moneyLabel = MoneyLabel(game.manager, moneyValue)
-        moneyValue.money = game.gameValues.getInteger("money", 0)
+        moneyValue.money = game.gameRepository.getMoney()
 
         //Retrieving the current ammo, power and availability of each weapon
-        val weaponValues = WeaponInfo.values().map { weapon ->
-            val weaponPower = game.gameValues.getInteger(weapon.powerKey, 0)
-            val weaponAmmo = game.gameValues.getFloat(weapon.ammoKey, 100f)
-            val isWeaponAvailable = game.gameValues.getBoolean(weapon.availabilityKey, true)
-            WeaponValues(weaponPower, weaponAmmo, isWeaponAvailable)
-        }
+        val weaponValues = WeaponUpgrade.values().map { game.gameRepository.getWeaponValues(it) }
 
         //Creates the sections for upgrading the tanks armor, rotation speed, movement speed and visibility
-        val upgradeTables = UpgradeType.values().map { upgradeType ->
-            val value = game.gameValues.getInteger(upgradeType.name)
+        val upgradeTables = PerformanceUpgrade.values().map { upgradeType ->
+            val value = game.gameRepository.getUpgradeLevel(upgradeType)
             val upgradeTable =
-                UpgradeTable(
+                IntUpgradeTable(
                     game.manager,
                     upgradeType.name,
-                    value.toFloat(),
-                    5f,
+                    value,
+                    upgradeType.prices.size,
                     if (value == 5) 1000 else upgradeType.prices[value]
                 )
-            upgradeTable.buyButton.onClick {
+            upgradeTable.onBuyClick = {
                 if (upgradeTable.canBuy(moneyValue.money)) {
                     if (soundsOn) purchaseSound.play()
-                    upgradeTable.increaseValue(1)
-                    val upgradeValue = upgradeTable.value
-                    moneyValue.money -= upgradeTable.price
-                    if (upgradeTable.isMaxValue) upgradeTable.buyButton.isVisible = false
-                    else upgradeTable.changePrice(upgradeType.prices[upgradeValue])
+                    upgradeTable.upgradeLevel += 1
+                    moneyValue.money -= upgradeTable.upgradePrice
+                    if (!upgradeTable.isMaxLevel) upgradeTable.upgradePrice = upgradeType.prices[upgradeTable.upgradeLevel]
                 }
             }
-            if (upgradeTable.isMaxValue) upgradeTable.buyButton.isVisible = false
             upgradeTable
         }
         //Creates the back button
@@ -91,14 +83,13 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
 
         //Creates the next button
         val nextButton = GameButton(game.manager, "Next") {
-            for (p: UpgradeTable in upgradeTables) game.gameValues.putInteger(p.name, p.value)
-            weaponValues.forEachIndexed { index, values ->
-                game.gameValues.putInteger("power$index", values.power)
-                game.gameValues.putFloat("ammo$index", values.ammo)
-                game.gameValues.putBoolean("isWeaponAvailable$index", values.isAvailable)
+            PerformanceUpgrade.values().forEachIndexed{ index, upgradeType ->
+                game.gameRepository.saveUpgradeLevel(upgradeType, upgradeTables[index].upgradeLevel)
             }
-            game.gameValues.putInteger("money", moneyValue.money)
-            game.gameValues.flush()
+            WeaponUpgrade.values().forEachIndexed { index, weaponType ->
+                game.gameRepository.saveWeaponValues(weaponType, weaponValues[index])
+            }
+            game.gameRepository.saveMoney(moneyValue.money)
             stage.addAction(
                 Actions.sequence(
                     Actions.fadeOut(TRANSITION_DURATION), Actions.run {
@@ -109,26 +100,21 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
         }
 
 
-        val currentWeaponImage = ImageButton(getWeaponButtonStyle(WeaponInfo.values()[currentWeapon]))
-        val currentWeaponName = Label(WeaponInfo.values()[currentWeapon].name, Styles.getLabelStyleSmall(game.manager))
+        val currentWeaponImage = ImageButton(getWeaponButtonStyle(WeaponUpgrade.values()[currentWeapon]))
+        val currentWeaponName = Label(WeaponUpgrade.values()[currentWeapon].name, Styles.getLabelStyleSmall(game.manager))
 
         //Creates the button for upgrading the selected weapon power
-        val weaponPower = UpgradeTable(
-            game.manager, "Power", weaponValues[0].power.toFloat(), 5f,
-            if (weaponValues[0].power >= 5) 5 else WeaponInfo.MINIGUN.upgradePrices[weaponValues[0].power]
+        val weaponPower = IntUpgradeTable(
+            game.manager, "Power", weaponValues[0].power,  WeaponUpgrade.values()[currentWeapon].upgradePrices.size,
+            if (weaponValues[currentWeapon].power >= 5) 5 else WeaponUpgrade.values()[currentWeapon].upgradePrices[weaponValues[0].power]
         ).apply {
-            if(isMaxValue) buyButton.isVisible = false
-            buyButton.onClick {
+            onBuyClick =  {
                 if (canBuy(moneyValue.money) && !currentWeaponImage.isDisabled) {
                     if (soundsOn) purchaseSound.play()
-                    increaseValue(1)
-                    weaponValues[currentWeapon].power = value
-                    moneyValue.money -= price
-                    if (isMaxValue) {
-                        buyButton.isVisible = false
-                    } else {
-                        changePrice(WeaponInfo.values()[currentWeapon].upgradePrices[weaponValues[currentWeapon].power])
-                    }
+                    moneyValue.money -= upgradePrice
+                    weaponValues[currentWeapon].power = upgradeLevel
+                    upgradeLevel += 1
+                    if (!isMaxLevel) upgradePrice = (WeaponUpgrade.values()[currentWeapon].upgradePrices[weaponValues[currentWeapon].power])
                 }
             }
         }
@@ -142,32 +128,29 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
             100
         ).apply {
             isVisible = false
-            buyButton.onClick {
+            onBuyClick = {
                 if (canBuy(moneyValue.money) && !currentWeaponImage.isDisabled) {
                     if (soundsOn) purchaseSound.play()
-                    increaseValue(20)
-                    weaponValues[currentWeapon].ammo = value.toFloat()
-                    moneyValue.money -= price
+                    upgradeLevel += 20
+                    weaponValues[currentWeapon].ammo = upgradeLevel.toFloat()
+                    moneyValue.money -= upgradePrice
                 }
             }
         }
 
         //Creates the row of weapon buttons at the bottom of the screen
-        val weaponButtons =  WeaponInfo.values().map { weapon ->
+        val weaponButtons =  WeaponUpgrade.values().map { weapon ->
             val weaponButton = ImageButton(getWeaponButtonStyle(weapon)).apply {
                 //Sets the availability of all the weapon buttons except for the minigun which is always available
                 if(weapon.ordinal > 0 ) isDisabled = !weaponValues[weapon.ordinal].isAvailable
                 onClick {
                     currentWeapon = weapon.ordinal
-                    weaponPower.setValue(weaponValues[currentWeapon].power.toFloat())
-                    if (weaponPower.isMaxValue) {
-                        weaponPower.buyButton.isVisible = false
-                    } else {
-                        weaponPower.changePrice(weapon.upgradePrices[weaponValues[currentWeapon].power])
-                        weaponPower.buyButton.isVisible = true
+                    weaponPower.upgradeLevel = weaponValues[currentWeapon].power
+                    if (!weaponPower.isMaxLevel) {
+                        weaponPower.upgradePrice = weapon.upgradePrices[weaponValues[currentWeapon].power]
                     }
-                    weaponAmmo.setValue(weaponValues[currentWeapon].ammo)
-                    weaponAmmo.changePrice(weapon.ammoPrice)
+                    weaponAmmo.upgradeLevel = weaponValues[currentWeapon].ammo
+                    weaponAmmo.upgradePrice = weapon.ammoPrice
                     currentWeaponImage.style = style
                     if (isDisabled) {
                         weaponAmmo.isVisible = false
@@ -192,7 +175,7 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
 
         //Sets the click listener for the big weapon image button in the middle of the screen
         currentWeaponImage.onClick {
-            val currentGunPrice = WeaponInfo.values()[currentWeapon].price
+            val currentGunPrice = WeaponUpgrade.values()[currentWeapon].price
             if (weaponButtons[currentWeapon].isDisabled && (moneyValue.money - currentGunPrice) > 0) {
                 if (soundsOn) purchaseSound.play()
                 moneyValue.money -= currentGunPrice
@@ -239,10 +222,10 @@ class UpgradesScreen(game: MainGame) : BaseScreen(game) {
     }
 
     //Gets the button style for a specified weapon index
-    private fun getWeaponButtonStyle(weaponInfo: WeaponInfo): ImageButtonStyle {
+    private fun getWeaponButtonStyle(weaponUpgrade: WeaponUpgrade): ImageButtonStyle {
         val uiSkin = game.manager.get<Skin>("uiskin/uiskin.json")
-        val up = game.manager.get<Texture>(weaponInfo.enabledIconPath)
-        val disabled = game.manager.get<Texture>(weaponInfo.disabledIconPath)
+        val up = game.manager.get<Texture>(weaponUpgrade.enabledIconPath)
+        val disabled = game.manager.get<Texture>(weaponUpgrade.disabledIconPath)
         val style = ImageButtonStyle(uiSkin.get(ButtonStyle::class.java))
         style.imageUp = TextureRegionDrawable(TextureRegion(up))
         style.imageDisabled = TextureRegionDrawable(TextureRegion(disabled))

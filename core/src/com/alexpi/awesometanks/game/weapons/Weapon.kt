@@ -2,6 +2,7 @@ package com.alexpi.awesometanks.game.weapons
 
 import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.alexpi.awesometanks.screens.game.stage.GameContext
+import com.alexpi.awesometanks.screens.upgrades.WeaponUpgrade
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
@@ -112,7 +113,26 @@ abstract class Weapon(
 
     companion object {
         fun getWeaponAt(
-            type: Type,
+            type: WeaponUpgrade,
+            gameContext: GameContext,
+            ammo: Float,
+            power: Int,
+            isPlayer: Boolean,
+            rocketListener: RocketListener? = null
+        ): Weapon {
+            return when (type) {
+                WeaponUpgrade.MINIGUN -> MiniGun(gameContext, ammo, power, isPlayer)
+                WeaponUpgrade.SHOTGUN -> ShotGun(gameContext, ammo, power, isPlayer)
+                WeaponUpgrade.RICOCHET -> Ricochet(gameContext, ammo, power, isPlayer)
+                WeaponUpgrade.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, isPlayer)
+                WeaponUpgrade.CANNON -> Cannon(gameContext, ammo, power, isPlayer)
+                WeaponUpgrade.ROCKETS -> RocketLauncher(gameContext, ammo, power, isPlayer, rocketListener)
+                WeaponUpgrade.LASERGUN -> LaserGun(gameContext, ammo, power, isPlayer)
+                WeaponUpgrade.RAILGUN -> RailGun(gameContext, ammo, power, isPlayer)
+            }
+        }
+        fun getWeaponAt(
+            type: Weapon.Type,
             gameContext: GameContext,
             ammo: Float,
             power: Int,

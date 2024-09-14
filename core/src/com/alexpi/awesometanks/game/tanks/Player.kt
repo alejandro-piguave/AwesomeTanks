@@ -1,21 +1,22 @@
 package com.alexpi.awesometanks.game.tanks
 
-import com.alexpi.awesometanks.game.components.health.HealthOwner
+import com.alexpi.awesometanks.data.GameRepository
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
+import com.alexpi.awesometanks.game.components.health.HealthOwner
 import com.alexpi.awesometanks.game.items.FreezingBall
 import com.alexpi.awesometanks.game.items.GoldNugget
 import com.alexpi.awesometanks.game.items.HealthPack
 import com.alexpi.awesometanks.game.items.Item
 import com.alexpi.awesometanks.game.map.MapTable
-import com.alexpi.awesometanks.screens.TILE_SIZE
-import com.alexpi.awesometanks.screens.game.stage.GameContext
-import com.alexpi.awesometanks.screens.game.stage.GameStage
-import com.alexpi.awesometanks.screens.upgrades.UpgradeType
 import com.alexpi.awesometanks.game.weapons.RocketLauncher
 import com.alexpi.awesometanks.game.weapons.RocketListener
 import com.alexpi.awesometanks.game.weapons.Weapon
+import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.screens.game.stage.GameContext
+import com.alexpi.awesometanks.screens.game.stage.GameStage
+import com.alexpi.awesometanks.screens.upgrades.PerformanceUpgrade
+import com.alexpi.awesometanks.screens.upgrades.WeaponUpgrade
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -25,8 +26,8 @@ class Player(gameContext: GameContext) : Tank(
     gameContext, Vector2(-1f, -1f), FixtureFilter.PLAYER, .75f,
     500f,
     false,
-    .07f + gameContext.getGameValues().getInteger(UpgradeType.ROTATION.name) / 40f,
-    150 + gameContext.getGameValues().getInteger(UpgradeType.SPEED.name) * 10f,
+    .07f + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.ROTATION) / 40f,
+    150 + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.SPEED) * 10f,
     Color.WHITE
 ), RocketListener {
 
@@ -35,8 +36,8 @@ class Player(gameContext: GameContext) : Tank(
     private val entityGroup = gameContext.getEntityGroup()
     private val blockGroup = gameContext.getBlockGroup()
     private val visibilityRadius =
-        2 + gameContext.getGameValues().getInteger(UpgradeType.VISIBILITY.name)
-    private val armor = gameContext.getGameValues().getInteger(UpgradeType.ARMOR.name)
+        2 + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.VISIBILITY)
+    private val armor = gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.ARMOR)
 
     val position: Vector2
         get() = bodyComponent.body.position
@@ -56,10 +57,9 @@ class Player(gameContext: GameContext) : Tank(
             currentWeapon.onAmmoUpdated = onWeaponAmmoUpdated
         }
 
-    private val weapons: List<Weapon> = Weapon.Type.values().map {
-        val weaponAmmo = gameContext.getGameValues().getFloat("ammo${it.ordinal}")
-        val weaponPower = gameContext.getGameValues().getInteger("power${it.ordinal}")
-        Weapon.getWeaponAt(it, gameContext, weaponAmmo, weaponPower, true, this)
+    private val weapons: List<Weapon> = WeaponUpgrade.values().map {
+        val weaponValues = gameContext.getGameRepository().getWeaponValues(it)
+        Weapon.getWeaponAt(it, gameContext, weaponValues.ammo, weaponValues.power, true, this)
     }
 
     //Used for keys
@@ -102,8 +102,8 @@ class Player(gameContext: GameContext) : Tank(
         bodyComponent.body.setTransform(position.add(.5f, .5f), bodyComponent.body.angle)
     }
 
-    fun saveProgress(gameValues: Preferences) {
-        for (i in weapons.indices) gameValues.putFloat("ammo$i", weapons[i].ammo)
+    fun saveProgress(gameRepository: GameRepository) {
+        WeaponUpgrade.values().forEachIndexed { i, weapon -> gameRepository.saveAmmo(weapon, weapons[i].ammo)  }
     }
 
     private fun updateVisibleArea() {

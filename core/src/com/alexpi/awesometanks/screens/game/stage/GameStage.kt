@@ -1,17 +1,17 @@
 package com.alexpi.awesometanks.screens.game.stage
 
-import com.alexpi.awesometanks.game.manager.RumbleManager
+import com.alexpi.awesometanks.data.GameRepository
 import com.alexpi.awesometanks.game.ai.PathFinding
 import com.alexpi.awesometanks.game.blocks.Spawner
 import com.alexpi.awesometanks.game.blocks.Turret
-import com.alexpi.awesometanks.game.tanks.EnemyTank
-import com.alexpi.awesometanks.game.tanks.Player
-import com.alexpi.awesometanks.game.map.MapLoader
-import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.manager.ContactManager
 import com.alexpi.awesometanks.game.manager.ExplosionManager
+import com.alexpi.awesometanks.game.manager.RumbleManager
+import com.alexpi.awesometanks.game.map.MapLoader
+import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.module.GameModule
-import com.badlogic.gdx.Preferences
+import com.alexpi.awesometanks.game.tanks.EnemyTank
+import com.alexpi.awesometanks.game.tanks.Player
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
 
-class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManager, val gameValues: Preferences, private val gameListener: GameListener): Stage(viewport) {
+class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManager, val gameRepository: GameRepository, private val gameListener: GameListener): Stage(viewport) {
 
     val mapTable: MapTable = MapTable(MapLoader.load(level))
     private val pathFinding: PathFinding
@@ -42,7 +42,6 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
     init {
         GameModule.world = world
         GameModule.assetManager = assetManager
-        GameModule.set(gameValues)
         GameModule.mapTable = mapTable
 
         pathFinding = PathFinding(mapTable)
