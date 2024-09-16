@@ -26,6 +26,7 @@ import com.alexpi.awesometanks.screens.upgrades.PerformanceUpgrade
 import com.alexpi.awesometanks.screens.upgrades.WeaponUpgrade
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import kotlin.math.abs
@@ -34,7 +35,6 @@ class PlayerTank(gameContext: GameContext) : Tank(
     gameContext, Vector2(-1f, -1f), FixtureFilter.PLAYER, .75f,
     500f,
     false,
-    .07f + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.ROTATION) / 40f,
     150 + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.SPEED) * 10f,
     Color.WHITE
 ), RocketListener {
@@ -67,7 +67,9 @@ class PlayerTank(gameContext: GameContext) : Tank(
 
     private val weapons: List<Weapon> = WeaponUpgrade.values().map {
         val weaponValues = gameContext.getGameRepository().getWeaponValues(it)
-        getWeaponAt(it, gameContext, weaponValues.ammo, weaponValues.power)
+        val rotationSpeed = 4.2f + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.ROTATION) * 1.5f
+
+        getWeaponAt(it, gameContext, weaponValues.ammo, weaponValues.power, rotationSpeed)
     }
 
     //Used for keys
@@ -103,7 +105,9 @@ class PlayerTank(gameContext: GameContext) : Tank(
         if (isRocketActive) {
             val rocketLauncher = weapons[WeaponUpgrade.ROCKETS.ordinal] as RocketLauncher
             rocketLauncher.rocket?.updateOrientation(x, y)
-        } else currentWeapon.setDesiredRotationAngleFrom(x, y)
+        } else {
+            currentWeapon.desiredRotationAngle = MathUtils.atan2(y,x)
+        }
     }
 
     fun setPosition(position: Vector2) {
@@ -260,17 +264,18 @@ class PlayerTank(gameContext: GameContext) : Tank(
         type: WeaponUpgrade,
         gameContext: GameContext,
         ammo: Float,
-        power: Int
+        power: Int,
+        rotationSpeed: Float
     ): Weapon {
         return when (type) {
-            WeaponUpgrade.MINIGUN -> MiniGun(gameContext, ammo, power, true)
-            WeaponUpgrade.SHOTGUN -> ShotGun(gameContext, ammo, power, true)
-            WeaponUpgrade.RICOCHET -> Ricochet(gameContext, ammo, power, true)
-            WeaponUpgrade.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, true)
-            WeaponUpgrade.CANNON -> Cannon(gameContext, ammo, power, true)
-            WeaponUpgrade.ROCKETS -> RocketLauncher(gameContext, ammo, power, true, this)
-            WeaponUpgrade.LASERGUN -> LaserGun(gameContext, ammo, power, true)
-            WeaponUpgrade.RAILGUN -> RailGun(gameContext, ammo, power, true)
+            WeaponUpgrade.MINIGUN -> MiniGun(gameContext, ammo, power, true, rotationSpeed)
+            WeaponUpgrade.SHOTGUN -> ShotGun(gameContext, ammo, power, true, rotationSpeed)
+            WeaponUpgrade.RICOCHET -> Ricochet(gameContext, ammo, power, true, rotationSpeed)
+            WeaponUpgrade.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, true, rotationSpeed)
+            WeaponUpgrade.CANNON -> Cannon(gameContext, ammo, power, true, rotationSpeed)
+            WeaponUpgrade.ROCKETS -> RocketLauncher(gameContext, ammo, power, true, rotationSpeed,this)
+            WeaponUpgrade.LASERGUN -> LaserGun(gameContext, ammo, power, true, rotationSpeed)
+            WeaponUpgrade.RAILGUN -> RailGun(gameContext, ammo, power, true, rotationSpeed)
         }
     }
 

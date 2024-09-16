@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 /**
  * Created by Alex on 04/01/2016.
  */
-class Flamethrower(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) : Weapon(
+class Flamethrower(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean, rotationSpeed: Float) : Weapon(
     gameContext,
     "weapons/flamethrower.png",
     "sounds/flamethrower.ogg",
@@ -16,7 +16,8 @@ class Flamethrower(gameContext: GameContext, ammo: Float, power: Int, filter: Bo
     power,
     filter,
     .4f,
-    .7f
+    rotationSpeed,
+    .7f,
 ) {
     override fun createProjectile(group: Group, position: Vector2) {
         group.addActor(Flame(gameContext, position, currentRotationAngle, 2f + power, isPlayer))

@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 /**
  * Created by Alex on 04/01/2016.
  */
-class ShotGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) :
-    Weapon(gameContext,"weapons/shotgun.png", "sounds/shotgun.ogg", ammo, power, filter, 1f) {
+class ShotGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean, rotationSpeed: Float) :
+    Weapon(gameContext,"weapons/shotgun.png", "sounds/shotgun.ogg", ammo, power, filter, 1f, rotationSpeed, 1f) {
     override fun createProjectile(group: Group, position: Vector2) {
         repeat(10){
             val delta = RandomUtils.getRandomFloat(SHOOTING_ANGLE * 2) - SHOOTING_ANGLE

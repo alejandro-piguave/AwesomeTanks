@@ -32,8 +32,7 @@ class EnemyTank(
     position: Vector2,
     type: EnemyType) : Tank(gameContext, position, FixtureFilter.ENEMY_TANK, type.tier.size,
     type.getHealth(),
-    true,
-    ROTATION_SPEED, MOVEMENT_SPEED, type.tier.color
+    true, MOVEMENT_SPEED, type.tier.color
 ), Telegraph {
 
     val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState())
@@ -67,19 +66,19 @@ class EnemyTank(
         rocketListener: RocketListener? = null
     ): Weapon {
         return when (type) {
-            EnemyWeapon.MINIGUN -> MiniGun(gameContext, ammo, power, false)
-            EnemyWeapon.SHOTGUN -> ShotGun(gameContext, ammo, power, false)
-            EnemyWeapon.RICOCHET -> Ricochet(gameContext, ammo, power, false)
-            EnemyWeapon.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, false)
-            EnemyWeapon.CANNON -> Cannon(gameContext, ammo, power, false)
-            EnemyWeapon.ROCKETS -> RocketLauncher(gameContext, ammo, power, false, rocketListener)
-            EnemyWeapon.LASERGUN -> LaserGun(gameContext, ammo, power, false)
-            EnemyWeapon.RAILGUN -> RailGun(gameContext, ammo, power, false)
+            EnemyWeapon.MINIGUN -> MiniGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.SHOTGUN -> ShotGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.RICOCHET -> Ricochet(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.CANNON -> Cannon(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.ROCKETS -> RocketLauncher(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED, rocketListener)
+            EnemyWeapon.LASERGUN -> LaserGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.RAILGUN -> RailGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
         }
     }
 
     companion object {
-        private const val ROTATION_SPEED = .035f
+        private const val WEAPON_ROTATION_SPEED = .035f
         private const val MOVEMENT_SPEED = 60f
 
     }

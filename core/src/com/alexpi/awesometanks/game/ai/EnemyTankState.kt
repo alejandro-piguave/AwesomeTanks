@@ -263,7 +263,7 @@ object ShootState: EnemyTankState(){
                 //If the player is in range and visible, aim and keep shooting
                 val rotationAngle = MathUtils.atan2(deltaY, deltaX)
                 entity.currentWeapon.desiredRotationAngle = rotationAngle
-                entity.isShooting = true
+                entity.currentWeapon.isShooting = true
                 return
             }
         }
@@ -274,7 +274,7 @@ object ShootState: EnemyTankState(){
     }
 
     override fun exit(entity: EnemyTank) {
-        entity.isShooting = false
+        entity.currentWeapon.isShooting = false
     }
 
     //Ignore damage when chasing

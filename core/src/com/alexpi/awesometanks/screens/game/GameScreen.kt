@@ -81,8 +81,8 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
             if (isTouched && (abs(knobPercentX) > .2f || abs(knobPercentY) > .2f)) {
                 gameStage.setRotationInput(knobPercentY,knobPercentY)
                 val distanceFromCenter = fastHypot(knobPercentY.toDouble(), knobPercentY.toDouble()).toFloat()
-                gameStage.playerTank.isShooting = distanceFromCenter > 0.95f && !gameStage.isLevelCompleted
-            } else gameStage.playerTank.isShooting = false
+                gameStage.playerTank.currentWeapon.isShooting = distanceFromCenter > 0.95f && !gameStage.isLevelCompleted
+            } else gameStage.playerTank.currentWeapon.isShooting = false
             true
         }
     }
@@ -196,7 +196,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     //EVENTS FOR DESKTOP
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameStage.playerTank.isShooting = !gameStage.isLevelCompleted
+            gameStage.playerTank.currentWeapon.isShooting = !gameStage.isLevelCompleted
             return true
         }
         return false
@@ -215,7 +215,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            gameStage.playerTank.isShooting = false
+            gameStage.playerTank.currentWeapon.isShooting = false
             return true
         }
         return false

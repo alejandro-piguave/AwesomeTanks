@@ -13,7 +13,7 @@ import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.BodyDef
@@ -32,15 +32,12 @@ abstract class Tank(
     bodySize: Float,
     maxHealth: Float,
     isFreezable: Boolean,
-    private val rotationSpeed: Float,
     private val movementSpeed: Float,
     tankColor: Color
 ) : Actor(), HealthOwner {
 
-    private val bodySprite: Sprite =
-        Sprite(gameContext.getAssetManager().get("sprites/tank_body.png", Texture::class.java))
-    private val wheelsSprite: Sprite =
-        Sprite(gameContext.getAssetManager().get("sprites/tank_wheels.png", Texture::class.java))
+    private val bodySprite = TextureRegion(gameContext.getAssetManager().get("sprites/tank_body.png", Texture::class.java))
+    private val wheelsSprite = TextureRegion(gameContext.getAssetManager().get("sprites/tank_wheels.png", Texture::class.java))
 
     private val entityGroup = gameContext.getEntityGroup()
 
@@ -76,7 +73,6 @@ abstract class Tank(
             else value
         }
     val isMoving: Boolean get() = !movementVector.isZero
-    var isShooting = false
     private val movementVector: Vector2 = Vector2()
 
     abstract val currentWeapon: Weapon
@@ -107,6 +103,7 @@ abstract class Tank(
         super.act(delta)
         healthComponent.update(this, delta)
         healthBarComponent.updatePosition(this)
+
         if (isMoving) {
             updateAngleRotation()
             bodyComponent.body.setLinearVelocity(
@@ -118,11 +115,7 @@ abstract class Tank(
             bodyComponent.body.setLinearVelocity(0f, 0f)
             bodyComponent.body.angularVelocity = 0f
         }
-        currentWeapon.updateAngleRotation(rotationSpeed)
-        if (isShooting) {
-            currentWeapon.shoot(entityGroup, bodyComponent.body.position)
-        } else currentWeapon.await()
-
+        currentWeapon.update(delta, entityGroup, bodyComponent.body.position)
         setPosition(
             bodyComponent.left * TILE_SIZE,
             bodyComponent.bottom * TILE_SIZE

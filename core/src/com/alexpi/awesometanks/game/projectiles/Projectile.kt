@@ -23,7 +23,7 @@ abstract class Projectile(
     bodyShape: BodyShape,
     angle: Float,
     val speed: Float,
-    protected val damage: Float,
+    private val damage: Float,
     val isPlayer: Boolean,
 ) : Actor() {
 

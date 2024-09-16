@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.game.blocks
 
 import com.alexpi.awesometanks.game.ai.TurretAI
-import com.alexpi.awesometanks.game.ai.TurretAICallback
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.items.GoldNugget
@@ -28,10 +27,11 @@ class Turret(
     gameContext: GameContext,
     pos: Vector2,
     type: EnemyWeapon
-) : HealthBlock(gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET), TurretAICallback {
-    private val weapon: Weapon
+) : HealthBlock(gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET) {
+    val weapon: Weapon
+    private val entityGroup = gameContext.getEntityGroup()
     private val gameStage: GameStage = gameContext.getStage()
-    private val enemyAI = TurretAI(gameContext, bodyComponent.body.position, this)
+    private val enemyAI = TurretAI(gameContext, this, bodyComponent.body.position)
     private val nuggetValue: Int = getNuggetValue(type)
 
     override fun drawBlock(batch: Batch, parentAlpha: Float) {
@@ -41,16 +41,13 @@ class Turret(
     }
 
     override fun act(delta: Float) {
-        if (!healthComponent.isFrozen){
-            enemyAI.update()
-        } else{
-            await()
-        }
         super.act(delta)
+        enemyAI.update()
+        weapon.update(delta, entityGroup, bodyComponent.body.position)
     }
 
     companion object {
-        private const val ROTATION_SPEED = .035f
+        private const val WEAPON_ROTATION_SPEED = .035f
 
         fun getHealthByType(type: EnemyWeapon): Float{
             val typeMultiplier: Float = when(type){
@@ -91,29 +88,19 @@ class Turret(
         setOrigin(width / 2, height / 2)
     }
 
-    override fun attack(angle: Float) {
-        weapon.desiredRotationAngle = angle
-        weapon.updateAngleRotation(ROTATION_SPEED)
-        weapon.shoot(parent, bodyComponent.body.position)
-    }
-
-    override fun await() {
-        weapon.await()
-    }
-
     private fun getWeaponAt(
         type: EnemyWeapon,
         gameContext: GameContext,
     ): Weapon {
         return when (type) {
-            EnemyWeapon.MINIGUN -> MiniGun(gameContext, 1f, 2, false)
-            EnemyWeapon.SHOTGUN -> ShotGun(gameContext, 1f, 2, false)
-            EnemyWeapon.RICOCHET -> Ricochet(gameContext, 1f, 2, false)
-            EnemyWeapon.FLAMETHROWER -> Flamethrower(gameContext, 1f, 2, false)
-            EnemyWeapon.CANNON -> Cannon(gameContext, 1f, 2, false)
-            EnemyWeapon.ROCKETS -> RocketLauncher(gameContext, 1f, 2, false, null)
-            EnemyWeapon.LASERGUN -> LaserGun(gameContext, 1f, 2, false)
-            EnemyWeapon.RAILGUN -> RailGun(gameContext, 1f, 2, false)
+            EnemyWeapon.MINIGUN -> MiniGun(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.SHOTGUN -> ShotGun(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.RICOCHET -> Ricochet(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.FLAMETHROWER -> Flamethrower(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.CANNON -> Cannon(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.ROCKETS -> RocketLauncher(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED, null)
+            EnemyWeapon.LASERGUN -> LaserGun(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.RAILGUN -> RailGun(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
         }
     }
 }

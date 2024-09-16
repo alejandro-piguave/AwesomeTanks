@@ -23,6 +23,7 @@ class LaserGun(
     ammo: Float,
     power: Int,
     isPlayer: Boolean,
+    rotationSpeed: Float
 ) : Weapon(
     gameContext,
     "weapons/laser.png",
@@ -31,6 +32,7 @@ class LaserGun(
     power,
     isPlayer,
     .05f,
+    rotationSpeed,
     .2f
 ) {
     private val laserRay = Image(gameContext.getAssetManager().get<Texture>("sprites/laser_ray.png"))

@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 04/01/2016.
  */
-class RailGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) :
+class RailGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean, rotationSpeed: Float) :
     Weapon(
         gameContext,
         "weapons/railgun.png",
@@ -28,6 +28,8 @@ class RailGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean
         ammo,
         power,
         filter,
+        1f,
+        rotationSpeed,
         1f
     ) {
 

@@ -6,12 +6,12 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.Timer
-import kotlin.math.atan2
+import kotlin.math.abs
 
 /**
  * Created by Alex on 03/01/2016.
@@ -24,7 +24,8 @@ abstract class Weapon(
     val power: Int,
     val isPlayer: Boolean,
     val coolingDownTime: Float,
-    private val ammoConsumption: Float = 1f
+    private val rotationSpeed: Float,
+    private val ammoConsumption: Float
 ) {
     var onAmmoUpdated: ((Float) -> Unit)? = null
     var ammo: Float = ammo
@@ -32,13 +33,16 @@ abstract class Weapon(
             field = value
             onAmmoUpdated?.invoke(value)
         }
-    var sprite: Sprite = Sprite(gameContext.getAssetManager().get(texturePath, Texture::class.java))
-    protected var shotSound: Sound = gameContext.getAssetManager().get(shotSoundPath, Sound::class.java)
+    private val sprite: TextureRegion = TextureRegion(gameContext.getAssetManager().get<Texture>(texturePath))
+    protected val shotSound: Sound = gameContext.getAssetManager().get(shotSoundPath)
 
     var desiredRotationAngle = 0f
         set(value) {
-            field = value
-            if (field < 0) field += (Math.PI * 2).toFloat()
+            if(value >= MathUtils.PI2)
+                field = value % MathUtils.PI2
+            else if(value < 0){
+                field = value % MathUtils.PI2 + MathUtils.PI2
+            }else field = value
         }
 
     var currentRotationAngle = 0f
@@ -48,30 +52,54 @@ abstract class Weapon(
 
     var unlimitedAmmo = false
 
+    var isShooting = false
+
     protected fun decreaseAmmo() {
         if (ammo - ammoConsumption > 0) ammo -= ammoConsumption else ammo = 0f
     }
 
     private fun hasAmmo(): Boolean =  ammo > 0
 
-    fun setDesiredRotationAngleFrom(x: Float, y: Float) {
-        desiredRotationAngle = atan2(y.toDouble(), x.toDouble()).toFloat()
-        if (desiredRotationAngle < 0) desiredRotationAngle += (Math.PI * 2).toFloat()
-    }
-
     fun hasRotated(): Boolean = currentRotationAngle == desiredRotationAngle
 
-    fun updateAngleRotation(rotationSpeed: Float) {
-        var diff = desiredRotationAngle - currentRotationAngle
-        if (diff < 0) diff += (Math.PI * 2).toFloat()
-        if (diff >= Math.PI) {
-            currentRotationAngle -= rotationSpeed
-            diff -= Math.PI.toFloat()
-        } else if (diff < Math.PI) currentRotationAngle += rotationSpeed
-        if (diff < rotationSpeed) currentRotationAngle = desiredRotationAngle
-        if (currentRotationAngle > Math.PI * 2) currentRotationAngle =
-            0f else if (currentRotationAngle < 0) currentRotationAngle = (Math.PI * 2).toFloat()
-        sprite.rotation = currentRotationAngle * MathUtils.radiansToDegrees
+    private fun updateRotationAngle(delta: Float) {
+        if(currentRotationAngle == desiredRotationAngle) {
+            return
+        }
+
+        val difference = getNormalizedAbsoluteDifference(currentRotationAngle, desiredRotationAngle)
+
+        if(difference < ANGLE_THRESHOLD) {
+            currentRotationAngle = desiredRotationAngle
+            return
+        }
+
+        if(currentRotationAngle < MathUtils.PI) {
+            if(desiredRotationAngle > currentRotationAngle && desiredRotationAngle < currentRotationAngle + MathUtils.PI) {
+                currentRotationAngle += rotationSpeed * delta
+            } else {
+                currentRotationAngle -= rotationSpeed * delta
+            }
+        } else {
+            if(desiredRotationAngle > currentRotationAngle - MathUtils.PI && desiredRotationAngle < currentRotationAngle) {
+                currentRotationAngle -= rotationSpeed * delta
+            } else {
+                currentRotationAngle += rotationSpeed * delta
+            }
+        }
+
+        if(currentRotationAngle < 0) currentRotationAngle += MathUtils.PI2
+        else if(currentRotationAngle >= MathUtils.PI2) currentRotationAngle -= MathUtils.PI2
+    }
+
+    //We assume a and b are between 0 and PI*2
+    private fun getNormalizedAbsoluteDifference(a: Float, b: Float): Float {
+        var difference = b - a
+        if(difference < -MathUtils.PI)
+            difference += MathUtils.PI2
+        else if(difference >= MathUtils.PI)
+            difference -= MathUtils.PI2
+        return abs(difference)
     }
 
     open fun draw(
@@ -87,7 +115,7 @@ abstract class Weapon(
         scaleY: Float,
         y: Float
     ) {
-        batch.draw(sprite, x, y, originX, originY, width, height, scaleX, scaleY, sprite.rotation)
+        batch.draw(sprite, x, y, originX, originY, width, height, scaleX, scaleY, currentRotationAngle * MathUtils.radiansToDegrees)
     }
 
 
@@ -105,9 +133,20 @@ abstract class Weapon(
         }
     }
 
+    fun update(delta: Float, group: Group, position: Vector2) {
+        updateRotationAngle(delta)
+        if(isShooting) {
+            shoot(group, position)
+        } else await()
+    }
+
     open fun await() {}
     abstract fun createProjectile(group: Group, position: Vector2)
 
     protected open fun canShoot(): Boolean = (hasAmmo() || unlimitedAmmo) && !isCoolingDown && hasRotated()
+
+    companion object {
+        private const val ANGLE_THRESHOLD = 1/60f
+    }
 
 }
