@@ -14,14 +14,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 class BodyComponent(
     parent: Actor,
     world: World,
-    private val bodyShape: BodyShape,
+    val bodyShape: BodyShape,
     bodyType: BodyType,
     fixtureFilter: FixtureFilter,
     position: Vector2 = Vector2.Zero,
-    density: Float = 0f
+    density: Float = 0f,
 ) {
     val body: Body
-    private val fixture: Fixture
+    val fixture: Fixture
 
     init {
         val bodyDef = BodyDef()

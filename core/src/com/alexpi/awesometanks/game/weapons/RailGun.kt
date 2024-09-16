@@ -1,12 +1,12 @@
 package com.alexpi.awesometanks.game.weapons
 
 import com.alexpi.awesometanks.game.blocks.Block
+import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.alexpi.awesometanks.game.projectiles.Rail
 import com.alexpi.awesometanks.game.tanks.Tank
+import com.alexpi.awesometanks.game.utils.fastHypot
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.game.stage.GameContext
-import com.alexpi.awesometanks.game.utils.fastHypot
-import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.Timer
 /**
  * Created by Alex on 04/01/2016.
  */
-class RailGun(private val gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) :
+class RailGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) :
     Weapon(
         gameContext,
         "weapons/railgun.png",

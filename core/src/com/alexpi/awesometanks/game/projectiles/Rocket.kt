@@ -34,11 +34,11 @@ class Rocket(
     }
 
     init {
-        body.setLinearVelocity(0f,0f)
+        bodyComponent.body.setLinearVelocity(0f,0f)
         forceX = speed * cos(angle)
         forceY = speed * sin(angle)
-        body.linearDamping = .5f
-        body.applyForceToCenter(forceX, forceY, true)
+        bodyComponent.body.linearDamping = .5f
+        bodyComponent.body.applyForceToCenter(forceX, forceY, true)
         sprite = Sprite(gameContext.getAssetManager().get<Texture>("sprites/rocket.png"))
         flameSprite = Sprite(gameContext.getAssetManager().get<Texture>("sprites/rocket_flame.png"))
     }
@@ -48,24 +48,24 @@ class Rocket(
         val angle = atan2(y,x)
         forceX = speed * cos(angle)
         forceY = speed * sin(angle)
-        body.setTransform(body.position, angle)
+        bodyComponent.body.setTransform(bodyComponent.body.position, angle)
     }
 
     override fun remove(): Boolean {
-        explosionManager.createCanonBallExplosion(body.position.x,  body.position.y)
+        explosionManager.createCanonBallExplosion(bodyComponent.body.position.x,  bodyComponent.body.position.y)
         return super.remove()
     }
 
     override fun act(delta: Float) {
         super.act(delta)
-        body.applyForceToCenter(forceX, forceY,true)
-        if(body.linearVelocity.len2() > MAX_VELOCITY2)
-            body.linearVelocity.setLength2(MAX_VELOCITY2)
+        bodyComponent.body.applyForceToCenter(forceX, forceY,true)
+        if(bodyComponent.body.linearVelocity.len2() > MAX_VELOCITY2)
+            bodyComponent.body.linearVelocity.setLength2(MAX_VELOCITY2)
         if(shouldBeDestroyed && !isDestroyedFlag){
             rocketListener?.onRocketCollided()
             isDestroyedFlag = true
             return
-        } else if (!shouldBeDestroyed) rocketListener?.onRocketMoved(body.position.x, body.position.y)
+        } else if (!shouldBeDestroyed) rocketListener?.onRocketMoved(bodyComponent.body.position.x, bodyComponent.body.position.y)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

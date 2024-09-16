@@ -17,7 +17,7 @@ import kotlin.math.atan2
  * Created by Alex on 03/01/2016.
  */
 abstract class Weapon(
-    gameContext: GameContext,
+    val gameContext: GameContext,
     texturePath: String,
     shotSoundPath: String,
     ammo: Float,

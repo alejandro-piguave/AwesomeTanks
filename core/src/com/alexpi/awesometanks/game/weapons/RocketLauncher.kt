@@ -5,7 +5,7 @@ import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 
-class RocketLauncher(private val gameContext: GameContext, ammo: Float, power: Int, isPlayer: Boolean, private val rocketListener: RocketListener? = null) :
+class RocketLauncher(gameContext: GameContext, ammo: Float, power: Int, isPlayer: Boolean, private val rocketListener: RocketListener? = null) :
     Weapon(
         gameContext,
         "weapons/rocket.png",

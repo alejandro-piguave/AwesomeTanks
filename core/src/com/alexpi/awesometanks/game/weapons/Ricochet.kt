@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 /**
  * Created by Alex on 04/01/2016.
  */
-class Ricochet(val gameContext: GameContext, ammo: Float, power: Int, isPlayer: Boolean) : Weapon(
+class Ricochet(gameContext: GameContext, ammo: Float, power: Int, isPlayer: Boolean) : Weapon(
     gameContext,
     "weapons/ricochet.png",
     "sounds/ricochet.ogg",

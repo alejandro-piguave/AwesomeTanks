@@ -18,8 +18,8 @@ class Flame(gameContext: GameContext, pos: Vector2, angle: Float, private var bu
         ParticleActor(
             gameContext,
             "particles/flame.party",
-            x + bodyShape.width / 2,
-            y + bodyShape.height / 2,
+            x + width / 2,
+            y + height / 2,
             true
         )
 
@@ -35,7 +35,7 @@ class Flame(gameContext: GameContext, pos: Vector2, angle: Float, private var bu
 
     override fun act(delta: Float) {
         super.act(delta)
-        particleActor.setPosition(x + bodyShape.width / 2, y + bodyShape.height / 2)
+        particleActor.setPosition(x + width / 2, y + height / 2)
         particleActor.act(delta)
     }
 

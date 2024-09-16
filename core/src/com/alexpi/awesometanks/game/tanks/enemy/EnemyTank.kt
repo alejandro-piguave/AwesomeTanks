@@ -28,7 +28,7 @@ import com.badlogic.gdx.math.Vector2
  * Created by Alex on 17/02/2016.
  */
 class EnemyTank(
-    val gameContext: GameContext,
+    gameContext: GameContext,
     position: Vector2,
     type: EnemyType) : Tank(gameContext, position, FixtureFilter.ENEMY_TANK, type.tier.size,
     type.getHealth(),
@@ -55,7 +55,7 @@ class EnemyTank(
     private fun dropLoot() {
         val count = RandomUtils.getRandomInt(5, 15)
         repeat(count){
-            parent.addActor(GoldNugget(bodyComponent.body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+            parent.addActor(GoldNugget(gameContext, bodyComponent.body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
         }
     }
 

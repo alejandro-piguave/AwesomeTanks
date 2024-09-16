@@ -12,7 +12,7 @@ class CannonBall(
 ) : Bullet(gameContext, pos, angle, 35f, .075f, 80f + power * 16f, isPlayer) {
 
     override fun remove(): Boolean {
-        gameContext.getExplosionManager().createCanonBallExplosion(body.position.x, body.position.y)
+        gameContext.getExplosionManager().createCanonBallExplosion(bodyComponent.body.position.x, bodyComponent.body.position.y)
         return super.remove()
     }
 }

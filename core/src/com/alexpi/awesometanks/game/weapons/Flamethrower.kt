@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 /**
  * Created by Alex on 04/01/2016.
  */
-class Flamethrower(val gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) : Weapon(
+class Flamethrower(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) : Weapon(
     gameContext,
     "weapons/flamethrower.png",
     "sounds/flamethrower.ogg",

@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.Timer
  * Created by Alex on 04/01/2016.
  */
 class LaserGun(
-    val gameContext: GameContext,
+    gameContext: GameContext,
     ammo: Float,
     power: Int,
     isPlayer: Boolean,

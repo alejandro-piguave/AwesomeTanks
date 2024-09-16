@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 /**
  * Created by Alex on 04/01/2016.
  */
-class ShotGun(val gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) :
+class ShotGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean) :
     Weapon(gameContext,"weapons/shotgun.png", "sounds/shotgun.ogg", ammo, power, filter, 1f) {
     override fun createProjectile(group: Group, position: Vector2) {
         repeat(10){

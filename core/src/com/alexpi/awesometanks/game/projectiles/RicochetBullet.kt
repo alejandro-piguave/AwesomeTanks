@@ -26,7 +26,7 @@ class RicochetBullet(
     private var hits = 0
     override fun act(delta: Float) {
         super.act(delta)
-        particleActor.setPosition(x + bodyShape.width / 2, y + bodyShape.height / 2)
+        particleActor.setPosition(x + width / 2, y + height / 2)
         particleActor.act(delta)
     }
 
@@ -59,9 +59,10 @@ class RicochetBullet(
         particleActor = ParticleActor(
             gameContext,
             "particles/ricochets.party",
-            x + bodyShape.width / 2,
-            y + bodyShape.height / 2,
+            x + width / 2,
+            y + height / 2,
             true
         )
+        bodyComponent.fixture.restitution = .9f
     }
 }

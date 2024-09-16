@@ -26,7 +26,7 @@ import kotlin.math.min
  * Created by Alex on 02/01/2016.
  */
 abstract class Tank(
-    gameContext: GameContext,
+    val gameContext: GameContext,
     position: Vector2,
     fixtureFilter: FixtureFilter,
     bodySize: Float,
@@ -134,6 +134,7 @@ abstract class Tank(
         healthBarComponent.hideHealthBar()
         stage.addActor(
             ParticleActor(
+                gameContext,
                 "particles/explosion.party",
                 x + width / 2,
                 y + height / 2,

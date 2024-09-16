@@ -20,8 +20,8 @@ class Rail(
         ParticleActor(
             gameContext,
             "particles/railgun.party",
-            x + bodyShape.width / 2,
-            y + bodyShape.height / 2,
+            x + width / 2,
+            y + height / 2,
             true
         )
 
@@ -29,7 +29,7 @@ class Rail(
 
 
     override fun remove(): Boolean {
-        explosionManager.createCanonBallExplosion(body.position.x,  body.position.y)
+        explosionManager.createCanonBallExplosion(bodyComponent.body.position.x,  bodyComponent.body.position.y)
         return super.remove()
     }
 
@@ -40,7 +40,7 @@ class Rail(
 
     override fun act(delta: Float) {
         super.act(delta)
-        particleActor.setPosition(x + bodyShape.width / 2, y + bodyShape.height / 2)
+        particleActor.setPosition(x + width/2, y + height/2)
         particleActor.act(delta)
     }
 
