@@ -1,14 +1,14 @@
 package com.alexpi.awesometanks.game.projectiles
 
-import com.alexpi.awesometanks.game.components.health.HealthOwner
-import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.CAT_ENEMY_BULLET
 import com.alexpi.awesometanks.game.components.body.CAT_PLAYER_BULLET
 import com.alexpi.awesometanks.game.components.body.ENEMY_BULLET_MASK
 import com.alexpi.awesometanks.game.components.body.PLAYER_BULLET_MASK
+import com.alexpi.awesometanks.game.components.health.HealthOwner
+import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.screens.TILE_SIZE
-import com.alexpi.awesometanks.game.module.GameModule
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
  * Created by Alex on 16/01/2016.
  */
 abstract class Projectile(
+    val gameContext: GameContext,
     position: Vector2,
     val bodyShape: BodyShape,
     angle: Float,
@@ -41,8 +42,9 @@ abstract class Projectile(
 
     override fun remove(): Boolean {
         body.world.destroyBody(body)
-        stage.addActor(
+        parent.addActor(
             ParticleActor(
+                gameContext,
                 "particles/collision.party",
                 x + bodyShape.width / 2,
                 y + bodyShape.height / 2,
@@ -109,7 +111,7 @@ abstract class Projectile(
             if (isPlayer) CAT_PLAYER_BULLET else CAT_ENEMY_BULLET
         fixtureDef.filter.maskBits =
             if (isPlayer) PLAYER_BULLET_MASK else ENEMY_BULLET_MASK
-        body = GameModule.world.createBody(bodyDef)
+        body = gameContext.getWorld().createBody(bodyDef)
         fixture = body.createFixture(fixtureDef)
         shape.dispose()
         fixture.userData = this

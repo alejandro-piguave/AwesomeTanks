@@ -1,21 +1,20 @@
 package com.alexpi.awesometanks.game.manager
 
 import com.alexpi.awesometanks.game.components.health.HealthOwner
-import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.game.module.Settings
-import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.game.utils.fastHypot
-import com.badlogic.gdx.assets.AssetManager
+import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 
-class ExplosionManager(assetManager: AssetManager, private val world: World, private val rumbleManager: RumbleManager): Actor() {
-    private val explosionSound: Sound = assetManager.get("sounds/explosion.ogg")
-    private val explosionTexture = assetManager.get("sprites/explosion_shine.png", Texture::class.java)
+class ExplosionManager(private val gameContext: GameContext): Actor() {
+    private val explosionSound: Sound = gameContext.getAssetManager().get("sounds/explosion.ogg")
+    private val explosionTexture = gameContext.getAssetManager().get("sprites/explosion_shine.png", Texture::class.java)
 
     fun createLandMineExplosion(x: Float, y: Float){
         createExplosion(x,y ,2.5f, 350f,1f, 40f, .65f,false)
@@ -31,6 +30,7 @@ class ExplosionManager(assetManager: AssetManager, private val world: World, pri
         val explosionY = TILE_SIZE * y
         stage.addActor(
             ParticleActor(
+                gameContext,
                 if (bigExplosion) "particles/big-explosion.party" else "particles/big-explosion.party",
                 explosionX,
                 explosionY,
@@ -56,7 +56,7 @@ class ExplosionManager(assetManager: AssetManager, private val world: World, pri
         )
         stage.addActor(explosionShine)
 
-        world.QueryAABB({
+        gameContext.getWorld().QueryAABB({
             val distanceFromMine = fastHypot(
                 (it.body.position.x - x).toDouble(),
                 (it.body.position.y - y).toDouble()
@@ -69,6 +69,6 @@ class ExplosionManager(assetManager: AssetManager, private val world: World, pri
         },x-explosionRadius,y-explosionRadius,x+explosionRadius,y+explosionRadius)
 
         if (Settings.soundsOn) explosionSound.play(volume)
-        rumbleManager.rumble(rumblePower, rumbleLength)
+        gameContext.getRumbleController().rumble(rumblePower, rumbleLength)
     }
 }

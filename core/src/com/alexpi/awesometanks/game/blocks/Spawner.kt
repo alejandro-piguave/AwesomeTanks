@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.TimeUtils
 /**
  * Created by Alex on 15/02/2016.
  */
-class Spawner(private val gameContext: GameContext, level: Int, pos: Vector2) : HealthBlock(
+class Spawner(gameContext: GameContext, level: Int, pos: Vector2) : HealthBlock(
     gameContext,
     "sprites/spawner.png",
     BodyShape.Box(1f, 1f),
@@ -91,6 +91,7 @@ class Spawner(private val gameContext: GameContext, level: Int, pos: Vector2) : 
         for (i in 0 until num1)
             parent.addActor(
                 GoldNugget(
+                    gameContext,
                     bodyComponent.body.position,
                     RandomUtils.getRandomInt(nuggetValue - 10, nuggetValue + 10)
                 )

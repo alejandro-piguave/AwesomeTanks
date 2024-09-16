@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 /**
  * Created by Alex on 04/01/2016.
  */
-class Ricochet(gameContext: GameContext, ammo: Float, power: Int, isPlayer: Boolean) : Weapon(
+class Ricochet(val gameContext: GameContext, ammo: Float, power: Int, isPlayer: Boolean) : Weapon(
     gameContext,
     "weapons/ricochet.png",
     "sounds/ricochet.ogg",
@@ -21,6 +21,7 @@ class Ricochet(gameContext: GameContext, ammo: Float, power: Int, isPlayer: Bool
     override fun createProjectile(group: Group, position: Vector2) {
         group.addActor(
             RicochetBullet(
+                gameContext,
                 position,
                 shotSound,
                 currentRotationAngle,

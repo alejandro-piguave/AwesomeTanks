@@ -17,7 +17,7 @@ import com.badlogic.gdx.math.Vector2
 /**
  * Created by Alex on 19/01/2016.
  */
-class Box(private val gameContext: GameContext, level: Int, pos: Vector2) :
+class Box(gameContext: GameContext, level: Int, pos: Vector2) :
     HealthBlock(gameContext, "sprites/box.png", BodyShape.Box(.8f, .8f), pos,50f,  true, false, FixtureFilter.BLOCK) {
     private var generatedTypes: List<EnemyWeapon> = getEnemyTypes(level)
     private val nuggetValue: Int = getNuggetValue(level)
@@ -29,6 +29,7 @@ class Box(private val gameContext: GameContext, level: Int, pos: Vector2) :
                 while (i < num1) {
                     parent.addActor(
                         GoldNugget(
+                            gameContext,
                             bodyComponent.body.position,
                             RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
                         )
@@ -37,8 +38,8 @@ class Box(private val gameContext: GameContext, level: Int, pos: Vector2) :
                 }
             }
 
-            1 -> parent.addActor(FreezingBall(bodyComponent.body.position))
-            2 -> parent.addActor(HealthPack(bodyComponent.body.position))
+            1 -> parent.addActor(FreezingBall(gameContext, bodyComponent.body.position))
+            2 -> parent.addActor(HealthPack(gameContext, bodyComponent.body.position))
             3 -> parent.addActor(
                 EnemyTank(
                     gameContext,

@@ -1,9 +1,8 @@
 package com.alexpi.awesometanks.game.projectiles
 
 import com.alexpi.awesometanks.game.components.body.BodyShape
-import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.game.weapons.RocketListener
-import com.alexpi.awesometanks.game.module.GameModule
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -20,7 +19,7 @@ class Rocket(
     power: Int,
     filter: Boolean,
     private val rocketListener: RocketListener? = null
-) : Projectile(pos, BodyShape.Box(.38f, 1f), angle, .075f, 90F + power * 15, filter){
+) : Projectile(gameContext, pos, BodyShape.Box(.38f, 1f), angle, .075f, 90F + power * 15, filter){
 
     private val explosionManager = gameContext.getExplosionManager()
     private var isDestroyedFlag = false
@@ -40,8 +39,8 @@ class Rocket(
         forceY = speed * sin(angle)
         body.linearDamping = .5f
         body.applyForceToCenter(forceX, forceY, true)
-        sprite = Sprite(GameModule.assetManager.get<Texture>("sprites/rocket.png"))
-        flameSprite = Sprite(GameModule.assetManager.get<Texture>("sprites/rocket_flame.png"))
+        sprite = Sprite(gameContext.getAssetManager().get<Texture>("sprites/rocket.png"))
+        flameSprite = Sprite(gameContext.getAssetManager().get<Texture>("sprites/rocket_flame.png"))
     }
 
 

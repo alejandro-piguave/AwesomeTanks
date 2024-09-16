@@ -3,10 +3,9 @@ package com.alexpi.awesometanks.game.weapons
 import com.alexpi.awesometanks.game.blocks.Block
 import com.alexpi.awesometanks.game.projectiles.Laser
 import com.alexpi.awesometanks.game.tanks.Tank
+import com.alexpi.awesometanks.game.utils.fastHypot
 import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.alexpi.awesometanks.screens.game.stage.GameContext
-import com.alexpi.awesometanks.game.utils.fastHypot
-import com.alexpi.awesometanks.game.module.GameModule
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -20,7 +19,7 @@ import com.badlogic.gdx.utils.Timer
  * Created by Alex on 04/01/2016.
  */
 class LaserGun(
-    gameContext: GameContext,
+    val gameContext: GameContext,
     ammo: Float,
     power: Int,
     isPlayer: Boolean,
@@ -37,6 +36,7 @@ class LaserGun(
     private val laserRay = Image(gameContext.getAssetManager().get<Texture>("sprites/laser_ray.png"))
     private var playSound = false
     private var minFraction = 1f
+    private val world = gameContext.getWorld()
 
     init {
         laserRay.originY = laserRay.height/2
@@ -66,7 +66,7 @@ class LaserGun(
 
             createProjectile(group, position)
 
-            GameModule.world.rayCast({ fixture, point, _, fraction ->
+            world.rayCast({ fixture, point, _, fraction ->
                 if(fixture.userData is Block || fixture.userData is Tank){
                     if(fraction < minFraction){
                         minFraction = fraction
@@ -105,7 +105,7 @@ class LaserGun(
     }
 
     override fun createProjectile(group: Group, position: Vector2) {
-        group.addActor(Laser( position, currentRotationAngle, power.toFloat(), isPlayer))
+        group.addActor(Laser(gameContext, position, currentRotationAngle, power.toFloat(), isPlayer))
     }
 
     companion object {

@@ -10,7 +10,6 @@ import com.alexpi.awesometanks.game.manager.RumbleManager
 import com.alexpi.awesometanks.game.map.MapLoader
 import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.map.createMap
-import com.alexpi.awesometanks.game.module.GameModule
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.alexpi.awesometanks.game.tanks.player.PlayerTank
 import com.badlogic.gdx.assets.AssetManager
@@ -32,8 +31,8 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
     val healthBarGroup: Group = Group()
     val world = World(Vector2(0f, 0f), true)
     val rumbleManager = RumbleManager()
-    val explosionManager = ExplosionManager(assetManager, world, rumbleManager)
     val gameContext = GameContext(this)
+    val explosionManager = ExplosionManager(gameContext)
 
     var isPaused = false
     var isLevelCompleted = false
@@ -41,8 +40,6 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
     val playerTank: PlayerTank = PlayerTank(gameContext)
 
     init {
-        GameModule.world = world
-        GameModule.assetManager = assetManager
 
         setWorldContactListener()
         createMap()
@@ -97,6 +94,5 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
     override fun dispose() {
         super.dispose()
         world.dispose()
-        GameModule.dispose()
     }
 }

@@ -1,19 +1,19 @@
 package com.alexpi.awesometanks.game.blocks
 
-import com.alexpi.awesometanks.game.components.health.HealthOwner
-import com.alexpi.awesometanks.game.particles.ParticleActor
-import com.alexpi.awesometanks.game.manager.RumbleManager
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.components.health.HealthComponent
+import com.alexpi.awesometanks.game.components.health.HealthOwner
 import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
+import com.alexpi.awesometanks.game.manager.RumbleManager
 import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 
 abstract class HealthBlock(
-    gameContext: GameContext,
+    val gameContext: GameContext,
     texturePath: String,
     bodyShape: BodyShape,
     position: Vector2, maxHealth: Float,
@@ -40,6 +40,7 @@ abstract class HealthBlock(
         healthBarComponent.hideHealthBar()
         stage.addActor(
             ParticleActor(
+                gameContext,
                 "particles/explosion.party",
                 x + width / 2,
                 y + height / 2,

@@ -28,7 +28,7 @@ class Turret(
     gameContext: GameContext,
     pos: Vector2,
     type: EnemyWeapon
-) : HealthBlock( gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET), TurretAICallback {
+) : HealthBlock(gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET), TurretAICallback {
     private val weapon: Weapon
     private val gameStage: GameStage = gameContext.getStage()
     private val enemyAI = TurretAI(gameContext, bodyComponent.body.position, this)
@@ -81,8 +81,7 @@ class Turret(
     private fun dropLoot() {
         val count = RandomUtils.getRandomInt(10, 15)
         repeat(count){
-            parent.addActor(GoldNugget(bodyComponent.body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
-
+            parent.addActor(GoldNugget(gameContext, bodyComponent.body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
         }
     }
 

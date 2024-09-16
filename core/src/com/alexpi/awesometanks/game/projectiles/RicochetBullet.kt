@@ -1,9 +1,9 @@
 package com.alexpi.awesometanks.game.projectiles
 
-import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.game.components.body.BodyShape
-import com.alexpi.awesometanks.game.module.GameModule
 import com.alexpi.awesometanks.game.module.Settings.soundsOn
+import com.alexpi.awesometanks.game.particles.ParticleActor
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -15,12 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor
  * Created by Alex on 16/01/2016.
  */
 class RicochetBullet(
+    gameContext: GameContext,
     pos: Vector2,
     private val hitSound: Sound,
     angle: Float,
     power: Float,
     isPlayer: Boolean
-) : Projectile(pos, BodyShape.Circular(.1f), angle, 20f, 35 + power * 5, isPlayer) {
+) : Projectile(gameContext, pos, BodyShape.Circular(.1f), angle, 20f, 35 + power * 5, isPlayer) {
     private val particleActor: ParticleActor
     private var hits = 0
     override fun act(delta: Float) {
@@ -54,8 +55,9 @@ class RicochetBullet(
     }
 
     init {
-        sprite = Sprite(GameModule.assetManager.get("sprites/ricochet_bullet.png", Texture::class.java))
+        sprite = Sprite(gameContext.getAssetManager().get("sprites/ricochet_bullet.png", Texture::class.java))
         particleActor = ParticleActor(
+            gameContext,
             "particles/ricochets.party",
             x + bodyShape.width / 2,
             y + bodyShape.height / 2,

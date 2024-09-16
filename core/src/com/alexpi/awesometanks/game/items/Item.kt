@@ -1,11 +1,11 @@
 package com.alexpi.awesometanks.game.items
 
-import com.alexpi.awesometanks.screens.TILE_SIZE
-import com.alexpi.awesometanks.game.module.GameModule
 import com.alexpi.awesometanks.game.components.body.CAT_BLOCK
 import com.alexpi.awesometanks.game.components.body.CAT_ENEMY
 import com.alexpi.awesometanks.game.components.body.CAT_ITEM
 import com.alexpi.awesometanks.game.components.body.CAT_PLAYER
+import com.alexpi.awesometanks.screens.TILE_SIZE
+import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
@@ -22,7 +22,7 @@ import kotlin.experimental.or
 /**
  * Created by Alex on 19/02/2016.
  */
-abstract class Item(fileName: String, position: Vector2, private val size: Float) : Actor() {
+abstract class Item(gameContext: GameContext, fileName: String, position: Vector2, private val size: Float) : Actor() {
     private val sprite: Sprite
     @JvmField
     protected val body: Body
@@ -66,13 +66,13 @@ abstract class Item(fileName: String, position: Vector2, private val size: Float
         fixtureDef.shape = shape
         fixtureDef.filter.categoryBits = CAT_ITEM
         fixtureDef.filter.maskBits = (CAT_PLAYER or CAT_BLOCK or CAT_ENEMY)
-        body = GameModule.world.createBody(bodyDef)
+        body = gameContext.getWorld().createBody(bodyDef)
         body.linearDamping = 1f
         body.angularDamping = .5f
         fixture = body.createFixture(fixtureDef)
         shape.dispose()
         fixture.userData = this
-        sprite = Sprite(GameModule.assetManager.get(fileName, Texture::class.java))
+        sprite = Sprite(gameContext.getAssetManager().get(fileName, Texture::class.java))
         setSize(size * TILE_SIZE, size * TILE_SIZE)
         setOrigin(originX + width / 2, originY + height / 2)
         setPosition(

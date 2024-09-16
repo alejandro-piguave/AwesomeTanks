@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.game.projectiles
 
-import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.game.components.body.BodyShape
+import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
@@ -15,9 +15,10 @@ class Rail(
     angle: Float,
     power: Float,
     filter: Boolean
-) : Projectile(pos, BodyShape.Circular(.125f), angle, 50f, 180 + power * 40, filter) {
+) : Projectile(gameContext, pos, BodyShape.Circular(.125f), angle, 50f, 180 + power * 40, filter) {
     private val particleActor: ParticleActor =
         ParticleActor(
+            gameContext,
             "particles/railgun.party",
             x + bodyShape.width / 2,
             y + bodyShape.height / 2,

@@ -1,21 +1,24 @@
-package com.alexpi.awesometanks.game.items;
+package com.alexpi.awesometanks.game.items
 
+import com.alexpi.awesometanks.game.utils.RandomUtils
+import com.alexpi.awesometanks.screens.game.stage.GameContext
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.Vector2
 
-import com.alexpi.awesometanks.game.utils.RandomUtils;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by Alex on 01/02/2016.
  */
-public class GoldNugget extends Item {
-
-    public final int value;
-
-    public GoldNugget(Vector2 position, int value){
-        super("sprites/nugget.png",position, RandomUtils.getRandomFloat(.15f,.25f));
-        this.value = value;
-        float angle =  RandomUtils.getRandomFloat(Math.PI*2);
-        body.applyLinearImpulse(MathUtils.cos(angle)*.025f, MathUtils.sin(angle)*.025f, body.getPosition().x, body.getPosition().y, true);
+class GoldNugget(gameContext: GameContext, position: Vector2, val value: Int) :
+    Item(gameContext,"sprites/nugget.png", position, RandomUtils.getRandomFloat(.15f, .25f)) {
+    init {
+        val angle = RandomUtils.getRandomFloat(Math.PI * 2)
+        body.applyLinearImpulse(
+            MathUtils.cos(angle) * .025f,
+            MathUtils.sin(angle) * .025f,
+            body.position.x,
+            body.position.y,
+            true
+        )
     }
 }
