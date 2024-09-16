@@ -128,8 +128,6 @@ abstract class Weapon(
         if(isShooting) {
         }
         if(isShooting && canShoot()) {
-            println("tiempo transcurrido: ${TimeUtils.millis() - lastShotTime}")
-
             createProjectile(group, position)
             decreaseAmmo()
             lastShotTime = TimeUtils.millis()
