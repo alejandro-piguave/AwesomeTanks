@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 class Cannon(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean, rotationSpeed: Float) :
     Weapon(gameContext,"weapons/canon.png", "sounds/canon.ogg", ammo, power, filter, .5f, rotationSpeed, 1f) {
     override fun createProjectile(group: Group, position: Vector2) {
+        shotSound.play()
         group.addActor(CannonBall(gameContext, position, currentRotationAngle, power.toFloat(), isPlayer))
     }
 }

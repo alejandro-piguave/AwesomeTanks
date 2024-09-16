@@ -23,6 +23,7 @@ class RocketLauncher(gameContext: GameContext, ammo: Float, power: Int, isPlayer
     override fun canShoot(): Boolean = super.canShoot() && rocket?.shouldBeDestroyed ?: true
 
     override fun createProjectile(group: Group, position: Vector2) {
+        shotSound.play()
         rocket = Rocket(gameContext, position,currentRotationAngle, power, isPlayer, rocketListener)
         group.addActor(rocket)
     }

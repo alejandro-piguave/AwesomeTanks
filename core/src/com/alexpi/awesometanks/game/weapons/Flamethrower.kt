@@ -20,6 +20,7 @@ class Flamethrower(gameContext: GameContext, ammo: Float, power: Int, filter: Bo
     .7f,
 ) {
     override fun createProjectile(group: Group, position: Vector2) {
+        shotSound.play()
         group.addActor(Flame(gameContext, position, currentRotationAngle, 2f + power, isPlayer))
     }
 }

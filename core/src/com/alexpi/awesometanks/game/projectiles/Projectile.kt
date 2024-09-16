@@ -37,7 +37,7 @@ abstract class Projectile(
         gameContext.getWorld(),
         bodyShape,
         BodyDef.BodyType.DynamicBody,
-        if(isPlayer) FixtureFilter.PLAYER else FixtureFilter.ENEMY_BULLET,
+        if(isPlayer) FixtureFilter.PLAYER_BULLET else FixtureFilter.ENEMY_BULLET,
         position,
         1f
     )

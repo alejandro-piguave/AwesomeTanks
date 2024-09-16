@@ -20,6 +20,7 @@ class Ricochet(gameContext: GameContext, ammo: Float, power: Int, isPlayer: Bool
     .9f
 ) {
     override fun createProjectile(group: Group, position: Vector2) {
+        shotSound.play()
         group.addActor(
             RicochetBullet(
                 gameContext,

@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.game.weapons
 
-import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
@@ -10,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.utils.Timer
+import com.badlogic.gdx.utils.TimeUtils
 import kotlin.math.abs
 
 /**
@@ -23,38 +22,43 @@ abstract class Weapon(
     ammo: Float,
     val power: Int,
     val isPlayer: Boolean,
-    val coolingDownTime: Float,
+    private val coolDownTime: Float,
     private val rotationSpeed: Float,
     private val ammoConsumption: Float
 ) {
     var onAmmoUpdated: ((Float) -> Unit)? = null
     var ammo: Float = ammo
-        protected set(value) {
+        private set(value) {
             field = value
             onAmmoUpdated?.invoke(value)
         }
+
     private val sprite: TextureRegion = TextureRegion(gameContext.getAssetManager().get<Texture>(texturePath))
     protected val shotSound: Sound = gameContext.getAssetManager().get(shotSoundPath)
 
     var desiredRotationAngle = 0f
         set(value) {
-            if(value >= MathUtils.PI2)
-                field = value % MathUtils.PI2
+            field = if(value >= MathUtils.PI2)
+                value % MathUtils.PI2
             else if(value < 0){
-                field = value % MathUtils.PI2 + MathUtils.PI2
-            }else field = value
+                value % MathUtils.PI2 + MathUtils.PI2
+            }else value
         }
 
     var currentRotationAngle = 0f
         protected set
 
-    protected var isCoolingDown = false
+    private val isCoolingDown: Boolean
+        get() = TimeUtils.millis() - lastShotTime < coolDownTime * 1000
+
+    private var lastShotTime = 0L
 
     var unlimitedAmmo = false
 
     var isShooting = false
 
-    protected fun decreaseAmmo() {
+    private fun decreaseAmmo() {
+        if(unlimitedAmmo) return
         if (ammo - ammoConsumption > 0) ammo -= ammoConsumption else ammo = 0f
     }
 
@@ -118,32 +122,24 @@ abstract class Weapon(
         batch.draw(sprite, x, y, originX, originY, width, height, scaleX, scaleY, currentRotationAngle * MathUtils.radiansToDegrees)
     }
 
+    open fun update(delta: Float, group: Group, position: Vector2) {
+        updateRotationAngle(delta)
 
-    open fun shoot( group: Group, position: Vector2) {
-        if (canShoot()) {
+        if(isShooting) {
+        }
+        if(isShooting && canShoot()) {
+            println("tiempo transcurrido: ${TimeUtils.millis() - lastShotTime}")
+
             createProjectile(group, position)
-            if (soundsOn) shotSound.play()
-            if (!unlimitedAmmo) decreaseAmmo()
-            isCoolingDown = true
-            Timer.schedule(object : Timer.Task() {
-                override fun run() {
-                    if (isCoolingDown) isCoolingDown = false
-                }
-            }, coolingDownTime)
+            decreaseAmmo()
+            lastShotTime = TimeUtils.millis()
+
         }
     }
 
-    fun update(delta: Float, group: Group, position: Vector2) {
-        updateRotationAngle(delta)
-        if(isShooting) {
-            shoot(group, position)
-        } else await()
-    }
-
-    open fun await() {}
     abstract fun createProjectile(group: Group, position: Vector2)
 
-    protected open fun canShoot(): Boolean = (hasAmmo() || unlimitedAmmo) && !isCoolingDown && hasRotated()
+    protected open fun canShoot(): Boolean =  !isCoolingDown && (hasAmmo() || unlimitedAmmo) && hasRotated()
 
     companion object {
         private const val ANGLE_THRESHOLD = 1/60f

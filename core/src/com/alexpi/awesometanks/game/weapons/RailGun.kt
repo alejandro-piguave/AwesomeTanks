@@ -1,7 +1,6 @@
 package com.alexpi.awesometanks.game.weapons
 
 import com.alexpi.awesometanks.game.blocks.Block
-import com.alexpi.awesometanks.game.module.Settings.soundsOn
 import com.alexpi.awesometanks.game.projectiles.Rail
 import com.alexpi.awesometanks.game.tanks.Tank
 import com.alexpi.awesometanks.game.utils.fastHypot
@@ -42,45 +41,6 @@ class RailGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean
         laserRay.originY = laserRay.height/2
     }
 
-    override fun shoot(group: Group, position: Vector2) {
-        if (canShoot()) {
-            minFraction = 1f
-            laserRay.rotation = currentRotationAngle * MathUtils.radiansToDegrees
-            laserRay.setPosition(position.x * TILE_SIZE, position.y * TILE_SIZE - laserRay.height/2)
-
-            val dX = MathUtils.cos(currentRotationAngle) * MAXIMUM_REACH
-            val dY = MathUtils.sin(currentRotationAngle) * MAXIMUM_REACH
-            val point2 = Vector2(position.x + dX, position.y + dY)
-            world.rayCast({ fixture, point, _, fraction ->
-                if(fixture.userData is Block || fixture.userData is Tank){
-                    if(fraction < minFraction){
-                        minFraction = fraction
-                        val distance = fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * TILE_SIZE
-                        laserRay.width = distance.toFloat()
-                    }
-                    fraction
-                }
-                1f
-            }, position, point2)
-
-            createProjectile(group, position)
-            if (soundsOn) shotSound.play()
-            if (!unlimitedAmmo) decreaseAmmo()
-            isCoolingDown = true
-            drawLaser = true
-            Timer.schedule(object : Timer.Task() {
-                override fun run() {
-                    drawLaser = false
-                }
-            }, .1f)
-            Timer.schedule(object : Timer.Task() {
-                override fun run() {
-                    if (isCoolingDown) isCoolingDown = false
-                }
-            }, coolingDownTime)
-        }
-    }
-
     override fun draw(
         batch: Batch,
         color: Color,
@@ -100,10 +60,38 @@ class RailGun(gameContext: GameContext, ammo: Float, power: Int, filter: Boolean
         super.draw(batch,color, x, parentAlpha, originX, originY, width, height, scaleX, scaleY, y)
     }
 
-    override fun await() {}
 
     override fun createProjectile(group: Group, position: Vector2) {
+        shotSound.play()
         group.addActor(Rail(gameContext, position, currentRotationAngle, power.toFloat(), isPlayer))
+
+
+        minFraction = 1f
+        laserRay.rotation = currentRotationAngle * MathUtils.radiansToDegrees
+        laserRay.setPosition(position.x * TILE_SIZE, position.y * TILE_SIZE - laserRay.height/2)
+
+        val dX = MathUtils.cos(currentRotationAngle) * MAXIMUM_REACH
+        val dY = MathUtils.sin(currentRotationAngle) * MAXIMUM_REACH
+        val point2 = Vector2(position.x + dX, position.y + dY)
+        world.rayCast({ fixture, point, _, fraction ->
+            if(fixture.userData is Block || fixture.userData is Tank){
+                if(fraction < minFraction){
+                    minFraction = fraction
+                    val distance = fastHypot((point.x - position.x).toDouble(), (point.y - position.y).toDouble()) * TILE_SIZE
+                    laserRay.width = distance.toFloat()
+                }
+                fraction
+            }
+            1f
+        }, position, point2)
+
+        drawLaser = true
+        Timer.schedule(object : Timer.Task() {
+            override fun run() {
+                drawLaser = false
+            }
+        }, .1f)
+
     }
 
     companion object {

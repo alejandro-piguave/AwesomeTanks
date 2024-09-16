@@ -96,12 +96,12 @@ abstract class Tank(
             y,
         )
         batch.setColor(1f, 1f, 1f, parentAlpha)
-        _healthComponent.draw(parent, batch)
+        _healthComponent.draw(this, batch)
     }
 
     override fun act(delta: Float) {
         super.act(delta)
-        healthComponent.update(this, delta)
+        _healthComponent.update(this, delta)
         healthBarComponent.updatePosition(this)
 
         if (isMoving) {

@@ -12,5 +12,13 @@ class Laser(
     pos: Vector2,
     angle: Float,
     power: Float,
-    filter: Boolean
-) : Projectile(gameContext, pos, BodyShape.Circular(.1f), angle, 50f, 20 + power * 5, filter)
+    filter: Boolean,
+    private val onRemove: (Vector2) -> Unit
+) : Projectile(gameContext, pos, BodyShape.Circular(.1f), angle, 50f, 20 + power * 5, filter) {
+
+
+    override fun remove(): Boolean {
+        onRemove(bodyComponent.body.position)
+        return super.remove()
+    }
+}
