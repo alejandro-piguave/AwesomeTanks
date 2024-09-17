@@ -65,6 +65,7 @@ class EnemyTank(
 
     override fun remove(): Boolean {
         dropLoot()
+        gameContext.getStage().checkLevelCompletion()
         return super.remove()
     }
 

@@ -4,7 +4,6 @@ import com.alexpi.awesometanks.game.blocks.Block
 import com.alexpi.awesometanks.game.tanks.player.PlayerTank
 import com.alexpi.awesometanks.game.utils.getNormalizedAbsoluteDifference
 import com.alexpi.awesometanks.game.utils.normalizeAngle
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.ai.fsm.State
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.math.MathUtils
@@ -138,11 +137,9 @@ object ShootState: TurretState(){
         val world = entity.gameContext.getWorld()
         val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.bodyComponent.body.position)
         if(isTargetVisible){
-            Gdx.app.log("Enemy Tank", "Player visible. Updating angle...")
             //If the player is in range and visible, aim and keep shooting
             val rotationAngle = MathUtils.atan2(deltaY, deltaX)
             entity.weapon.desiredRotationAngle = rotationAngle
-            Gdx.app.log("Enemy Tank", "Angle rotated? ${entity.weapon.hasRotated()}")
             entity.weapon.isShooting = true
             return
         }
