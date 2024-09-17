@@ -34,8 +34,8 @@ sealed class EnemyTankState: State<EnemyTank>{
             return false
         }
 
-        val deltaX = playerTank.position.x - entity.bodyComponent.body.position.x
-        val deltaY = playerTank.position.y - entity.bodyComponent.body.position.y
+        val deltaX = playerTank.bodyComponent.body.position.x - entity.bodyComponent.body.position.x
+        val deltaY = playerTank.bodyComponent.body.position.y - entity.bodyComponent.body.position.y
 
         //If the player is not within range, return false
         if(deltaX * deltaX  + deltaY * deltaY > SHOOTING_RADIUS_2){
@@ -50,12 +50,8 @@ sealed class EnemyTankState: State<EnemyTank>{
         }
 
         //If the player is within the visibility angle, check if there's no obstacles in between
-        val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, playerTank.position)
-        return if(isTargetVisible){
-            true
-        } else false
-
-
+        val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, playerTank.bodyComponent.body.position)
+        return isTargetVisible
     }
 
     protected fun checkTargetVisibility(world: World, position: Vector2, targetPosition: Vector2): Boolean {
@@ -212,13 +208,13 @@ class ChaseState: EnemyTankState(){
         }
         //Else, check if it's in range
 
-        val deltaX = target.position.x - entity.bodyComponent.body.position.x
-        val deltaY = target.position.y - entity.bodyComponent.body.position.y
+        val deltaX = target.bodyComponent.body.position.x - entity.bodyComponent.body.position.x
+        val deltaY = target.bodyComponent.body.position.y - entity.bodyComponent.body.position.y
 
         //If the player is in range to shoot, check if its directly visible
         if(deltaX * deltaX  + deltaY * deltaY < SHOOTING_RADIUS_2){
             val world = entity.gameContext.getWorld()
-            val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.position)
+            val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.bodyComponent.body.position)
             if(isTargetVisible){
                 //If it is, then shoot
                 entity.stateMachine.changeState(ShootState)
@@ -231,7 +227,7 @@ class ChaseState: EnemyTankState(){
 
             val pathFinding = entity.gameContext.getPathFinding()
 
-            val nextPosition = pathFinding.findNextPosition(entity.bodyComponent.body.position, target.position)
+            val nextPosition = pathFinding.findNextPosition(entity.bodyComponent.body.position, target.bodyComponent.body.position)
             if(nextPosition == null){
                 //Path is blocked or doesn't exist, keep wandering
                 entity.stateMachine.changeState(WanderState())
@@ -267,8 +263,8 @@ object ShootState: EnemyTankState(){
             return
         }
 
-        val deltaX = target.position.x - entity.bodyComponent.body.position.x
-        val deltaY = target.position.y - entity.bodyComponent.body.position.y
+        val deltaX = target.bodyComponent.body.position.x - entity.bodyComponent.body.position.x
+        val deltaY = target.bodyComponent.body.position.y - entity.bodyComponent.body.position.y
 
 
         //If it is not in range, chase the target
@@ -278,7 +274,7 @@ object ShootState: EnemyTankState(){
         }
 
         val world = entity.gameContext.getWorld()
-        val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.position)
+        val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.bodyComponent.body.position)
         if(isTargetVisible){
             Gdx.app.log("Enemy Tank", "Player visible. Updating angle...")
             //If the player is in range and visible, aim and keep shooting

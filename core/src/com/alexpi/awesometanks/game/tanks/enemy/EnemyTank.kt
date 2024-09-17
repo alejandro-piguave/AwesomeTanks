@@ -44,7 +44,7 @@ class EnemyTank(
         type.getHealth(),
         isFlammable = true,
         isFreezable = true,
-        onDamageTaken = {
+        onHealthChanged = {
             healthBarComponent.updateHealth(it)
             MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
         },

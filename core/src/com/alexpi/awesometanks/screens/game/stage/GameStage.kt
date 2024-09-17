@@ -3,7 +3,7 @@ package com.alexpi.awesometanks.screens.game.stage
 import com.alexpi.awesometanks.data.GameRepository
 import com.alexpi.awesometanks.game.ai.PathFinding
 import com.alexpi.awesometanks.game.blocks.Spawner
-import com.alexpi.awesometanks.game.blocks.Turret
+import com.alexpi.awesometanks.game.blocks.turret.Turret
 import com.alexpi.awesometanks.game.manager.ContactManager
 import com.alexpi.awesometanks.game.manager.ExplosionManager
 import com.alexpi.awesometanks.game.manager.RumbleManager

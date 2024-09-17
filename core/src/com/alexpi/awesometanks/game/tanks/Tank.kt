@@ -87,6 +87,8 @@ abstract class Tank(
     override fun act(delta: Float) {
         super.act(delta)
         healthComponent.update(this, delta)
+        if(!healthComponent.isAlive) return
+
         healthBarComponent.updatePosition(this)
 
         if (isMoving) {

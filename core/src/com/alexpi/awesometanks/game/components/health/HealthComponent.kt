@@ -13,7 +13,7 @@ class HealthComponent(
     private val isFlammable: Boolean,
     private val isFreezable: Boolean,
     initialState: HealthState = HealthState.Normal,
-    var onDamageTaken: ((Float) -> Unit)? = null,
+    var onHealthChanged: ((Float) -> Unit)? = null,
     var onFreeze: (() -> Unit)? = null,
     var onDeath: ((Actor) -> Unit)? = null){
     var currentHealth: Float = maxHealth
@@ -37,7 +37,7 @@ class HealthComponent(
         if(damage <= 0) throw IllegalArgumentException("damage must be greater than 0.")
         val finalDamage = damage * (1 - damageReduction)
         currentHealth = (currentHealth - finalDamage).coerceAtLeast(0f)
-        onDamageTaken?.invoke(currentHealth)
+        onHealthChanged?.invoke(currentHealth)
     }
 
     fun kill() {
@@ -47,6 +47,7 @@ class HealthComponent(
     fun heal(health: Float) {
         if(health <= 0) throw IllegalArgumentException("health must be greater than 0.")
         currentHealth = (currentHealth + health).coerceAtMost(maxHealth)
+        onHealthChanged?.invoke(currentHealth)
     }
 
     //burn duration in seconds
@@ -60,6 +61,7 @@ class HealthComponent(
         healthState = HealthState.Frozen(startTime = TimeUtils.millis(), duration = duration)
         onFreeze?.invoke()
     }
+
 
     fun update(parent: Actor, delta: Float) {
         if(currentHealth <= 0) {

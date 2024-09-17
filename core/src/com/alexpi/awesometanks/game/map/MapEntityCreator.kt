@@ -5,8 +5,8 @@ import com.alexpi.awesometanks.game.blocks.Bricks
 import com.alexpi.awesometanks.game.blocks.Gate
 import com.alexpi.awesometanks.game.blocks.Mine
 import com.alexpi.awesometanks.game.blocks.Spawner
-import com.alexpi.awesometanks.game.blocks.Turret
 import com.alexpi.awesometanks.game.blocks.Wall
+import com.alexpi.awesometanks.game.blocks.turret.Turret
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTier
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyType

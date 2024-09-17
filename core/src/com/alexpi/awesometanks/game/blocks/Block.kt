@@ -19,7 +19,7 @@ open class Block(
     fixtureFilter: FixtureFilter,
 ) : Actor() {
     private val texture: Texture = gameContext.getAssetManager().get(texturePath, Texture::class.java)
-    protected val bodyComponent = BodyComponent(this, gameContext.getWorld(), bodyShape, BodyDef.BodyType.StaticBody, fixtureFilter, position)
+    val bodyComponent = BodyComponent(this, gameContext.getWorld(), bodyShape, BodyDef.BodyType.StaticBody, fixtureFilter, position)
 
     init {
         this.setSize(bodyShape.width * TILE_SIZE, bodyShape.height * TILE_SIZE)

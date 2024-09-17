@@ -55,7 +55,6 @@ class BodyComponent(
 
 
     fun destroy() {
-        body.destroyFixture(fixture)
         body.world.destroyBody(body)
     }
 }

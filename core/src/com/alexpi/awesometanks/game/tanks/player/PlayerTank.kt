@@ -47,9 +47,6 @@ class PlayerTank(gameContext: GameContext) : Tank(
         2 + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.VISIBILITY)
     private val armor = gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.ARMOR)
 
-    val position: Vector2
-        get() = bodyComponent.body.position
-
     var onMoneyUpdated: ((Int) -> Unit)? = null
     var money: Int = 0
         set(value) {
@@ -82,7 +79,7 @@ class PlayerTank(gameContext: GameContext) : Tank(
             isFlammable = true,
             isFreezable = false,
             onDeath = { remove() },
-            onDamageTaken = { healthBarComponent.updateHealth(it) }
+            onHealthChanged = { healthBarComponent.updateHealth(it) }
         )
 
     //Used for keys
@@ -103,7 +100,7 @@ class PlayerTank(gameContext: GameContext) : Tank(
 
     override fun act(delta: Float) {
         super.act(delta)
-        stage.camera.position.set(centerX, centerY, 0f)
+        gameStage.camera.position.set(centerX, centerY, 0f)
         if (isMoving || isRocketActive) {
             updateVisibleArea()
         }

@@ -1,6 +1,6 @@
-package com.alexpi.awesometanks.game.blocks
+package com.alexpi.awesometanks.game.blocks.turret
 
-import com.alexpi.awesometanks.game.ai.TurretAI
+import com.alexpi.awesometanks.game.blocks.HealthBlock
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.items.GoldNugget
@@ -17,6 +17,7 @@ import com.alexpi.awesometanks.game.weapons.ShotGun
 import com.alexpi.awesometanks.game.weapons.Weapon
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.screens.game.stage.GameStage
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 
@@ -31,18 +32,17 @@ class Turret(
     val weapon: Weapon = getWeaponAt(type, gameContext)
     private val entityGroup = gameContext.getEntityGroup()
     private val gameStage: GameStage = gameContext.getStage()
-    private val enemyAI = TurretAI(gameContext, this, bodyComponent.body.position)
+    val stateMachine = DefaultStateMachine<Turret, TurretState>(this, PeekState())
     private val nuggetValue: Int = getNuggetValue(type)
 
     override fun drawBlock(batch: Batch, parentAlpha: Float) {
         super.drawBlock(batch, parentAlpha)
         weapon.draw(batch,color, x, parentAlpha, originX, originY, width, height, scaleX, scaleY, y)
-
     }
 
     override fun act(delta: Float) {
         super.act(delta)
-        enemyAI.update()
+        stateMachine.update()
         weapon.update(delta, entityGroup, bodyComponent.body.position)
     }
 
@@ -84,6 +84,7 @@ class Turret(
 
     init {
         weapon.unlimitedAmmo = true
+        healthComponent.onFreeze = { stateMachine.changeState(FrozenState) }
         setOrigin(width / 2, height / 2)
     }
 
