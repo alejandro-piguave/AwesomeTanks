@@ -28,7 +28,7 @@ class Turret(
     pos: Vector2,
     type: EnemyWeapon
 ) : HealthBlock(gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET) {
-    val weapon: Weapon
+    val weapon: Weapon = getWeaponAt(type, gameContext)
     private val entityGroup = gameContext.getEntityGroup()
     private val gameStage: GameStage = gameContext.getStage()
     private val enemyAI = TurretAI(gameContext, this, bodyComponent.body.position)
@@ -47,7 +47,7 @@ class Turret(
     }
 
     companion object {
-        private const val WEAPON_ROTATION_SPEED = .035f
+        private const val WEAPON_ROTATION_SPEED = 2.1f
 
         fun getHealthByType(type: EnemyWeapon): Float{
             val typeMultiplier: Float = when(type){
@@ -83,7 +83,6 @@ class Turret(
     }
 
     init {
-        weapon = getWeaponAt(type, gameContext)
         weapon.unlimitedAmmo = true
         setOrigin(width / 2, height / 2)
     }

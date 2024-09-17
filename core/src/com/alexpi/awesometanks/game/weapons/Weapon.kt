@@ -1,5 +1,6 @@
 package com.alexpi.awesometanks.game.weapons
 
+import com.alexpi.awesometanks.game.utils.getNormalizedAbsoluteDifference
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Color
@@ -10,7 +11,6 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.utils.TimeUtils
-import kotlin.math.abs
 
 /**
  * Created by Alex on 03/01/2016.
@@ -42,7 +42,7 @@ abstract class Weapon(
                 value % MathUtils.PI2
             else if(value < 0){
                 value % MathUtils.PI2 + MathUtils.PI2
-            }else value
+            } else value
         }
 
     var currentRotationAngle = 0f
@@ -96,16 +96,6 @@ abstract class Weapon(
         else if(currentRotationAngle >= MathUtils.PI2) currentRotationAngle -= MathUtils.PI2
     }
 
-    //We assume a and b are between 0 and PI*2
-    private fun getNormalizedAbsoluteDifference(a: Float, b: Float): Float {
-        var difference = b - a
-        if(difference < -MathUtils.PI)
-            difference += MathUtils.PI2
-        else if(difference >= MathUtils.PI)
-            difference -= MathUtils.PI2
-        return abs(difference)
-    }
-
     open fun draw(
         batch: Batch,
         color: Color,
@@ -137,7 +127,7 @@ abstract class Weapon(
     protected open fun canShoot(): Boolean =  !isCoolingDown && (hasAmmo() || unlimitedAmmo) && hasRotated()
 
     companion object {
-        private const val ANGLE_THRESHOLD = 1/60f
+        private const val ANGLE_THRESHOLD = 1/40f
     }
 
 }

@@ -48,6 +48,7 @@ class EnemyTank(
             healthBarComponent.updateHealth(it)
             MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
         },
+        onDeath = { remove() },
         onFreeze = { stateMachine.changeState(FrozenState) }
     )
     override val healthBarComponent = HealthBarComponent(
@@ -115,7 +116,7 @@ class EnemyTank(
     }
 
     companion object {
-        private const val WEAPON_ROTATION_SPEED = .035f
+        private const val WEAPON_ROTATION_SPEED = 2.1f
         private const val MOVEMENT_SPEED = 60f
 
     }

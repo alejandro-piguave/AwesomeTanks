@@ -81,6 +81,7 @@ class PlayerTank(gameContext: GameContext) : Tank(
             500f,
             isFlammable = true,
             isFreezable = false,
+            onDeath = { remove() },
             onDamageTaken = { healthBarComponent.updateHealth(it) }
         )
 

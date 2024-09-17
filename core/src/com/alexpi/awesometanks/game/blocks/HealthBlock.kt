@@ -24,16 +24,14 @@ abstract class HealthBlock(
 ) : Block(gameContext, texturePath, bodyShape, position, fixtureFilter), HealthOwner {
     private val mapTable: MapTable = gameContext.getMapTable()
     private val rumbleManager: RumbleManager = gameContext.getRumbleController()
-    private val _healthComponent: HealthComponent =
-        HealthComponent(gameContext, maxHealth, isFlammable, isFreezable, onDamageTaken = {
-            healthBarComponent.updateHealth(it)
-        }, onDeath = { remove() })
-    override val healthComponent: HealthComponent
-        get() = _healthComponent
+    final override val healthComponent: HealthComponent = HealthComponent(gameContext, maxHealth, isFlammable, isFreezable, onDamageTaken = {
+        healthBarComponent.updateHealth(it)
+    }, onDeath = { remove() })
+
     private val healthBarComponent: HealthBarComponent = HealthBarComponent(
         gameContext,
-        _healthComponent.maxHealth,
-        _healthComponent.currentHealth,
+        healthComponent.maxHealth,
+        healthComponent.currentHealth,
         2f
     )
 
@@ -57,13 +55,13 @@ abstract class HealthBlock(
 
     override fun act(delta: Float) {
         super.act(delta)
-        _healthComponent.update(this, delta)
+        healthComponent.update(this, delta)
         healthBarComponent.updatePosition(this)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
-        _healthComponent.draw(this, batch)
+        healthComponent.draw(this, batch)
     }
 
 }
