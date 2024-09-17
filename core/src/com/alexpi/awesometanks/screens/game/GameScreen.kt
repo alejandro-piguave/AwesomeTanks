@@ -116,7 +116,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
     }
 
     private fun saveProgress(unlockNextLevel: Boolean = false) {
-        if (unlockNextLevel) game.gameRepository.unlockLevel(level+1)
+        if (unlockNextLevel) game.gameRepository.unlockLevel(level)
         gameStage.playerTank.saveProgress(game.gameRepository)
         game.gameRepository.updateMoney(gameStage.playerTank.money)
     }
