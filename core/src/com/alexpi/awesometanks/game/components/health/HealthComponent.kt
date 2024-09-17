@@ -8,14 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.TimeUtils
 
 class HealthComponent(
+    private val owner: HealthOwner,
     gameContext: GameContext,
     val maxHealth: Float,
     private val isFlammable: Boolean,
     private val isFreezable: Boolean,
-    initialState: HealthState = HealthState.Normal,
-    var onHealthChanged: ((Float) -> Unit)? = null,
-    var onFreeze: (() -> Unit)? = null,
-    var onDeath: ((Actor) -> Unit)? = null){
+    initialState: HealthState = HealthState.Normal){
     var currentHealth: Float = maxHealth
     private set
     var healthState = initialState
@@ -34,20 +32,25 @@ class HealthComponent(
     private val frozenTexture: Texture = gameContext.getAssetManager().get("sprites/frozen.png", Texture::class.java)
 
     fun takeDamage(damage: Float) {
+        if(currentHealth == 0f) return
         if(damage <= 0) throw IllegalArgumentException("damage must be greater than 0.")
         val finalDamage = damage * (1 - damageReduction)
         currentHealth = (currentHealth - finalDamage).coerceAtLeast(0f)
-        onHealthChanged?.invoke(currentHealth)
+        owner.onTakeDamage(currentHealth)
+        if(currentHealth == 0f) owner.onDeath()
     }
 
     fun kill() {
+        if(currentHealth == 0f) return
         currentHealth = 0f
+        owner.onDeath()
     }
 
     fun heal(health: Float) {
         if(health <= 0) throw IllegalArgumentException("health must be greater than 0.")
+
         currentHealth = (currentHealth + health).coerceAtMost(maxHealth)
-        onHealthChanged?.invoke(currentHealth)
+        owner.onHeal(currentHealth)
     }
 
     //burn duration in seconds
@@ -59,15 +62,11 @@ class HealthComponent(
     fun freeze(duration: Float) {
         if(!isFreezable) return
         healthState = HealthState.Frozen(startTime = TimeUtils.millis(), duration = duration)
-        onFreeze?.invoke()
+        owner.onFreeze()
     }
 
 
     fun update(parent: Actor, delta: Float) {
-        if(currentHealth <= 0) {
-            onDeath?.invoke(parent)
-            return
-        }
         when(val state = healthState) {
             is HealthState.Burning -> {
                 flameEffect.setPosition(parent.x + parent.width/2, parent.y + parent.height/2)

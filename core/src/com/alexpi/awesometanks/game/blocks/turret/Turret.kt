@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.game.blocks.turret
 
 import com.alexpi.awesometanks.game.blocks.HealthBlock
+import com.alexpi.awesometanks.game.blocks.turret.TurretState.Companion.DAMAGE_RECEIVED_MESSAGE
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.items.GoldNugget
@@ -18,6 +19,9 @@ import com.alexpi.awesometanks.game.weapons.Weapon
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.alexpi.awesometanks.screens.game.stage.GameStage
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine
+import com.badlogic.gdx.ai.msg.MessageManager
+import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 
@@ -28,7 +32,8 @@ class Turret(
     gameContext: GameContext,
     pos: Vector2,
     type: EnemyWeapon
-) : HealthBlock(gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET) {
+) : HealthBlock(gameContext,"sprites/turret_base.png", BodyShape.Box(.8f, .8f), pos, getHealthByType(type),true, true, FixtureFilter.TURRET),
+    Telegraph {
     val weapon: Weapon = getWeaponAt(type, gameContext)
     private val entityGroup = gameContext.getEntityGroup()
     private val gameStage: GameStage = gameContext.getStage()
@@ -82,9 +87,18 @@ class Turret(
         }
     }
 
+    override fun onFreeze() {
+        super.onFreeze()
+        stateMachine.changeState(FrozenState)
+    }
+
+    override fun onTakeDamage(health: Float) {
+        super.onTakeDamage(health)
+        MessageManager.getInstance().dispatchMessage(this, stateMachine, DAMAGE_RECEIVED_MESSAGE)
+    }
+
     init {
         weapon.unlimitedAmmo = true
-        healthComponent.onFreeze = { stateMachine.changeState(FrozenState) }
         setOrigin(width / 2, height / 2)
     }
 
@@ -103,4 +117,6 @@ class Turret(
             EnemyWeapon.RAILGUN -> RailGun(gameContext, 1f, 2, false, WEAPON_ROTATION_SPEED)
         }
     }
+
+    override fun handleMessage(msg: Telegram): Boolean = true
 }

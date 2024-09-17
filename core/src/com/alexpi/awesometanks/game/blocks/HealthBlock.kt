@@ -5,12 +5,12 @@ import com.alexpi.awesometanks.game.components.body.FixtureFilter
 import com.alexpi.awesometanks.game.components.health.HealthComponent
 import com.alexpi.awesometanks.game.components.health.HealthOwner
 import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
-import com.alexpi.awesometanks.game.manager.RumbleManager
 import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.particles.ParticleActor
 import com.alexpi.awesometanks.screens.game.stage.GameContext
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 
 abstract class HealthBlock(
     val gameContext: GameContext,
@@ -23,10 +23,7 @@ abstract class HealthBlock(
     private val rumbleOnDeath: Boolean = true
 ) : Block(gameContext, texturePath, bodyShape, position, fixtureFilter), HealthOwner {
     private val mapTable: MapTable = gameContext.getMapTable()
-    private val rumbleManager: RumbleManager = gameContext.getRumbleController()
-    final override val healthComponent: HealthComponent = HealthComponent(gameContext, maxHealth, isFlammable, isFreezable, onHealthChanged = {
-        healthBarComponent.updateHealth(it)
-    }, onDeath = { remove() })
+    final override val healthComponent: HealthComponent = HealthComponent(this, gameContext, maxHealth, isFlammable, isFreezable)
 
     private val healthBarComponent: HealthBarComponent = HealthBarComponent(
         gameContext,
@@ -46,7 +43,7 @@ abstract class HealthBlock(
                 false
             )
         )
-        if (rumbleOnDeath) rumbleManager.rumble(15f, .3f)
+        if (rumbleOnDeath) gameContext.getRumbleController().rumble(15f, .3f)
 
         val cell = mapTable.toCell(bodyComponent.body.position)
         mapTable.clear(cell)
@@ -65,4 +62,15 @@ abstract class HealthBlock(
         healthComponent.draw(this, batch)
     }
 
+    override fun onTakeDamage(health: Float) {
+        healthBarComponent.updateHealth(health)
+    }
+
+    override fun onHeal(health: Float) {
+        healthBarComponent.updateHealth(health)
+    }
+
+    override fun onDeath() {
+        addAction(Actions.removeActor())
+    }
 }

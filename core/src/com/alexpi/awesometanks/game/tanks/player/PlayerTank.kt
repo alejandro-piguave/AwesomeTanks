@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import kotlin.math.abs
 
 class PlayerTank(gameContext: GameContext) : Tank(
@@ -74,12 +75,11 @@ class PlayerTank(gameContext: GameContext) : Tank(
         HealthBarComponent(gameContext, 500f, 500f, null)
     override val healthComponent =
         HealthComponent(
+            this,
             gameContext,
             500f,
             isFlammable = true,
-            isFreezable = false,
-            onDeath = { remove() },
-            onHealthChanged = { healthBarComponent.updateHealth(it) }
+            isFreezable = false
         )
 
     //Used for keys
@@ -264,6 +264,21 @@ class PlayerTank(gameContext: GameContext) : Tank(
             a.healthComponent.freeze(5f)
         }
         for (a: Actor in blockGroup.children) if (a is HealthOwner) a.healthComponent.freeze(5f)
+    }
+
+    override fun onHeal(health: Float) {
+        super.onHeal(health)
+        healthBarComponent.updateHealth(health)
+    }
+
+    override fun onTakeDamage(health: Float) {
+        super.onTakeDamage(health)
+        healthBarComponent.updateHealth(health)
+    }
+
+    override fun onDeath() {
+        super.onDeath()
+        addAction(Actions.removeActor())
     }
 
     init {

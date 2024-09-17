@@ -5,6 +5,7 @@ import com.alexpi.awesometanks.game.components.health.HealthComponent
 import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
 import com.alexpi.awesometanks.game.items.GoldNugget
 import com.alexpi.awesometanks.game.tanks.Tank
+import com.alexpi.awesometanks.game.tanks.enemy.EnemyTankState.Companion.DAMAGE_RECEIVED_MESSAGE
 import com.alexpi.awesometanks.game.utils.RandomUtils
 import com.alexpi.awesometanks.game.weapons.Cannon
 import com.alexpi.awesometanks.game.weapons.Flamethrower
@@ -22,6 +23,7 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 
 /**
  * Created by Alex on 17/02/2016.
@@ -40,16 +42,11 @@ class EnemyTank(
 
     override val currentWeapon: Weapon = getWeaponAt(type.weapon, gameContext, 1f, type.tier.power)
     override val healthComponent: HealthComponent = HealthComponent(
+        this,
         gameContext,
         type.getHealth(),
         isFlammable = true,
-        isFreezable = true,
-        onHealthChanged = {
-            healthBarComponent.updateHealth(it)
-            MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
-        },
-        onDeath = { remove() },
-        onFreeze = { stateMachine.changeState(FrozenState) }
+        isFreezable = true
     )
     override val healthBarComponent = HealthBarComponent(
         gameContext,
@@ -114,6 +111,27 @@ class EnemyTank(
             EnemyWeapon.LASERGUN -> LaserGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
             EnemyWeapon.RAILGUN -> RailGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
         }
+    }
+
+    override fun onDeath() {
+        super.onDeath()
+        addAction(Actions.removeActor())
+    }
+
+    override fun onTakeDamage(health: Float) {
+        super.onTakeDamage(health)
+        healthBarComponent.updateHealth(health)
+        MessageManager.getInstance().dispatchMessage(this, stateMachine, DAMAGE_RECEIVED_MESSAGE)
+    }
+
+    override fun onHeal(health: Float) {
+        super.onHeal(health)
+        healthBarComponent.updateHealth(health)
+    }
+
+    override fun onFreeze() {
+        super.onFreeze()
+        stateMachine.changeState(FrozenState)
     }
 
     companion object {
