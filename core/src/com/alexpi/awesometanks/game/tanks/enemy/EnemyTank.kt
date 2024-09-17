@@ -1,9 +1,8 @@
 package com.alexpi.awesometanks.game.tanks.enemy
 
-import com.alexpi.awesometanks.game.ai.EnemyTankState
-import com.alexpi.awesometanks.game.ai.FrozenState
-import com.alexpi.awesometanks.game.ai.WanderState
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
+import com.alexpi.awesometanks.game.components.health.HealthComponent
+import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
 import com.alexpi.awesometanks.game.items.GoldNugget
 import com.alexpi.awesometanks.game.tanks.Tank
 import com.alexpi.awesometanks.game.utils.RandomUtils
@@ -30,16 +29,33 @@ import com.badlogic.gdx.math.Vector2
 class EnemyTank(
     gameContext: GameContext,
     position: Vector2,
-    type: EnemyType) : Tank(gameContext, position, FixtureFilter.ENEMY_TANK, type.tier.size,
-    type.getHealth(),
-    true, MOVEMENT_SPEED, type.tier.color
+    type: EnemyType
+) : Tank(
+    gameContext, position, FixtureFilter.ENEMY_TANK, type.tier.size,
+    MOVEMENT_SPEED, type.tier.color
 ), Telegraph {
 
     val stateMachine = DefaultStateMachine<EnemyTank, EnemyTankState>(this, WanderState())
-    private val nuggetValue: Int
-    private val weapon: Weapon = getWeaponAt(type.weapon, gameContext,1f, type.tier.power)
-    override val currentWeapon: Weapon
-        get() = weapon
+    private val nuggetValue: Int = type.getNuggetValue()
+
+    override val currentWeapon: Weapon = getWeaponAt(type.weapon, gameContext, 1f, type.tier.power)
+    override val healthComponent: HealthComponent = HealthComponent(
+        gameContext,
+        type.getHealth(),
+        isFlammable = true,
+        isFreezable = true,
+        onDamageTaken = {
+            healthBarComponent.updateHealth(it)
+            MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
+        },
+        onFreeze = { stateMachine.changeState(FrozenState) }
+    )
+    override val healthBarComponent = HealthBarComponent(
+        gameContext,
+        healthComponent.maxHealth,
+        healthComponent.currentHealth,
+        2f
+    )
 
     override fun act(delta: Float) {
         super.act(delta)
@@ -53,8 +69,14 @@ class EnemyTank(
 
     private fun dropLoot() {
         val count = RandomUtils.getRandomInt(5, 15)
-        repeat(count){
-            parent.addActor(GoldNugget(gameContext, bodyComponent.body.position, RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)))
+        repeat(count) {
+            parent.addActor(
+                GoldNugget(
+                    gameContext,
+                    bodyComponent.body.position,
+                    RandomUtils.getRandomInt(nuggetValue - 5, nuggetValue + 5)
+                )
+            )
         }
     }
 
@@ -69,9 +91,24 @@ class EnemyTank(
             EnemyWeapon.MINIGUN -> MiniGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
             EnemyWeapon.SHOTGUN -> ShotGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
             EnemyWeapon.RICOCHET -> Ricochet(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
-            EnemyWeapon.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
+            EnemyWeapon.FLAMETHROWER -> Flamethrower(
+                gameContext,
+                ammo,
+                power,
+                false,
+                WEAPON_ROTATION_SPEED
+            )
+
             EnemyWeapon.CANNON -> Cannon(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
-            EnemyWeapon.ROCKETS -> RocketLauncher(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED, rocketListener)
+            EnemyWeapon.ROCKETS -> RocketLauncher(
+                gameContext,
+                ammo,
+                power,
+                false,
+                WEAPON_ROTATION_SPEED,
+                rocketListener
+            )
+
             EnemyWeapon.LASERGUN -> LaserGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
             EnemyWeapon.RAILGUN -> RailGun(gameContext, ammo, power, false, WEAPON_ROTATION_SPEED)
         }
@@ -84,18 +121,10 @@ class EnemyTank(
     }
 
     init {
-        weapon.unlimitedAmmo = true
-        nuggetValue = type.getNuggetValue()
-        healthComponent.onDamageTaken = {
-            healthBarComponent.updateHealth(it, 2f)
-            MessageManager.getInstance().dispatchMessage(this, stateMachine, EnemyTankState.DAMAGE_RECEIVED_MESSAGE)
-        }
-        healthComponent.onFreeze = {
-            stateMachine.changeState(FrozenState)
-        }
+        currentWeapon.unlimitedAmmo = true
     }
-    
 
-    override fun handleMessage(msg: Telegram): Boolean  = true
+
+    override fun handleMessage(msg: Telegram): Boolean = true
 
 }

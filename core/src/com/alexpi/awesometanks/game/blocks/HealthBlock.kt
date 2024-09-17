@@ -26,14 +26,15 @@ abstract class HealthBlock(
     private val rumbleManager: RumbleManager = gameContext.getRumbleController()
     private val _healthComponent: HealthComponent =
         HealthComponent(gameContext, maxHealth, isFlammable, isFreezable, onDamageTaken = {
-            healthBarComponent.updateHealth(it, 2f)
+            healthBarComponent.updateHealth(it)
         }, onDeath = { remove() })
     override val healthComponent: HealthComponent
         get() = _healthComponent
     private val healthBarComponent: HealthBarComponent = HealthBarComponent(
         gameContext,
         _healthComponent.maxHealth,
-        _healthComponent.currentHealth
+        _healthComponent.currentHealth,
+        2f
     )
 
     override fun remove(): Boolean {

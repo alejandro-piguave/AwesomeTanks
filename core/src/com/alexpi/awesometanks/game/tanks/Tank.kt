@@ -3,7 +3,6 @@ package com.alexpi.awesometanks.game.tanks
 import com.alexpi.awesometanks.game.components.body.BodyComponent
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
-import com.alexpi.awesometanks.game.components.health.HealthComponent
 import com.alexpi.awesometanks.game.components.health.HealthOwner
 import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
 import com.alexpi.awesometanks.game.particles.ParticleActor
@@ -30,8 +29,6 @@ abstract class Tank(
     position: Vector2,
     fixtureFilter: FixtureFilter,
     bodySize: Float,
-    maxHealth: Float,
-    isFreezable: Boolean,
     private val movementSpeed: Float,
     tankColor: Color
 ) : Actor(), HealthOwner {
@@ -50,20 +47,8 @@ abstract class Tank(
         position,
         10f
     )
-    private val _healthComponent = HealthComponent(
-        gameContext,
-        maxHealth,
-        true,
-        isFreezable,
-        onDamageTaken = { healthBarComponent.updateHealth(it) },
-        onDeath = { remove() })
-    override val healthComponent: HealthComponent get() = _healthComponent
 
-    val healthBarComponent: HealthBarComponent = HealthBarComponent(
-        gameContext,
-        _healthComponent.maxHealth,
-        _healthComponent.currentHealth
-    )
+    abstract val healthBarComponent: HealthBarComponent
 
     private var currentAngleRotation: Float = 0f
     private var desiredAngleRotation: Float = 0f
@@ -96,12 +81,12 @@ abstract class Tank(
             y,
         )
         batch.setColor(1f, 1f, 1f, parentAlpha)
-        _healthComponent.draw(this, batch)
+        healthComponent.draw(this, batch)
     }
 
     override fun act(delta: Float) {
         super.act(delta)
-        _healthComponent.update(this, delta)
+        healthComponent.update(this, delta)
         healthBarComponent.updatePosition(this)
 
         if (isMoving) {

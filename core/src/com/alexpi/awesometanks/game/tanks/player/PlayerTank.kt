@@ -2,7 +2,9 @@ package com.alexpi.awesometanks.game.tanks.player
 
 import com.alexpi.awesometanks.data.GameRepository
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
+import com.alexpi.awesometanks.game.components.health.HealthComponent
 import com.alexpi.awesometanks.game.components.health.HealthOwner
+import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
 import com.alexpi.awesometanks.game.items.FreezingBall
 import com.alexpi.awesometanks.game.items.GoldNugget
 import com.alexpi.awesometanks.game.items.HealthPack
@@ -33,8 +35,6 @@ import kotlin.math.abs
 
 class PlayerTank(gameContext: GameContext) : Tank(
     gameContext, Vector2(-1f, -1f), FixtureFilter.PLAYER, .75f,
-    500f,
-    false,
     150 + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.SPEED) * 10f,
     Color.WHITE
 ), RocketListener {
@@ -67,10 +67,22 @@ class PlayerTank(gameContext: GameContext) : Tank(
 
     private val weapons: List<Weapon> = WeaponUpgrade.values().map {
         val weaponValues = gameContext.getGameRepository().getWeaponValues(it)
-        val rotationSpeed = 4.2f + gameContext.getGameRepository().getUpgradeLevel(PerformanceUpgrade.ROTATION) * 1.5f
+        val rotationSpeed = 4.2f + gameContext.getGameRepository()
+            .getUpgradeLevel(PerformanceUpgrade.ROTATION) * 1.5f
 
         getWeaponAt(it, gameContext, weaponValues.ammo, weaponValues.power, rotationSpeed)
     }
+
+    override val healthBarComponent =
+        HealthBarComponent(gameContext, 500f, 500f, null)
+    override val healthComponent =
+        HealthComponent(
+            gameContext,
+            500f,
+            isFlammable = true,
+            isFreezable = false,
+            onDamageTaken = { healthBarComponent.updateHealth(it) }
+        )
 
     //Used for keys
 
@@ -106,7 +118,7 @@ class PlayerTank(gameContext: GameContext) : Tank(
             val rocketLauncher = weapons[WeaponUpgrade.ROCKETS.ordinal] as RocketLauncher
             rocketLauncher.rocket?.updateOrientation(x, y)
         } else {
-            currentWeapon.desiredRotationAngle = MathUtils.atan2(y,x)
+            currentWeapon.desiredRotationAngle = MathUtils.atan2(y, x)
         }
     }
 
@@ -115,7 +127,8 @@ class PlayerTank(gameContext: GameContext) : Tank(
     }
 
     fun saveProgress(gameRepository: GameRepository) {
-        WeaponUpgrade.values().forEachIndexed { i, weapon -> gameRepository.saveAmmo(weapon, weapons[i].ammo)  }
+        WeaponUpgrade.values()
+            .forEachIndexed { i, weapon -> gameRepository.saveAmmo(weapon, weapons[i].ammo) }
     }
 
     private fun updateVisibleArea() {
@@ -257,7 +270,6 @@ class PlayerTank(gameContext: GameContext) : Tank(
 
     init {
         healthComponent.damageReduction = armor * .1f
-        healthBarComponent.showHealthBar()
     }
 
     private fun getWeaponAt(
@@ -271,9 +283,24 @@ class PlayerTank(gameContext: GameContext) : Tank(
             WeaponUpgrade.MINIGUN -> MiniGun(gameContext, ammo, power, true, rotationSpeed)
             WeaponUpgrade.SHOTGUN -> ShotGun(gameContext, ammo, power, true, rotationSpeed)
             WeaponUpgrade.RICOCHET -> Ricochet(gameContext, ammo, power, true, rotationSpeed)
-            WeaponUpgrade.FLAMETHROWER -> Flamethrower(gameContext, ammo, power, true, rotationSpeed)
+            WeaponUpgrade.FLAMETHROWER -> Flamethrower(
+                gameContext,
+                ammo,
+                power,
+                true,
+                rotationSpeed
+            )
+
             WeaponUpgrade.CANNON -> Cannon(gameContext, ammo, power, true, rotationSpeed)
-            WeaponUpgrade.ROCKETS -> RocketLauncher(gameContext, ammo, power, true, rotationSpeed,this)
+            WeaponUpgrade.ROCKETS -> RocketLauncher(
+                gameContext,
+                ammo,
+                power,
+                true,
+                rotationSpeed,
+                this
+            )
+
             WeaponUpgrade.LASERGUN -> LaserGun(gameContext, ammo, power, true, rotationSpeed)
             WeaponUpgrade.RAILGUN -> RailGun(gameContext, ammo, power, true, rotationSpeed)
         }

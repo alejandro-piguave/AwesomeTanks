@@ -124,9 +124,6 @@ abstract class Weapon(
 
     open fun update(delta: Float, group: Group, position: Vector2) {
         updateRotationAngle(delta)
-
-        if(isShooting) {
-        }
         if(isShooting && canShoot()) {
             createProjectile(group, position)
             decreaseAmmo()

@@ -1,8 +1,7 @@
-package com.alexpi.awesometanks.game.ai
+package com.alexpi.awesometanks.game.tanks.enemy
 
 import com.alexpi.awesometanks.game.blocks.Block
 import com.alexpi.awesometanks.game.map.Cell
-import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.badlogic.gdx.ai.fsm.State
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.pfa.Connection
@@ -61,7 +60,9 @@ sealed class EnemyTankState: State<EnemyTank>{
         return isVisible
     }
 
-    override fun enter(entity: EnemyTank) {}
+    override fun enter(entity: EnemyTank) {
+
+    }
 
     override fun exit(entity: EnemyTank) { }
 
@@ -185,54 +186,57 @@ class ChaseState: EnemyTankState(){
 
     override fun update(entity: EnemyTank) {
         val target = entity.gameContext.getPlayer()
-        val pathFinding = entity.gameContext.getPathFinding()
+
         if(!target.healthComponent.isAlive){
             entity.stateMachine.changeState(WanderState())
             return
         }
-        //If it still remembers having seen the player, check if it's in range
-        if(playerLastSeen + FORGET_TARGET_LIMIT_MILLIS > TimeUtils.millis()){
-            val deltaX = target.position.x - entity.bodyComponent.body.position.x
-            val deltaY = target.position.y - entity.bodyComponent.body.position.y
-
-            //If the player is in range to shoot, check if its directly visible
-            if(deltaX * deltaX  + deltaY * deltaY < SHOOTING_RADIUS_2){
-                val world = entity.gameContext.getWorld()
-                val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.position)
-                if(isTargetVisible){
-                    //If it is, then shoot
-                    entity.stateMachine.changeState(ShootState)
-                    return
-                }
-            }
 
 
-            //Otherwise, chase it according to the path finding algorithm
-            if(lastPathFindingExecution + PATHFINDING_EXECUTION_INTERVAL < TimeUtils.millis()){
-                lastPathFindingExecution = TimeUtils.millis()
-
-                val nextPosition = pathFinding.findNextPosition(entity.bodyComponent.body.position, target.position)
-                if(nextPosition == null){
-                    //Path is blocked or doesn't exist, keep wandering
-                    entity.stateMachine.changeState(WanderState())
-                }
-                else {
-                    //Else, update position
-                    val nextDeltaX = nextPosition.x - entity.bodyComponent.body.position.x
-                    val nextDeltaY = nextPosition.y - entity.bodyComponent.body.position.y
-                    val moveAngle = atan2(nextDeltaY, nextDeltaX)
-
-                    entity.currentWeapon.desiredRotationAngle = moveAngle
-                    entity.setOrientation(moveAngle)
-                }
-            }
-
-        } else{
-            //Else keep wandering
+        //If it has forgotten having seen the player, keep wandering
+        if(TimeUtils.millis() - playerLastSeen > FORGET_TARGET_LIMIT_MILLIS) {
             val wanderState = WanderState()
             entity.stateMachine.changeState(AwaitState(AWAIT_TIME_MILLIS, wanderState))
+            return
+        }
+        //Else, check if it's in range
+
+        val deltaX = target.position.x - entity.bodyComponent.body.position.x
+        val deltaY = target.position.y - entity.bodyComponent.body.position.y
+
+        //If the player is in range to shoot, check if its directly visible
+        if(deltaX * deltaX  + deltaY * deltaY < SHOOTING_RADIUS_2){
+            val world = entity.gameContext.getWorld()
+            val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.position)
+            if(isTargetVisible){
+                //If it is, then shoot
+                entity.stateMachine.changeState(ShootState)
+                return
+            }
         }
 
+        //Otherwise, chase it according to the path finding algorithm
+        if(lastPathFindingExecution + PATHFINDING_EXECUTION_INTERVAL < TimeUtils.millis()){
+
+            val pathFinding = entity.gameContext.getPathFinding()
+
+            val nextPosition = pathFinding.findNextPosition(entity.bodyComponent.body.position, target.position)
+            if(nextPosition == null){
+                //Path is blocked or doesn't exist, keep wandering
+                entity.stateMachine.changeState(WanderState())
+            }
+            else {
+                //Else, update position
+                val nextDeltaX = nextPosition.x - entity.bodyComponent.body.position.x
+                val nextDeltaY = nextPosition.y - entity.bodyComponent.body.position.y
+                val moveAngle = atan2(nextDeltaY, nextDeltaX)
+
+                entity.currentWeapon.desiredRotationAngle = moveAngle
+                entity.setOrientation(moveAngle)
+            }
+
+            lastPathFindingExecution = TimeUtils.millis()
+        }
     }
 
     override fun exit(entity: EnemyTank) {
@@ -256,20 +260,22 @@ object ShootState: EnemyTankState(){
         val deltaY = target.position.y - entity.bodyComponent.body.position.y
 
 
-        if(deltaX * deltaX + deltaY * deltaY < SHOOTING_RADIUS_2){
-            val world = entity.gameContext.getWorld()
-            val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.position)
-            if(isTargetVisible){
-                //If the player is in range and visible, aim and keep shooting
-                val rotationAngle = MathUtils.atan2(deltaY, deltaX)
-                entity.currentWeapon.desiredRotationAngle = rotationAngle
-                entity.currentWeapon.isShooting = true
-                return
-            }
+        //If it is not in range, chase the target
+        if(deltaX * deltaX + deltaY * deltaY > SHOOTING_RADIUS_2){
+            entity.stateMachine.changeState(ChaseState())
+            return
         }
 
-        //Else, chase it
-        entity.stateMachine.changeState(ChaseState())
+        val world = entity.gameContext.getWorld()
+        val isTargetVisible = checkTargetVisibility(world, entity.bodyComponent.body.position, target.position)
+        if(isTargetVisible){
+            //If the player is in range and visible, aim and keep shooting
+            val rotationAngle = MathUtils.atan2(deltaY, deltaX)
+            entity.currentWeapon.desiredRotationAngle = rotationAngle
+            entity.currentWeapon.isShooting = true
+            return
+        }
+
 
     }
 
