@@ -74,10 +74,10 @@ class HealthComponent(
                 if(flameEffect.isComplete) flameEffect.reset()
                 takeDamage(state.damage)
 
-                if(state.startTime + state.duration * 1000 > TimeUtils.millis()) healthState = HealthState.Normal
+                if(TimeUtils.millis() - state.startTime > state.duration * 1000) healthState = HealthState.Normal
             }
             is HealthState.Frozen -> {
-                if(state.startTime + state.duration * 1000 > TimeUtils.millis()) healthState = HealthState.Normal
+                if(TimeUtils.millis() - state.startTime > state.duration * 1000) healthState = HealthState.Normal
             }
             HealthState.Normal -> {}
         }

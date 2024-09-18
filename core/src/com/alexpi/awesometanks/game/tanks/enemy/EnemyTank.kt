@@ -23,6 +23,7 @@ import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.ai.msg.Telegraph
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 
 /**
@@ -132,6 +133,7 @@ class EnemyTank(
     override fun onFreeze() {
         super.onFreeze()
         stateMachine.changeState(FrozenState)
+        addAction(Actions.run { bodyComponent.body.type = BodyDef.BodyType.StaticBody })
     }
 
     companion object {

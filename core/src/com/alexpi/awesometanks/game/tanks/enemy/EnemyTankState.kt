@@ -11,6 +11,7 @@ import com.badlogic.gdx.ai.pfa.Connection
 import com.badlogic.gdx.ai.pfa.GraphPath
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.physics.box2d.BodyDef
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.utils.TimeUtils
 import kotlin.math.atan2
@@ -85,6 +86,11 @@ object FrozenState: EnemyTankState(){
         if(!entity.healthComponent.isFrozen){
             entity.stateMachine.changeState(entity.stateMachine.previousState)
         }
+    }
+
+    override fun exit(entity: EnemyTank) {
+        super.exit(entity)
+        entity.bodyComponent.body.type = BodyDef.BodyType.DynamicBody
     }
 
     override fun onMessage(entity: EnemyTank, telegram: Telegram): Boolean  = false

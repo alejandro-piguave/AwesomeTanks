@@ -157,7 +157,7 @@ abstract class Tank(
 
     init {
         color = tankColor
-        setSize(bodySize * TILE_SIZE, bodySize * TILE_SIZE)
-        setOrigin(width / 2, height / 2)
+        this.setSize(bodySize * TILE_SIZE, bodySize * TILE_SIZE)
+        this.setOrigin(width / 2, height / 2)
     }
 }

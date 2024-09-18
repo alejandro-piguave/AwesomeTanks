@@ -12,7 +12,6 @@ import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.map.createMap
 import com.alexpi.awesometanks.game.tanks.enemy.EnemyTank
 import com.alexpi.awesometanks.game.tanks.player.PlayerTank
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
@@ -81,7 +80,6 @@ class GameStage(viewport: Viewport, val level: Int, val assetManager: AssetManag
 
     fun checkLevelCompletion() {
         isLevelCompleted = isLevelCleared()
-        Gdx.app.log("GameStage","isLevelCompleted: $isLevelCompleted")
         if(isLevelCompleted) gameListener.onLevelCompleted()
     }
 
