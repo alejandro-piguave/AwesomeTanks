@@ -19,7 +19,7 @@ class Rocket(
     power: Int,
     filter: Boolean,
     private val rocketListener: RocketListener? = null
-) : Projectile(gameContext, pos, BodyShape.Box(.38f, .1f), angle, .075f, 90F + power * 15, filter){
+) : BaseProjectile(gameContext, pos, BodyShape.Box(.38f, .1f), angle, .075f, 90F + power * 15, filter){
 
     private val explosionManager = gameContext.getExplosionManager()
     private var isDestroyedFlag = false

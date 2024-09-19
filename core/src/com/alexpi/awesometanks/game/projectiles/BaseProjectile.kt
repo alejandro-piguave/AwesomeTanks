@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 /**
  * Created by Alex on 16/01/2016.
  */
-abstract class Projectile(
+abstract class BaseProjectile(
     val gameContext: GameContext,
     position: Vector2,
     bodyShape: BodyShape,

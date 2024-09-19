@@ -15,7 +15,7 @@ class Rail(
     angle: Float,
     power: Float,
     filter: Boolean
-) : Projectile(gameContext, pos, BodyShape.Circular(.125f), angle, 50f, 180 + power * 40, filter) {
+) : BaseProjectile(gameContext, pos, BodyShape.Circular(.125f), angle, 50f, 180 + power * 40, filter) {
     private val particleActor: ParticleActor =
         ParticleActor(
             gameContext,

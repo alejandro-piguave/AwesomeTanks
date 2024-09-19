@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 /**
  * Created by Alex on 16/01/2016.
  */
-class Flame(gameContext: GameContext, pos: Vector2, angle: Float, private var burnDuration: Float, filter: Boolean) : Projectile(
+class Flame(gameContext: GameContext, pos: Vector2, angle: Float, private var burnDuration: Float, filter: Boolean) : BaseProjectile(
     gameContext, pos, BodyShape.Circular(.05f), angle, 15f, 20f, filter
 ) {
     private val particleActor: ParticleActor =

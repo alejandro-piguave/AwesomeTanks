@@ -17,7 +17,7 @@ open class Bullet(
     radius: Float,
     damage: Float,
     isPlayer: Boolean
-) : Projectile(gameContext, pos, BodyShape.Circular(radius), angle, speed, damage, isPlayer) {
+) : BaseProjectile(gameContext, pos, BodyShape.Circular(radius), angle, speed, damage, isPlayer) {
     init {
         sprite = Sprite(gameContext.getAssetManager().get("sprites/bullet.png", Texture::class.java))
     }

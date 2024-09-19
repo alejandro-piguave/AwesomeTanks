@@ -1,7 +1,7 @@
 package com.alexpi.awesometanks.game.manager
 
 import com.alexpi.awesometanks.game.items.Item
-import com.alexpi.awesometanks.game.projectiles.Projectile
+import com.alexpi.awesometanks.game.projectiles.BaseProjectile
 import com.alexpi.awesometanks.game.tanks.player.PlayerTank
 import com.badlogic.gdx.physics.box2d.Contact
 import com.badlogic.gdx.physics.box2d.ContactImpulse
@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 class ContactManager: ContactListener {
 
     override fun beginContact(contact: Contact) {
-        contact.isOfType(Projectile::class.java, Actor::class.java) { projectile, actor ->
+        contact.isOfType(BaseProjectile::class.java, Actor::class.java) { projectile, actor ->
             projectile.collide(actor)
         }
 

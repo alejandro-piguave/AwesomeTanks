@@ -21,7 +21,7 @@ class RicochetBullet(
     angle: Float,
     power: Float,
     isPlayer: Boolean
-) : Projectile(gameContext, pos, BodyShape.Circular(.1f), angle, 20f, 35 + power * 5, isPlayer) {
+) : BaseProjectile(gameContext, pos, BodyShape.Circular(.1f), angle, 20f, 35 + power * 5, isPlayer) {
     private val particleActor: ParticleActor
     private var hits = 0
     override fun act(delta: Float) {
