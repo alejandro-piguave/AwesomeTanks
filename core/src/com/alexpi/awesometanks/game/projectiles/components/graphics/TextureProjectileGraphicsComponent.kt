@@ -6,9 +6,10 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 
-class DefaultProjectileGraphicsComponent(gameContext: GameContext, texturePath: String): ProjectileGraphicsComponent {
+class TextureProjectileGraphicsComponent(gameContext: GameContext, texturePath: String): ProjectileGraphicsComponent {
 
     private val textureRegion: TextureRegion = TextureRegion(gameContext.getAssetManager().get<Texture>(texturePath))
+    override fun update(projectile: Projectile, delta: Float) { }
 
     override fun draw(projectile: Projectile, batch: Batch, parentAlpha: Float) {
         with(projectile) {
