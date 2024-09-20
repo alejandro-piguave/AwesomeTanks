@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 class Projectile(
     val gameContext: GameContext,
     private val damage: Float,
-    private val physicsComponent: ProjectilePhysicsComponent,
+    val physicsComponent: ProjectilePhysicsComponent,
     private val collisionComponent: ProjectileCollisionComponent,
     private val graphicsComponent: ProjectileGraphicsComponent,
     private val projectileRemoveComponent: ProjectileRemoveComponent

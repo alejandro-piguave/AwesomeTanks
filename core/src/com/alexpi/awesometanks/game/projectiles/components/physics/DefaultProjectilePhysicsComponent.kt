@@ -53,6 +53,10 @@ class DefaultProjectilePhysicsComponent(
         projectile.setOrigin(projectile.width/2, projectile.height/2)
     }
 
+    override fun getPosition(): Vector2 {
+        return body.position
+    }
+
     override fun update(projectile: Projectile) {
         projectile.setPosition(getLeft() * TILE_SIZE, getBottom() * TILE_SIZE)
         projectile.rotation = body.angle * MathUtils.radiansToDegrees
