@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2
  * Created by Alex on 01/02/2016.
  */
 class GoldNugget(gameContext: GameContext, position: Vector2, val value: Int) :
-    Item(gameContext,"sprites/nugget.png", position, RandomUtils.getRandomFloat(.15f, .25f)) {
+    BaseItem(gameContext,"sprites/nugget.png", position, RandomUtils.getRandomFloat(.15f, .25f)) {
     init {
         val angle = RandomUtils.getRandomFloat(Math.PI * 2)
         body.applyLinearImpulse(

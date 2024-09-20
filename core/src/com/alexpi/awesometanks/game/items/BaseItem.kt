@@ -22,7 +22,7 @@ import kotlin.experimental.or
 /**
  * Created by Alex on 19/02/2016.
  */
-abstract class Item(gameContext: GameContext, fileName: String, position: Vector2, private val size: Float) : Actor() {
+abstract class BaseItem(gameContext: GameContext, fileName: String, position: Vector2, private val size: Float) : Actor() {
     private val sprite: Sprite
     @JvmField
     protected val body: Body

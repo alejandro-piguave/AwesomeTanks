@@ -8,7 +8,7 @@ import com.alexpi.awesometanks.game.components.healthbar.HealthBarComponent
 import com.alexpi.awesometanks.game.items.FreezingBall
 import com.alexpi.awesometanks.game.items.GoldNugget
 import com.alexpi.awesometanks.game.items.HealthPack
-import com.alexpi.awesometanks.game.items.Item
+import com.alexpi.awesometanks.game.items.BaseItem
 import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.tanks.Tank
 import com.alexpi.awesometanks.game.weapons.Cannon
@@ -246,7 +246,7 @@ class PlayerTank(gameContext: GameContext) : Tank(
         setMovementDirection(horizontalMovement, verticalMovement)
     }
 
-    fun pickUp(item: Item) {
+    fun pickUp(item: BaseItem) {
         when (item) {
             is GoldNugget -> {
                 money += item.value
