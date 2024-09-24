@@ -2,7 +2,7 @@ package com.alexpi.awesometanks.screens.game
 
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.game.components.SpriteComponent
+import com.alexpi.awesometanks.game.entites.createTile
 import com.alexpi.awesometanks.game.systems.RenderSystem
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.artemis.World
@@ -10,8 +10,7 @@ import com.artemis.WorldConfigurationBuilder
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.math.Vector2
 
 /**
  * Created by Alex on 30/12/2015.
@@ -28,13 +27,7 @@ class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), Inp
 
     override fun show() {
 
-        val i = gameWorld.create()
-        gameWorld.edit(i).add(SpriteComponent().apply {
-            sprite = Sprite(game.manager.get<Texture>("sprites/box.png")).apply {
-                setPosition(0f,0f)
-                setSize(80f, 80f)
-            }
-        })
+        val i = gameWorld.createTile(game.manager, "sprites/box.png", Vector2.Zero)
     }
 
 
