@@ -5,6 +5,7 @@ import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.game.entities.buildLevelMap
 import com.alexpi.awesometanks.game.map.MapLoader
 import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.systems.BodySystem
 import com.alexpi.awesometanks.game.systems.RenderSystem
 import com.alexpi.awesometanks.game.systems.UpdatePositionSystem
 import com.alexpi.awesometanks.screens.BaseScreen
@@ -29,7 +30,13 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor 
 
     init {
 
-        val config = WorldConfigurationBuilder().with(renderSystem, UpdatePositionSystem()).build()
+        val config = WorldConfigurationBuilder()
+            .with(
+                renderSystem,
+                BodySystem(),
+                UpdatePositionSystem()
+            )
+            .build()
         gameWorld = World(config)
 
         buildLevelMap()
@@ -52,7 +59,6 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor 
         gameWorld.delta = delta
         gameWorld.process()
     }
-
 
 
     override fun keyDown(keycode: Int): Boolean = false
