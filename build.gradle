@@ -116,5 +116,6 @@ project(":core") {
         api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         api group: 'io.github.libktx', name: 'ktx-actors', version: '1.11.0-rc2'
+        api "net.onedaybeard.artemis:artemis-odb:2.2.0"
     }
 }
