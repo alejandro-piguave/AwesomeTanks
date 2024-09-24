@@ -8,14 +8,14 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
 
-fun World.createTile(assetManager: AssetManager, texturePath: String, position: Vector2): Int {
+fun World.createGroundTile(assetManager: AssetManager, position: Vector2): Int {
     val i = create()
-    edit(i).add(SpriteComponent().apply {
-        sprite = Sprite(assetManager.get<Texture>(texturePath)).apply {
-            setPosition(position.x, position.y)
-            setSize(TILE_SIZE, TILE_SIZE)
-        }
-    })
+
+    val spriteComponent = SpriteComponent()
+    spriteComponent.sprite = Sprite(assetManager.get<Texture>("sprites/sand.png"))
+    spriteComponent.sprite.setPosition(position.x, position.y)
+    spriteComponent.sprite.setSize(TILE_SIZE, TILE_SIZE)
+    edit(i).add(spriteComponent)
 
     return i
 }
