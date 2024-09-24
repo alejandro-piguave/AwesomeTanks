@@ -2,32 +2,37 @@ package com.alexpi.awesometanks.screens.game
 
 
 import com.alexpi.awesometanks.MainGame
-import com.alexpi.awesometanks.game.entites.createTile
+import com.alexpi.awesometanks.game.entities.buildMap
+import com.alexpi.awesometanks.game.map.MapLoader
+import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.systems.RenderSystem
+import com.alexpi.awesometanks.game.systems.UpdatePositionSystem
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.artemis.World
 import com.artemis.WorldConfigurationBuilder
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.math.Vector2
 
 /**
  * Created by Alex on 30/12/2015.
  */
-class GameScreen(game: MainGame, private val level: Int) : BaseScreen(game), InputProcessor {
+class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor {
 
-    private val gameWorld: World
+    val gameWorld: World
     private val renderSystem = RenderSystem()
+    val mapTable = MapTable(MapLoader.load(level))
+
 
     init {
-        val config = WorldConfigurationBuilder().with(renderSystem).build()
+        val config = WorldConfigurationBuilder().with(renderSystem, UpdatePositionSystem()).build()
         gameWorld = World(config)
+
+        buildMap()
     }
 
     override fun show() {
 
-        val i = gameWorld.createTile(game.manager, "sprites/box.png", Vector2.Zero)
     }
 
 

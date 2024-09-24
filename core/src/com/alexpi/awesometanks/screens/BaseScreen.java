@@ -8,7 +8,7 @@ import com.alexpi.awesometanks.MainGame;
  */
 public abstract class BaseScreen implements Screen{
 
-    protected MainGame game;
+    private MainGame game;
 
     public BaseScreen(MainGame game){
         this.game = game;
@@ -47,5 +47,9 @@ public abstract class BaseScreen implements Screen{
     @Override
     public void pause() {
 
+    }
+
+    public MainGame getGame() {
+        return game;
     }
 }

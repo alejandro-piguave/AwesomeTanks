@@ -1,4 +1,4 @@
-package com.alexpi.awesometanks.game.entites
+package com.alexpi.awesometanks.game.entities
 
 import com.alexpi.awesometanks.game.components.SpriteComponent
 import com.alexpi.awesometanks.screens.TILE_SIZE
