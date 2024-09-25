@@ -10,6 +10,7 @@ fun GameScreen.buildLevelMap(){
         } else {
             when (cell.value) {
                 MapTable.START -> {
+                    gameWorld.createPlayer(game.manager, physicsWorld, cell.toWorldPosition(mapTable))
                 }
 
                 MapTable.GATE -> gameWorld.createSquareHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/gate.png", 1f)

@@ -5,9 +5,11 @@ import com.alexpi.awesometanks.MainGame
 import com.alexpi.awesometanks.game.entities.buildLevelMap
 import com.alexpi.awesometanks.game.map.MapLoader
 import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.systems.BodyMultiSpriteSystem
 import com.alexpi.awesometanks.game.systems.BodySystem
+import com.alexpi.awesometanks.game.systems.InputSystem
+import com.alexpi.awesometanks.game.systems.LinearMovementSystem
 import com.alexpi.awesometanks.game.systems.RenderSystem
-import com.alexpi.awesometanks.game.systems.UpdatePositionSystem
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.artemis.World
 import com.artemis.WorldConfigurationBuilder
@@ -26,15 +28,18 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor 
     val gameWorld: World
     val physicsWorld: PhysicsWorld = PhysicsWorld(Vector2.Zero, true)
     private val renderSystem = RenderSystem()
+    private val inputSystem = InputSystem()
     val mapTable = MapTable(MapLoader.load(level))
 
 
     init {
         val config = WorldConfigurationBuilder()
             .with(
-                renderSystem,
                 BodySystem(),
-                UpdatePositionSystem()
+                LinearMovementSystem(),
+                inputSystem,
+                BodyMultiSpriteSystem(),
+                renderSystem,
             )
             .build()
         gameWorld = World(config)
@@ -43,7 +48,7 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor 
     }
 
     override fun show() {
-        Gdx.input.inputProcessor = this
+        Gdx.input.inputProcessor = inputSystem
     }
 
 
