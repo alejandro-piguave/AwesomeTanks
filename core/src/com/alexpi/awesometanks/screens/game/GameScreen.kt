@@ -8,7 +8,7 @@ import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.systems.BodyMultiSpriteSystem
 import com.alexpi.awesometanks.game.systems.BodySystem
 import com.alexpi.awesometanks.game.systems.CameraFollowSystem
-import com.alexpi.awesometanks.game.systems.InputSystem
+import com.alexpi.awesometanks.game.systems.PlayerInputSystem
 import com.alexpi.awesometanks.game.systems.LinearMovementSystem
 import com.alexpi.awesometanks.game.systems.RenderSystem
 import com.alexpi.awesometanks.screens.BaseScreen
@@ -28,7 +28,7 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game) {
     val gameWorld: World
     val physicsWorld: PhysicsWorld = PhysicsWorld(Vector2.Zero, true)
     private val renderSystem = RenderSystem()
-    private val inputSystem = InputSystem()
+    private val playerInputSystem = PlayerInputSystem()
     val tagManager = TagManager()
     val mapTable = MapTable(MapLoader.load(level))
 
@@ -40,7 +40,7 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game) {
                 BodySystem(),
                 LinearMovementSystem(),
                 CameraFollowSystem(),
-                inputSystem,
+                playerInputSystem,
                 BodyMultiSpriteSystem(),
                 renderSystem,
             )
@@ -51,7 +51,7 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game) {
     }
 
     override fun show() {
-        Gdx.input.inputProcessor = inputSystem
+        Gdx.input.inputProcessor = playerInputSystem
     }
 
 

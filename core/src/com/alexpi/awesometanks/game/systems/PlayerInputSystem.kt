@@ -11,7 +11,7 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 
 @All(LinearMovementComponent::class)
-class InputSystem: BaseEntitySystem(), InputProcessor {
+class PlayerInputSystem: BaseEntitySystem(), InputProcessor {
 
     lateinit var tagManager: TagManager
     lateinit var linearMovementMapper: ComponentMapper<LinearMovementComponent>
