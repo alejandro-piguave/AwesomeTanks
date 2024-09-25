@@ -4,6 +4,7 @@ import com.artemis.BaseEntitySystem
 
 abstract class SortedIteratingSystem: BaseEntitySystem() {
     private var shouldSort = false
+    var sortedIds: IntArray = IntArray(0)
 
     fun forceSort() {
         shouldSort = true
@@ -20,13 +21,15 @@ abstract class SortedIteratingSystem: BaseEntitySystem() {
     }
 
     private fun sort(ids: IntArray): IntArray {
-        return if (shouldSort) {
+        if (shouldSort) {
+            sortedIds = ids.sortedBy { selector(it) }.toIntArray()
             shouldSort = false
-            ids.sortedBy { comparator(it) }.toIntArray()
-        } else ids
+        }
+
+        return  sortedIds
     }
 
-    protected abstract fun comparator(entityId: Int): Int
+    protected abstract fun selector(entityId: Int): Int
 
     protected abstract fun process(entityId: Int)
 
@@ -37,6 +40,5 @@ abstract class SortedIteratingSystem: BaseEntitySystem() {
         ids.forEach { id ->
             process(id)
         }
-
     }
 }

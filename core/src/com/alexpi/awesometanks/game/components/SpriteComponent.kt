@@ -5,4 +5,5 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 
 class SpriteComponent: Component() {
     lateinit var sprite: Sprite
+    lateinit var renderLayer: RenderLayer
 }

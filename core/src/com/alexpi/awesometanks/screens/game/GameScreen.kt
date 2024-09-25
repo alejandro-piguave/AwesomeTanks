@@ -12,6 +12,7 @@ import com.alexpi.awesometanks.screens.BaseScreen
 import com.artemis.World
 import com.artemis.WorldConfigurationBuilder
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.math.Vector2
@@ -29,7 +30,6 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor 
 
 
     init {
-
         val config = WorldConfigurationBuilder()
             .with(
                 renderSystem,
@@ -43,7 +43,7 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor 
     }
 
     override fun show() {
-
+        Gdx.input.inputProcessor = this
     }
 
 
@@ -61,10 +61,31 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game), InputProcessor 
     }
 
 
-    override fun keyDown(keycode: Int): Boolean = false
+    override fun keyDown(keycode: Int): Boolean {
+        when(keycode) {
+            Input.Keys.W -> {
+                renderSystem.updateCameraPosition(0f, 80f)
+                return true
+            }
+            Input.Keys.A -> {
+                renderSystem.updateCameraPosition(-80f, 0f)
+                return true
+            }
+            Input.Keys.S -> {
+                renderSystem.updateCameraPosition(0f, -80f)
+                return true
+            }
+            Input.Keys.D -> {
+                renderSystem.updateCameraPosition(80f, 0f)
+                return true
+            }
+        }
+        return false
+    }
 
     override fun hide() {
         gameWorld.dispose()
+        Gdx.input.inputProcessor = null
     }
 
     //EVENTS FOR DESKTOP
