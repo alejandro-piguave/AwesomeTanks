@@ -1,6 +1,7 @@
 package com.alexpi.awesometanks.game.entities
 
 import com.alexpi.awesometanks.game.map.MapTable
+import com.alexpi.awesometanks.game.tags.Tags
 import com.alexpi.awesometanks.screens.game.GameScreen
 
 fun GameScreen.buildLevelMap(){
@@ -10,7 +11,8 @@ fun GameScreen.buildLevelMap(){
         } else {
             when (cell.value) {
                 MapTable.START -> {
-                    gameWorld.createPlayer(game.manager, physicsWorld, cell.toWorldPosition(mapTable))
+                    val playerId = gameWorld.createPlayer(game.manager, physicsWorld, cell.toWorldPosition(mapTable))
+                    tagManager.register(Tags.PLAYER, playerId)
                 }
 
                 MapTable.GATE -> gameWorld.createSquareHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/gate.png", 1f)

@@ -46,9 +46,8 @@ class RenderSystem: SortedIteratingSystem() {
         viewport.update(width, height)
     }
 
-    fun updateCameraPosition(dx: Float, dy: Float) {
-        camera.position.x += dx
-        camera.position.y += dy
+    fun setCameraPosition(x: Float, y: Float) {
+        camera.position.set(x,y,0f)
     }
 
     override fun dispose() {

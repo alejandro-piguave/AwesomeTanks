@@ -1,24 +1,26 @@
 package com.alexpi.awesometanks.game.systems
 
 import com.alexpi.awesometanks.game.components.LinearMovementComponent
-import com.alexpi.awesometanks.game.components.PlayerComponent
+import com.alexpi.awesometanks.game.tags.Tags
 import com.alexpi.awesometanks.game.utils.SQRT2_2
+import com.artemis.BaseEntitySystem
 import com.artemis.ComponentMapper
 import com.artemis.annotations.All
-import com.artemis.systems.IteratingSystem
+import com.artemis.managers.TagManager
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 
-@All(LinearMovementComponent::class, PlayerComponent::class)
-class InputSystem: IteratingSystem(), InputProcessor {
+@All(LinearMovementComponent::class)
+class InputSystem: BaseEntitySystem(), InputProcessor {
 
+    lateinit var tagManager: TagManager
     lateinit var linearMovementMapper: ComponentMapper<LinearMovementComponent>
 
     private var horizontalDirection = 0f
     private var verticalDirection = 0f
 
-    override fun process(entityId: Int) {
-        val component = linearMovementMapper[entityId]
+    override fun processSystem() {
+        val component = linearMovementMapper[tagManager.getEntityId(Tags.PLAYER)]
         component.vX = calculateDx() * component.speed
         component.vY = calculateDy() * component.speed
     }
@@ -102,4 +104,6 @@ class InputSystem: IteratingSystem(), InputProcessor {
     override fun scrolled(amountX: Float, amountY: Float): Boolean {
         return true
     }
+
+
 }
