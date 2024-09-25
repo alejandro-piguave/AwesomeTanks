@@ -3,6 +3,7 @@ package com.alexpi.awesometanks.game.entities
 import com.alexpi.awesometanks.game.components.BodyComponent
 import com.alexpi.awesometanks.game.components.LinearMovementComponent
 import com.alexpi.awesometanks.game.components.MultiSpriteComponent
+import com.alexpi.awesometanks.game.components.SmoothRotationComponent
 import com.alexpi.awesometanks.game.components.SpriteComponent
 import com.alexpi.awesometanks.game.components.body.BodyShape
 import com.alexpi.awesometanks.game.components.body.FixtureFilter
@@ -30,6 +31,7 @@ fun World.createPlayer(assetManager: AssetManager, physicsWorld: PhysicsWorld, p
     val tankId = create()
     edit(tankId).add(bodyComponent)
     edit(tankId).add(LinearMovementComponent(speed = 150f))
+    edit(tankId).add(SmoothRotationComponent(12f, 1/40f))
     edit(tankId).add(multiSpriteComponent)
 
     return tankId

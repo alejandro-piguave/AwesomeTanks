@@ -4,6 +4,7 @@ import com.alexpi.awesometanks.game.components.BodyComponent
 import com.alexpi.awesometanks.game.components.MultiSpriteComponent
 import com.alexpi.awesometanks.game.components.SpriteComponent
 import com.alexpi.awesometanks.game.utils.setBounds
+import com.alexpi.awesometanks.game.utils.setRotation
 import com.artemis.ComponentMapper
 import com.artemis.annotations.All
 import com.artemis.systems.IteratingSystem
@@ -15,7 +16,12 @@ class BodyMultiSpriteSystem: IteratingSystem() {
     lateinit var multiSpriteMapper: ComponentMapper<MultiSpriteComponent>
 
     override fun process(entityId: Int) {
-        spriteMapper[multiSpriteMapper[entityId].bodySpriteId].sprite.setBounds(bodyMapper[entityId])
-        spriteMapper[multiSpriteMapper[entityId].wheelsSpriteId].sprite.setBounds(bodyMapper[entityId])
+        with(multiSpriteMapper[entityId]) {
+            spriteMapper[bodySpriteId].sprite.setBounds(bodyMapper[entityId])
+            spriteMapper[bodySpriteId].sprite.setRotation(bodyMapper[entityId])
+
+            spriteMapper[wheelsSpriteId].sprite.setBounds(bodyMapper[entityId])
+            spriteMapper[wheelsSpriteId].sprite.setRotation(bodyMapper[entityId])
+        }
     }
 }
