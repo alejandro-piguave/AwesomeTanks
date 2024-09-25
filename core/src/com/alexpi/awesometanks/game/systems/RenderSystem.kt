@@ -25,7 +25,7 @@ class RenderSystem: SortedIteratingSystem() {
         batch.begin()
     }
 
-    override fun selector(entityId: Int) = mapper[entityId].renderLayer.ordinal
+    override fun selector(entityId: Int) = mapper[entityId].layer.ordinal
 
     override fun process(entityId: Int) {
         val sprite = mapper[entityId].sprite

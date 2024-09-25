@@ -5,5 +5,10 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 
 class SpriteComponent: Component() {
     lateinit var sprite: Sprite
-    lateinit var renderLayer: RenderLayer
+    lateinit var layer: Layer
+
+
+    enum class Layer {
+        FLOOR, ENTITY, BLOCK, HEALTH_BAR, SHADE
+    }
 }

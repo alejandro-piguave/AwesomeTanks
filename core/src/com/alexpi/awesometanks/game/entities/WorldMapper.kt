@@ -12,11 +12,11 @@ fun GameScreen.buildLevelMap(){
                 MapTable.START -> {
                 }
 
-                MapTable.GATE -> gameWorld.createHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/gate.png")
-                MapTable.BRICKS -> gameWorld.createHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/bricks.png")
-                MapTable.BOX -> gameWorld.createHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/box.png")
-                MapTable.SPAWNER -> gameWorld.createHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/spawner.png")
-                MapTable.BOMB -> gameWorld.createHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/mine.png", .5f)
+                MapTable.GATE -> gameWorld.createSquareHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/gate.png", 1f)
+                MapTable.BRICKS -> gameWorld.createSquareHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/bricks.png",1f)
+                MapTable.BOX -> gameWorld.createSquareHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/box.png", .8f)
+                MapTable.SPAWNER -> gameWorld.createSquareHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/spawner.png", 1f)
+                MapTable.BOMB -> gameWorld.createCircularHealthBlock(game.manager, physicsWorld, cell.toWorldPosition(mapTable), "sprites/mine.png", .5f)
 
             }
             gameWorld.createGroundTile(game.manager, cell.toStagePosition(mapTable))
