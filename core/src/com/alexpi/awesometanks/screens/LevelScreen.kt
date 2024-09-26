@@ -25,7 +25,7 @@ class LevelScreen(game: MainGame?) : BaseScreen(game) {
     private lateinit var background: Texture
     override fun show() {
         stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
-        background = game.manager.get("sprites/background.png", Texture::class.java)
+        background = game.manager.get("ui/background.png", Texture::class.java)
         val table = Table()
         table.pad(32f)
         table.setFillParent(true)

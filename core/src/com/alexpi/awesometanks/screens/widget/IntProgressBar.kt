@@ -22,7 +22,7 @@ class IntProgressBar(
     private val background: NinePatchDrawable = NinePatchDrawable(
         NinePatch(
             assetManager.get(
-                "sprites/progress_bar_background.9.png",
+                "ui/progress_bar_background.9.png",
                 Texture::class.java
             ), 6, 6, 6, 6
         )
@@ -30,7 +30,7 @@ class IntProgressBar(
     private val foreground: NinePatchDrawable = NinePatchDrawable(
         NinePatch(
             assetManager.get(
-                "sprites/progress_bar_foreground.9.png",
+                "ui/progress_bar_foreground.9.png",
                 Texture::class.java
             ), 6, 6, 6, 6
         )

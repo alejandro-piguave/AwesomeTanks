@@ -34,7 +34,7 @@ import ktx.actors.onClick
  */
 class UpgradesScreen(game: MainGame) : BaseScreen(game) {
     private val stage: Stage = Stage(ExtendViewport(SCREEN_WIDTH, SCREEN_HEIGHT))
-    private val background: Texture = game.manager.get("sprites/background.png")
+    private val background: Texture = game.manager.get("ui/background.png")
     private var currentWeapon = 0
     override fun show() {
         val purchaseSound = game.manager.get("sounds/purchase.ogg", Sound::class.java)

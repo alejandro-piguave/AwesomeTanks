@@ -1,10 +1,10 @@
 package com.alexpi.awesometanks.screens
 
 import com.alexpi.awesometanks.MainGame
+import com.alexpi.awesometanks.game.module.Settings
 import com.alexpi.awesometanks.screens.upgrades.UpgradesScreen
 import com.alexpi.awesometanks.screens.widget.GameButton
 import com.alexpi.awesometanks.screens.widget.Styles
-import com.alexpi.awesometanks.game.module.Settings
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
@@ -31,7 +31,7 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
             SCREEN_HEIGHT
         )
         )
-        background = game.manager.get("sprites/background.png")
+        background = game.manager.get("ui/background.png")
         val table = Table()
         val title1 = Label("Awesome", Styles.getGameTitleStyle1(game.manager))
         val title2 = Label("Tanks", Styles.getGameTitleStyle2(game.manager))
@@ -46,18 +46,18 @@ class MainScreen(game: MainGame) : BaseScreen(game) {
             )
         }
         val soundButton = ImageButton(TextureRegionDrawable(game.manager.get<Texture>(
-            if(Settings.soundsOn)"sprites/sound_on.png" else "sprites/sound_off.png")))
+            if(Settings.soundsOn)"ui/sound_on.png" else "ui/sound_off.png")))
         soundButton.setPosition(SCREEN_WIDTH - 92f, SCREEN_HEIGHT - 92f)
         soundButton.onClick {
             Gdx.app.log("MainScreen", "Sound button clicked")
             if (Settings.soundsOn){
                 game.gameSettings.putBoolean("areSoundsActivated",false).flush()
                 Settings.soundsOn = false
-                soundButton.style.imageUp = TextureRegionDrawable(game.manager.get<Texture>("sprites/sound_off.png"))
+                soundButton.style.imageUp = TextureRegionDrawable(game.manager.get<Texture>("ui/sound_off.png"))
             }else{
                 game.gameSettings.putBoolean("areSoundsActivated",true).flush()
                 Settings.soundsOn = true
-                soundButton.style.imageUp = TextureRegionDrawable(game.manager.get<Texture>("sprites/sound_on.png"))
+                soundButton.style.imageUp = TextureRegionDrawable(game.manager.get<Texture>("ui/sound_on.png"))
             }
         }
         table.setFillParent(true)

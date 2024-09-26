@@ -32,7 +32,7 @@ open class FloatProgressBar(
         this.background = NinePatchDrawable(
             NinePatch(
                 assetManager.get(
-                    "sprites/progress_bar_background.9.png",
+                    "ui/progress_bar_background.9.png",
                     Texture::class.java
                 ), 6, 6, 6, 6
             )
@@ -40,7 +40,7 @@ open class FloatProgressBar(
         this.foreground = NinePatchDrawable(
             NinePatch(
                 assetManager.get(
-                    "sprites/progress_bar_foreground.9.png",
+                    "ui/progress_bar_foreground.9.png",
                     Texture::class.java
                 ), 6, 6, 6, 6
             )

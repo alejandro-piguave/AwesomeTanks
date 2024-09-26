@@ -17,8 +17,8 @@ import com.badlogic.gdx.physics.box2d.World as PhysicsWorld
 
 fun World.createPlayer(assetManager: AssetManager, physicsWorld: PhysicsWorld, position: Vector2): Int {
     val bodyComponent = getTankBodyComponent(physicsWorld, position, .75f)
-    val bodySpriteComponent = getSpriteComponent(assetManager, "sprites/tank_body.png", SpriteComponent.Layer.ENTITY, bodyComponent)
-    val wheelsSpriteComponent = getSpriteComponent(assetManager, "sprites/tank_wheels.png", SpriteComponent.Layer.ENTITY, bodyComponent)
+    val bodySpriteComponent = getSpriteComponent(assetManager, "sprites/tank/tank_body.png", SpriteComponent.Layer.ENTITY, bodyComponent)
+    val wheelsSpriteComponent = getSpriteComponent(assetManager, "sprites/tank/tank_wheels.png", SpriteComponent.Layer.ENTITY, bodyComponent)
 
     val wheelsSpriteId = create()
     edit(wheelsSpriteId).add(wheelsSpriteComponent)

@@ -15,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.World as PhysicsWorld
 fun World.createWall(assetManager: AssetManager, physicsWorld: PhysicsWorld, position: Vector2): Int {
 
     val bodyComponent = getSquareBlockBodyComponent(physicsWorld, position, 1f)
-    val spriteComponent = getSpriteComponent(assetManager, "sprites/wall.png", SpriteComponent.Layer.BLOCK, bodyComponent)
+    val spriteComponent = getSpriteComponent(assetManager, "sprites/blocks/wall.png", SpriteComponent.Layer.BLOCK, bodyComponent)
 
     val i = create()
     edit(i).add(bodyComponent)

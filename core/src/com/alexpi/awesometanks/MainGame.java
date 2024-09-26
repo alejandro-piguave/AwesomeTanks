@@ -50,50 +50,59 @@ public class MainGame extends Game {
         manager.load("sounds/laser.ogg", Sound.class);
         manager.load("sounds/railgun.ogg", Sound.class);
 
-        manager.load("sprites/background.png", Texture.class);
-        manager.load("sprites/button_background.9.png", Texture.class);
-        manager.load("sprites/button_background_down.9.png", Texture.class);
-        manager.load("sprites/label_background.9.png", Texture.class);
-        manager.load("sprites/progress_bar_background.9.png", Texture.class);
-        manager.load("sprites/progress_bar_foreground.9.png", Texture.class);
+        manager.load("ui/background.png", Texture.class);
+        manager.load("ui/button_background.9.png", Texture.class);
+        manager.load("ui/button_background_down.9.png", Texture.class);
+        manager.load("ui/label_background.9.png", Texture.class);
+        manager.load("ui/progress_bar_background.9.png", Texture.class);
+        manager.load("ui/progress_bar_foreground.9.png", Texture.class);
+        manager.load("ui/gun_menu_icon.png", Texture.class);
+        manager.load("ui/touchBackground.png", Texture.class);
+        manager.load("ui/touchKnob.png", Texture.class);
+        manager.load("ui/sound_on.png", Texture.class);
+        manager.load("ui/sound_off.png", Texture.class);
+
+        manager.load("sprites/tank/tank_wheels.png", Texture.class);
+        manager.load("sprites/tank/tank_body.png", Texture.class);
+
+        manager.load("sprites/blocks/wall.png", Texture.class);
+        manager.load("sprites/blocks/spawner.png", Texture.class);
+        manager.load("sprites/blocks/box.png", Texture.class);
+        manager.load("sprites/blocks/mine.png", Texture.class);
+        manager.load("sprites/blocks/bricks.png", Texture.class);
+        manager.load("sprites/blocks/gate.png", Texture.class);
+        manager.load("sprites/blocks/turret_base.png", Texture.class);
+
+        manager.load("sprites/tiles/sand.png", Texture.class);
+        manager.load("sprites/tiles/shade.png", Texture.class);
+
+        manager.load("sprites/items/nugget.png", Texture.class);
+        manager.load("sprites/items/freezing_ball.png", Texture.class);
+        manager.load("sprites/items/health_pack.png", Texture.class);
+
+        manager.load("sprites/weapons/minigun.png", Texture.class);
+        manager.load("sprites/weapons/shotgun.png", Texture.class);
+        manager.load("sprites/weapons/ricochet.png", Texture.class);
+        manager.load("sprites/weapons/flamethrower.png", Texture.class);
+        manager.load("sprites/weapons/canon.png", Texture.class);
+        manager.load("sprites/weapons/rocket.png", Texture.class);
+        manager.load("sprites/weapons/laser.png", Texture.class);
+        manager.load("sprites/weapons/railgun.png", Texture.class);
 
 
-        manager.load("touchBackground.png", Texture.class);
-        manager.load("touchKnob.png", Texture.class);
-
-        manager.load("sprites/tank_wheels.png", Texture.class);
-        manager.load("sprites/tank_body.png", Texture.class);
-
-        manager.load("sprites/wall.png", Texture.class);
-        manager.load("sprites/sand.png", Texture.class);
-        manager.load("sprites/spawner.png", Texture.class);
-        manager.load("sprites/box.png", Texture.class);
-        manager.load("sprites/mine.png", Texture.class);
-        manager.load("sprites/bricks.png", Texture.class);
-        manager.load("sprites/gate.png", Texture.class);
-        manager.load("sprites/shade.png", Texture.class);
-        manager.load("sprites/turret_base.png", Texture.class);
-        manager.load("sprites/explosion_shine.png", Texture.class);
-
-        manager.load("sprites/nugget.png", Texture.class);
-        manager.load("sprites/freezing_ball.png", Texture.class);
-        manager.load("sprites/health_pack.png", Texture.class);
-        manager.load("sprites/frozen.png", Texture.class);
-        manager.load("sprites/gun_menu_icon.png", Texture.class);
-
-        manager.load("sprites/sound_on.png", Texture.class);
-        manager.load("sprites/sound_off.png", Texture.class);
-
-        manager.load("sprites/bullet.png", Texture.class);
-        manager.load("sprites/laser_ray.png", Texture.class);
-        manager.load("sprites/railgun_ray.png", Texture.class);
-        manager.load("sprites/railgun_laser.png", Texture.class);
-        manager.load("sprites/rocket.png", Texture.class);
-        manager.load("sprites/rocket_flame.png", Texture.class);
+        manager.load("sprites/projectiles/bullet.png", Texture.class);
+        manager.load("sprites/projectiles/laser_ray.png", Texture.class);
+        manager.load("sprites/projectiles/railgun_ray.png", Texture.class);
+        manager.load("sprites/projectiles/railgun_laser.png", Texture.class);
+        manager.load("sprites/projectiles/rocket.png", Texture.class);
+        manager.load("sprites/projectiles/rocket_flame.png", Texture.class);
+        manager.load("sprites/projectiles/ricochet_bullet.png", Texture.class);
 
         manager.load("sprites/health_bar/health_bar_background.png", Texture.class);
         manager.load("sprites/health_bar/health_bar_foreground.png", Texture.class);
-        manager.load("sprites/ricochet_bullet.png", Texture.class);
+
+        manager.load("sprites/effects/explosion_shine.png", Texture.class);
+        manager.load("sprites/effects/frozen.png", Texture.class);
 
         manager.load("particles/flame.party", ParticleEffect.class);
         manager.load("particles/ricochets.party", ParticleEffect.class);
@@ -102,14 +111,9 @@ public class MainGame extends Game {
         manager.load("particles/explosion.party", ParticleEffect.class);
         manager.load("particles/big-explosion.party", ParticleEffect.class);
 
-        manager.load("weapons/minigun.png", Texture.class);
-        manager.load("weapons/shotgun.png", Texture.class);
-        manager.load("weapons/ricochet.png", Texture.class);
-        manager.load("weapons/flamethrower.png", Texture.class);
-        manager.load("weapons/canon.png", Texture.class);
-        manager.load("weapons/rocket.png", Texture.class);
-        manager.load("weapons/laser.png", Texture.class);
-        manager.load("weapons/railgun.png", Texture.class);
+
+
+
 
         for (int i = 0; i < WeaponUpgrade.values().length; i++){
             manager.load(WeaponUpgrade.values()[i].getEnabledIconPath(), Texture.class);

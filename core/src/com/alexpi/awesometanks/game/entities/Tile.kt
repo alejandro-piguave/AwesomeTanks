@@ -13,7 +13,7 @@ fun World.createGroundTile(assetManager: AssetManager, position: Vector2): Int {
 
     val spriteComponent = SpriteComponent()
     spriteComponent.layer = SpriteComponent.Layer.FLOOR
-    spriteComponent.sprite = Sprite(assetManager.get<Texture>("sprites/sand.png"))
+    spriteComponent.sprite = Sprite(assetManager.get<Texture>("sprites/tiles/sand.png"))
     spriteComponent.sprite.setPosition(position.x, position.y)
     spriteComponent.sprite.setSize(TILE_SIZE, TILE_SIZE)
     edit(i).add(spriteComponent)

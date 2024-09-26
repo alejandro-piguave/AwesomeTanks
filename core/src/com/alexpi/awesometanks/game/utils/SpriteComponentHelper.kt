@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 
 fun getSpriteComponent(assetManager: AssetManager, texturePath: String, layer: SpriteComponent.Layer, bodyComponent: BodyComponent): SpriteComponent {
     val spriteComponent = SpriteComponent()
-    spriteComponent.layer = SpriteComponent.Layer.BLOCK
+    spriteComponent.layer = layer
     spriteComponent.sprite = Sprite(assetManager.get<Texture>(texturePath))
     spriteComponent.sprite.setBounds(bodyComponent)
     spriteComponent.sprite.setOrigin(spriteComponent.sprite.width/2, spriteComponent.sprite.height/2)
