@@ -6,12 +6,13 @@ import com.alexpi.awesometanks.game.entities.buildLevelMap
 import com.alexpi.awesometanks.game.map.MapLoader
 import com.alexpi.awesometanks.game.map.MapTable
 import com.alexpi.awesometanks.game.systems.BodyMultiSpriteSystem
+import com.alexpi.awesometanks.game.systems.BodyRotationSystem
 import com.alexpi.awesometanks.game.systems.BodySystem
 import com.alexpi.awesometanks.game.systems.CameraFollowSystem
 import com.alexpi.awesometanks.game.systems.LinearMovementSystem
 import com.alexpi.awesometanks.game.systems.PlayerInputSystem
 import com.alexpi.awesometanks.game.systems.RenderSystem
-import com.alexpi.awesometanks.game.systems.SmoothBodyRotationSystem
+import com.alexpi.awesometanks.game.systems.SmoothRotationSystem
 import com.alexpi.awesometanks.screens.BaseScreen
 import com.artemis.World
 import com.artemis.WorldConfigurationBuilder
@@ -40,7 +41,8 @@ class GameScreen(game: MainGame, level: Int) : BaseScreen(game) {
                 tagManager,
                 BodySystem(),
                 LinearMovementSystem(),
-                SmoothBodyRotationSystem(),
+                SmoothRotationSystem(),
+                BodyRotationSystem(),
                 CameraFollowSystem(),
                 BodyMultiSpriteSystem(),
                 playerInputSystem,

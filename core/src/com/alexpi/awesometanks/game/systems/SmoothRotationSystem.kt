@@ -9,20 +9,13 @@ import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.math.MathUtils
 
 @All(BodyComponent::class, SmoothRotationComponent::class)
-class SmoothBodyRotationSystem: IteratingSystem() {
+class SmoothRotationSystem: IteratingSystem() {
     lateinit var smoothRotationMapper: ComponentMapper<SmoothRotationComponent>
-    lateinit var bodyMapper: ComponentMapper<BodyComponent>
 
     override fun process(entityId: Int) {
-        val newAngle = with(smoothRotationMapper[entityId]) {
+        with(smoothRotationMapper[entityId]) {
             desiredAngle = normalizeAngle(desiredAngle)
             currentAngle = updateRotationAngle(currentAngle, desiredAngle, rotationSpeed, threshold)
-
-            currentAngle
-        }
-
-        with(bodyMapper[entityId]) {
-            body.setTransform(body.position, newAngle)
         }
     }
 
