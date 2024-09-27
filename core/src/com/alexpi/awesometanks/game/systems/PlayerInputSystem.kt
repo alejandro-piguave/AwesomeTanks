@@ -2,12 +2,14 @@ package com.alexpi.awesometanks.game.systems
 
 import com.alexpi.awesometanks.game.components.LinearMovementComponent
 import com.alexpi.awesometanks.game.components.SmoothRotationComponent
+import com.alexpi.awesometanks.game.components.WeaponComponent
 import com.alexpi.awesometanks.game.tags.Tags
 import com.alexpi.awesometanks.game.utils.SQRT2_2
 import com.artemis.BaseEntitySystem
 import com.artemis.ComponentMapper
 import com.artemis.annotations.All
 import com.artemis.managers.TagManager
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.MathUtils
@@ -18,6 +20,7 @@ class PlayerInputSystem: BaseEntitySystem(), InputProcessor {
     lateinit var tagManager: TagManager
     lateinit var linearMovementMapper: ComponentMapper<LinearMovementComponent>
     lateinit var smoothRotationMapper: ComponentMapper<SmoothRotationComponent>
+    lateinit var weaponMapper: ComponentMapper<WeaponComponent>
 
     private var horizontalDirection = 0f
     private var verticalDirection = 0f
@@ -25,14 +28,15 @@ class PlayerInputSystem: BaseEntitySystem(), InputProcessor {
     private var dx = 0f
     private var dy = 0f
     private var desiredRotation = 0f
+    private var desiredWeaponRotation = 0f
 
     override fun processSystem() {
         val linearMovementComponent = linearMovementMapper[tagManager.getEntityId(Tags.PLAYER)]
         linearMovementComponent.vX = dx * linearMovementComponent.speed
         linearMovementComponent.vY = dy* linearMovementComponent.speed
 
-        val smoothRotationComponent = smoothRotationMapper[tagManager.getEntityId(Tags.PLAYER)]
-        smoothRotationComponent.desiredAngle = desiredRotation
+        smoothRotationMapper[tagManager.getEntityId(Tags.PLAYER)].desiredAngle = desiredRotation
+        smoothRotationMapper[weaponMapper[tagManager.getEntityId(Tags.PLAYER)].weaponId].desiredAngle = desiredWeaponRotation
     }
 
     private fun updateDesiredAngle() {
@@ -129,6 +133,11 @@ class PlayerInputSystem: BaseEntitySystem(), InputProcessor {
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        val x = screenX - Gdx.graphics.width*.5f
+        val y = (Gdx.graphics.height - screenY) - Gdx.graphics.height*.5f
+
+        desiredWeaponRotation = MathUtils.atan2(y, x)
+
         return true
     }
 

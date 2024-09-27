@@ -5,6 +5,11 @@ import com.alexpi.awesometanks.screens.TILE_SIZE
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.MathUtils
 
+fun Sprite.setTransform(bodyComponent: BodyComponent) {
+    setBounds(bodyComponent)
+    setRotation(bodyComponent)
+}
+
 fun Sprite.setBounds(bodyComponent: BodyComponent) {
     setBounds(bodyComponent.left() * TILE_SIZE, bodyComponent.bottom() * TILE_SIZE, bodyComponent.width * TILE_SIZE, bodyComponent.height * TILE_SIZE)
 }

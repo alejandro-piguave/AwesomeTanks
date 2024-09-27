@@ -1,6 +1,5 @@
 package com.alexpi.awesometanks.game.systems
 
-import com.alexpi.awesometanks.game.components.BodyComponent
 import com.alexpi.awesometanks.game.components.SmoothRotationComponent
 import com.alexpi.awesometanks.game.utils.getNormalizedAbsoluteDifference
 import com.artemis.ComponentMapper
@@ -8,7 +7,7 @@ import com.artemis.annotations.All
 import com.artemis.systems.IteratingSystem
 import com.badlogic.gdx.math.MathUtils
 
-@All(BodyComponent::class, SmoothRotationComponent::class)
+@All(SmoothRotationComponent::class)
 class SmoothRotationSystem: IteratingSystem() {
     lateinit var smoothRotationMapper: ComponentMapper<SmoothRotationComponent>
 
