@@ -11,7 +11,7 @@ fun GameScreen.buildLevelMap(){
         } else {
             when (cell.value) {
                 MapTable.START -> {
-                    val playerId = gameWorld.createPlayer(game.manager, physicsWorld, cell.toWorldPosition(mapTable))
+                    val playerId = gameWorld.createPlayer(game.manager, physicsWorld, cell.toWorldPosition(mapTable), game.gameRepository)
                     tagManager.register(Tags.PLAYER, playerId)
                 }
 
